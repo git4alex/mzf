@@ -1,0 +1,9 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" build-on-make="true" name="tplt2-web:war exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/tplt2_web_war_exploded</output-path>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="tplt2-web/web/Web" />
+      <element id="directory" name="WEB-INF" />
+    </root>
+  </artifact>
+</component>

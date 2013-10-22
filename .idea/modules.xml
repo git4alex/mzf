@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/mzf/mzf.iml" filepath="$PROJECT_DIR$/mzf/mzf.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tplt2/tplt2.iml" filepath="$PROJECT_DIR$/tplt2/tplt2.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tplt2-web/tplt2-web.iml" filepath="$PROJECT_DIR$/tplt2-web/tplt2-web.iml" />
+    </modules>
+  </component>
+</project>
+

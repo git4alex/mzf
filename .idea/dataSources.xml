@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="DataSourceManagerImpl" format="xml" hash="3864283046">
+    <data-source source="LOCAL" name="Data Source" product="Microsoft SQL Server" version="10.50.1617" jdbc-version="3.0" driver-name="jTDS Type 4 JDBC Driver for MS SQL Server and Sybase" driver-version="1.2.5" uuid="3c731399-37ce-4a89-9c4a-2fa24001aeea">
+      <extra-name-characters>$#@</extra-name-characters>
+      <identifier-quote-string>&quot;</identifier-quote-string>
+      <jdbc-driver>net.sourceforge.jtds.jdbc.Driver</jdbc-driver>
+      <jdbc-url>jdbc:jtds:sqlserver://localhost/ERP-MZF;user=sa;password=000000</jdbc-url>
+      <user-name>sa</user-name>
+      <user-password>df9adf9adf9adf9adf9adf9a</user-password>
+      <schema-pattern>*.dbo</schema-pattern>
+      <default-schemas>*.dbo</default-schemas>
+      <libraries>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/aopalliance.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/asm-all-3.3.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/aspectjweaver-1.5.2a.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/avalon-framework-4.2.0.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/barcode4j.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/cglib-2.2.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-collections-3.2.1.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-dbcp-1.2.2.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-fileupload-1.2.1.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-io-1.4.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-lang-2.1.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-logging-1.1.1.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/commons-pool-1.3.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/dom4j-1.6.1.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/freemarker-2.3.15.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/jackson-core-asl-1.5.4.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/jackson-mapper-asl-1.5.4.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/jaxen-1.1-beta-6.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/jstl-1.1.2.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/jtds-1.2.5.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/jxl.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/log4j-1.2.15.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.aop-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.asm-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.aspects-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.beans-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.context-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.context.support-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.core-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.expression-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.jdbc-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.transaction-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.web-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/org.springframework.web.servlet-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/poi-3.8-beta4-20110826.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/poi-ooxml-3.8-beta4-20110826.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/poi-ooxml-schemas-3.8-beta4-20110826.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/spring-security-acl-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/spring-security-config-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/spring-security-core-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/spring-security-taglibs-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/spring-security-web-3.0.3.RELEASE.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/sqljdbc.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/standard-1.1.2.jar!/</url>
+        </library>
+        <library>
+          <url>jar://D:/Project Resource/���귻/workspace/mzf/WebContent/WEB-INF/lib/xmlbeans-2.3.0.jar!/</url>
+        </library>
+      </libraries>
+    </data-source>
+  </component>
+</project>
+

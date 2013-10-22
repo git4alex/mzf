@@ -1,0 +1,12 @@
+<component name="libraryTable">
+  <library name="tplt2-3rd">
+    <CLASSES>
+      <root url="file://$PROJECT_DIR$/tplt2-3rd" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$PROJECT_DIR$/../../3rd-libs/spring-framework-3.0.3.RELEASE/src/org.springframework.jdbc-sources-3.0.3.RELEASE.jar!/" />
+    </SOURCES>
+    <jarDirectory url="file://$PROJECT_DIR$/tplt2-3rd" recursive="false" />
+  </library>
+</component>
