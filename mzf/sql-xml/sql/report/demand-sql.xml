@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="demand">  
+   	<sql name="list" title="要货申请单明细表">
+ 	<![CDATA[
+		select o.name orgName,
+				a.num demandNum,
+				bc.name statusText,
+				CONVERT(VARCHAR(100), a.cdate, 23) cdate,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				p.num productNum,
+				a.style_code styleCode,
+				bc3.name goldClassText,
+				p.diamond_Size diamondSize,
+				p.retail_base_price retailBasePrice,
+				a.remark
+		  from v_mzf_demand a
+				left join v_mzf_product p on (a.product_id = p.id)
+				left join sys_org o on (a.org_id = o.id)
+				left join sys_biz_code bc on (a.status = bc.value and bc.type_code = 'demandStatus')
+				left join sys_biz_code bc1 on (bc1.value = a.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = a.pkind and bc2.type_code = 'productKind')
+				left join sys_biz_code bc3 on (bc3.value = a.gold_class and bc3.type_code = 'goldClass')
+		  where 1 = 1
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>   		 
+			<#if demandNum?exists> 
+				AND a.num LIKE '%${demandNum}%'
+			</#if>   		 
+			<#if productNum?exists> 
+				AND p.num LIKE '%${productNum}%'
+			</#if>   		 
+			<#if remark?exists> 
+				AND a.remark LIKE '%${remark}%'
+			</#if>   		 
+			<#if cstartDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${cstartDate}' 
+			</#if>
+			<#if cendDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${cendDate}' 
+			</#if>
+			<#if status?exists> 
+				AND  bc.value =  '${status}' 
+			</#if>
+			<#if pkind?exists> 
+				AND  bc2.value =  '${pkind}' 
+			</#if>
+			<#if ptype?exists> 
+				AND  bc1.value =  '${ptype}' 
+			</#if>
+			<#if styleCode?exists> 
+				AND  a.style_code LIKE  '%${styleCode}%' 
+			</#if>
+			<#if goldClass?exists> 
+				AND  bc3.value =  '${goldClass}' 
+			</#if> 
+		order by cdate
+	]]>
+   	</sql>
+</sqls> 

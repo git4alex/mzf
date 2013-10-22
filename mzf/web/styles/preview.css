@@ -1,0 +1,11 @@
+#bill table{
+	line-height:15px;
+	margin:6px;
+}
+#bill table td{ 
+	padding: 2px 4px;
+	font-family: "宋体",arial, tahoma, helvetica, sans-serif;
+	font-size: 9px;
+	text-align: left;
+}
+#bill table .title{font-size:12pt; font-weight:bold;  text-align: center;}

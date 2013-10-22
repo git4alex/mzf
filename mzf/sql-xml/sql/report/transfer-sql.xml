@@ -1,0 +1,474 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="transfer">  
+   	<sql name="productBack, productBackAnalyse" title="连锁店回仓明细表,连锁店回仓货品分析表">
+		SELECT o1.NAME                            sourceOrgName,
+		       CONVERT(VARCHAR(100), a.SDATE, 23) sdateStr,
+		       CONVERT(VARCHAR(100), a.RDATE, 23) rdateStr,
+		       bc.name							  transferTypeText,
+		       b.NUM                              productNum,
+		       bc1.NAME                           ptypeText,
+		       bc2.NAME                           pkindText,
+		       b.DIAMOND_SIZE                     diamondSize,
+		       b.WEIGHT                           weight,
+		       b.RETAIL_BASE_PRICE                retailBasePrice,
+		       b.WHOLESALE_PRICE                  wholesalePrice,
+		       b.COST_PRICE                       costPrice,
+		       b.promotion_price                  promotionPrice
+		FROM   mzf_transfer a
+		      	INNER JOIN mzf_product b ON (a.target_type = 'product' AND a.target_id = b.id)
+		       	left join SYS_ORG o1 ON (a.source_org_id = o1.id)
+		       	left join SYS_ORG o2 ON (a.target_org_id = o2.id)
+		       	left join SYS_BIZ_CODE bc1 ON (b.PTYPE = bc1.VALUE AND bc1.TYPE_CODE = 'productType')
+		       	left join SYS_BIZ_CODE bc2 ON (b.PKIND = bc2.VALUE AND bc2.TYPE_CODE = 'productKind')
+		       	left join sys_biz_code bc on (a.transfer_type = bc.value and bc.type_code = 'transferType')
+		WHERE  o1.type != 'HQ'
+		       AND o2.TYPE = 'HQ'
+		       AND a.RDATE IS NOT NULL 
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>    		
+			<#if sourceOrgName?exists> 
+				AND o1.NAME LIKE '%${sourceOrgName}%'
+			</#if>   		 
+			<#if productNum?exists> 
+				AND  b.NUM  LIKE '%${productNum}%'
+			</#if>   		 
+			<#if transferType?exists> 
+				AND  bc.value = '${transferType}' 
+			</#if>
+			<#if ptype?exists> 
+				AND  b.ptype = '${ptype}' 
+			</#if>
+			<#if pkind?exists> 
+				AND  b.pkind = '${pkind}' 
+			</#if>
+			<#if diamondSizeStart?exists> 
+				AND  b.diamond_size >= '${diamondSizeStart}' 
+			</#if>
+			<#if diamondSizeEnd?exists> 
+				AND  b.diamond_size <= '${diamondSizeEnd}' 
+			</#if>
+			<#if weightStart?exists> 
+				AND  b.weight  >= '${weightStart}' 
+			</#if>
+			<#if weightEnd?exists> 
+				AND  b.weight <= '${weightEnd}' 
+			</#if>
+			<#if retailBasePriceStart?exists> 
+				AND  b.retail_base_price  >= '${retailBasePriceStart}' 
+			</#if>
+			<#if retailBasePriceEnd?exists> 
+				AND  b.retail_base_price <= '${retailBasePriceEnd}' 
+			</#if>
+			
+			<#if costPriceStart?exists> 
+				AND  b.cost_price  >= '${costPriceStart}' 
+			</#if>
+			<#if costPriceEnd?exists> 
+				AND  b.cost_price <= '${costPriceEnd}' 
+			</#if>
+			
+			<#if promotionPriceStart?exists> 
+				AND  b.promotion_price  >= '${promotionPriceStart}' 
+			</#if>
+			<#if promotionPriceEnd?exists> 
+				AND  b.promotion_price <= '${promotionPriceEnd}' 
+			</#if>
+			
+			<#if startDate?exists> 
+				AND CONVERT(VARCHAR(100), a.RDATE, 23) >=  '${startDate}' 
+			</#if>
+			<#if endDate?exists> 
+				AND CONVERT(VARCHAR(100), a.RDATE, 23) <=  '${endDate}' 
+			</#if>
+			<#if productBackOrderBy?exists>
+				order by rdateStr,ptypeText,pkindText
+			</#if>			
+			<#if productBackAnalyseOrderBy?exists>
+				order by transferTypeText, sdateStr
+			</#if>						
+		]]>
+   	</sql>
+   	
+   	<sql name="secondProduct" title="连锁店旧饰调拨明细表">
+		SELECT o.name              orgName,
+				CONVERT(VARCHAR(100), c.cdate, 23) returnsDate,		       
+				CONVERT(VARCHAR(100), d.sdate, 23) sdate,
+				CONVERT(VARCHAR(100), d.rdate, 23) rdate,		       
+		       a.num               secondProductNum,
+		       style_code          styleCode,
+		       bc1.name             ptypeText,
+		       bc2.name             pkindText,
+		       bc3.name             goldClassmText,
+		       a.weight,
+		       a.retail_base_price retailBasePrice,
+		       a.buy_price         buyPrice,
+		       a.diamond_size      diamondSize,
+		       bc4.name             diamondColorText,
+		       bc5.name             diamondCleanText,
+		       bc6.name             diamondCutText
+		FROM   mzf_second_product a 
+				LEFT JOIN mzf_sale_detail b ON (a.id = b.target_id AND b.type = 'secondJewel')
+				LEFT JOIN mzf_sale c ON (b.sale_id = c.id)
+				INNER JOIN mzf_transfer d ON (a.id = d.target_id AND d.target_type = 'secondProduct')
+				LEFT JOIN sys_org o ON (d.source_org_id = o.id)
+				LEFT JOIN sys_biz_code bc1 on (bc1.value = a.ptype and bc1.type_code = 'productType')
+				LEFT JOIN sys_biz_code bc2 on (bc2.value = a.pkind and bc2.type_code = 'productKind')
+				LEFT JOIN sys_biz_code bc3 on (bc3.value = a.gold_class and bc3.type_code = 'goldClass')
+				LEFT JOIN sys_biz_code bc4 on (bc4.value = a.diamond_color and bc4.type_code = 'diamondColor')
+				LEFT JOIN sys_biz_code bc5 on (bc5.value = a.diamond_clean and bc5.type_code = 'diamondClean')
+				LEFT JOIN sys_biz_code bc6 on (bc6.value = a.diamond_cut and bc6.type_code = 'diamondCut')
+		WHERE  d.rdate is not null		
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>   		 
+			<#if secondProductNum?exists> 
+				AND a.num  LIKE '%${secondProductNum}%'
+			</#if>   		 
+			<#if styleCode?exists> 
+				AND style_code  LIKE '%${styleCode}%'
+			</#if>   		 
+			<#if ptype?exists> 
+				AND  bc1.value =  '${ptype}' 
+			</#if>
+			<#if pkind?exists> 
+				AND  bc2.value =  '${pkind}' 
+			</#if>
+			<#if goldClass?exists> 
+				AND  bc3.value =  '${goldClass}' 
+			</#if>
+			<#if diamondColor?exists> 
+				AND  bc4.value =  '${diamondColor}' 
+			</#if>
+			<#if diamondClean?exists> 
+				AND  bc5.value =  '${diamondClean}' 
+			</#if>
+			<#if diamondCut?exists> 
+				AND  bc6.value =  '${diamondCut}' 
+			</#if>
+			<#if weightStart?exists> 
+				AND  a.weight >=  '${weightStart}' 
+			</#if>
+			<#if weightEnd?exists> 
+				AND  a.weight <=  '${weightEnd}' 
+			</#if>
+			<#if diamondSizeStart?exists> 
+				AND  a.diamond_size >=  '${diamondSizeStart}' 
+			</#if>
+			<#if diamondSizeEnd?exists> 
+				AND  a.diamond_size <=  '${diamondSizeEnd}' 
+			</#if>
+			<#if retailBasePriceStart?exists> 
+				AND  a.retail_base_price >=  '${retailBasePriceStart}' 
+			</#if>
+			<#if retailBasePriceEnd?exists> 
+				AND  a.retail_base_price <=  '${retailBasePriceEnd}' 
+			</#if>
+			<#if sdateStart?exists> 
+				AND CONVERT(VARCHAR(100), d.sdate, 23) >=  '${sdateStart}' 
+			</#if>
+			<#if sdateEnd?exists> 
+				AND CONVERT(VARCHAR(100), d.sdate, 23) <=  '${sdateEnd}' 
+			</#if>						
+			<#if returnsDateStart?exists> 
+				AND CONVERT(VARCHAR(100), c.cdate, 23) >=  '${returnsDateStart}' 
+			</#if>
+			<#if returnsDateEnd?exists> 
+				AND CONVERT(VARCHAR(100), c.cdate, 23) <=  '${returnsDateEnd}' 
+			</#if>						
+			<#if rdateStart?exists> 
+				AND CONVERT(VARCHAR(100), d.rdate, 23) >=  '${rdateStart}' 
+			</#if>
+			<#if rdateEnd?exists> 
+				AND CONVERT(VARCHAR(100), d.rdate, 23) <=  '${rdateEnd}' 
+			</#if>						
+		]]>			
+		ORDER  BY rdate 
+   	</sql>
+   	   	
+   	<sql name="productSecondProductAndMaintainProductOutput, productSecondProductAndMaintainProductInput" title="货品调出明细表（含维修、旧饰、回仓）, 货品调入明细表（含维修、旧饰、回仓）">
+		SELECT x.productNum,
+				o1.name sourceOrgName,
+				o2.name targetOrgName,
+				x.sdateStr,
+				x.rdateStr,
+				x.remark,
+				x.weight,
+		 		bc1.name             ptypeText,
+				bc2.name             pkindText,
+				bc3.name             goldClassmText,
+				x.gold_weight        goldWeight,
+				x.diamond_size       diamondSize,		
+				bc4.name             diamondColorText,
+				bc5.name             diamondCleanText,
+				bc6.name             diamondCutText,
+				bc7.name		     diamondShapeText,
+				x.wholesalePrice,
+				x.costPrice,
+				x.retailBasePrice,
+				x.promotionPrice,
+				x.transferType,
+				x.status,
+				x.dispatchNum
+		  FROM (
+				select case when target_type = 'secondProduct' then sp.num else p.num end productNum,
+						a.source_org_id,
+						a.target_org_id,
+						CONVERT(VARCHAR(100), dis.CDATE, 23) sdateStr,
+						CONVERT(VARCHAR(100), a.RDATE, 23) rdateStr,
+						a.remark,
+						dis.num dispatchNum,
+						code.name status,
+						case
+						      when a.target_org_id = 1 and a.transfer_type is not null and a.target_type = 'product' then '门店回仓'
+						      when a.source_org_id = 1 and a.demand_id is null and a.target_type = 'product' then '总部发货'
+						      when a.source_org_id = 1 and a.demand_id is not null and a.target_type = 'product' then '门店要货'
+						      when a.target_type = 'maintainProduct' then '维修调拨'
+						      when a.target_type = 'secondProduct' then '旧饰调拨'
+						      when a.source_org_id != 1 and a.target_org_id != 1 and a.target_type = 'product' then '门店调拨'
+						 end transferType,
+						case when target_type = 'secondProduct' then sp.weight else p.weight end weight,
+						case when target_type = 'secondProduct' then sp.ptype else p.ptype end ptype,
+						case when target_type = 'secondProduct' then sp.pkind else p.pkind end pkind,
+						case when target_type = 'secondProduct' then sp.gold_class else p.gold_class end gold_class,
+						case when target_type = 'secondProduct' then sp.gold_weight else p.gold_weight end gold_weight,
+						case when target_type = 'secondProduct' then sp.diamond_size else p.diamond_size end diamond_size,
+						case when target_type = 'secondProduct' then sp.diamond_shape else p.diamond_shape end diamond_shape,
+						case when target_type = 'secondProduct' then sp.diamond_color else p.diamond_color end diamond_color,
+						case when target_type = 'secondProduct' then sp.diamond_clean else p.diamond_clean end diamond_clean,
+						case when target_type = 'secondProduct' then sp.diamond_cut else p.diamond_cut end diamond_cut,
+						case when target_type = 'secondProduct' then sp.wholesale_price else  p.wholesale_price end wholesalePrice,
+						case when target_type = 'secondProduct' then sp.cost_price else  p.cost_price end costPrice,
+						case when target_type = 'secondProduct' then sp.retail_base_price else  p.retail_base_price end retailBasePrice,
+						case when target_type = 'secondProduct' then null else  p.promotion_price end promotionPrice
+				  from mzf_transfer a
+						left join mzf_product p on (a.target_id = p.id and a.target_type in ('product', 'maintainProduct'))
+						left join mzf_second_product sp on (a.target_id = sp.id)
+						left join mzf_dispatch dis on (a.dispatch_id = dis.id)
+						left join sys_biz_code code on (a.status = code.value and code.type_code = 'transferStatus')
+				 where a.target_type in ('product', 'maintainProduct', 'secondProduct')
+			   		<![CDATA[
+						<#if sdateStart?exists> 
+							AND CONVERT(VARCHAR(100), dis.CDATE, 23) >=  '${sdateStart}' 
+						</#if>
+						<#if sdateEnd?exists> 
+							AND CONVERT(VARCHAR(100), dis.CDATE, 23) <=  '${sdateEnd}' 
+						</#if>						   		 
+						<#if rdateStart?exists> 
+							AND CONVERT(VARCHAR(100), a.RDATE, 23) >=  '${rdateStart}' 
+						</#if>
+						<#if rdateEnd?exists> 
+							AND CONVERT(VARCHAR(100), a.RDATE, 23) <=  '${rdateEnd}' 
+						</#if>	
+						<#if dispatchNum?exists> 
+							AND dis.num like  '%${dispatchNum}%' 
+						</#if>
+						<#if status?exists> 
+							AND code.value =  '${status}' 
+						</#if>	
+									
+					]]>				 
+				) x
+		       	left join SYS_ORG o1 ON (x.source_org_id = o1.id)
+		       	left join SYS_ORG o2 ON (x.target_org_id = o2.id)
+				left join sys_biz_code bc1 on (bc1.value = x.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = x.pkind and bc2.type_code = 'productKind')
+				left join sys_biz_code bc3 on (bc3.value = x.gold_class and bc3.type_code = 'goldClass')
+				left join sys_biz_code bc4 on (bc4.value = x.diamond_color and bc4.type_code = 'diamondColor')
+				left join sys_biz_code bc5 on (bc5.value = x.diamond_clean and bc5.type_code = 'diamondClean')
+				left join sys_biz_code bc6 on (bc6.value = x.diamond_cut and bc6.type_code = 'diamondCut')
+				left join sys_biz_code bc7 on (bc7.value = x.diamond_shape and bc6.type_code = 'diamondShape')
+		 where 1 = 1
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if sourceOrgName?exists> 
+				AND o1.NAME LIKE '%${sourceOrgName}%'
+			</#if>
+			<#if targetOrgName?exists> 
+				AND o2.NAME LIKE '%${targetOrgName}%'
+			</#if>
+			<#if productNum?exists> 
+				AND x.productNum LIKE '%${productNum}%'
+			</#if>
+			<#if ptype?exists> 
+				AND  bc1.value =  '${ptype}' 
+			</#if>
+			<#if pkind?exists> 
+				AND  bc2.value =  '${pkind}' 
+			</#if>
+			<#if goldClass?exists> 
+				AND  bc3.value =  '${goldClass}' 
+			</#if>
+			<#if diamondColor?exists> 
+				AND  bc4.value =  '${diamondColor}' 
+			</#if>
+			<#if diamondClean?exists> 
+				AND  bc5.value =  '${diamondClean}' 
+			</#if>
+			<#if diamondCut?exists> 
+				AND  bc6.value =  '${diamondCut}' 
+			</#if>
+			<#if diamondShape?exists> 
+				AND  bc7.value =  '${diamondShape}' 
+			</#if>
+			<#if goldWeightStart?exists> 
+				AND x.gold_weight >= '${goldWeightStart}'
+			</#if>
+			<#if goldWeightEnd?exists> 
+				AND x.gold_weight <= '${goldWeightEnd}'
+			</#if>
+			<#if diamondSizeStart?exists> 
+				AND x.diamond_size >= '${diamondSizeStart}'
+			</#if>
+			<#if diamondSizeEnd?exists> 
+				AND x.diamond_size <= '${diamondSizeEnd}'
+			</#if>
+			<#if weightStart?exists> 
+				AND x.weight >= '${weightStart}'
+			</#if>
+			<#if weightEnd?exists> 
+				AND x.weight <= '${weightEnd}'
+			</#if>
+			<#if transferPriceStart?exists> 
+				AND x.transferPrice >= '${transferPriceStart}'
+			</#if>
+			<#if transferPriceEnd?exists> 
+				AND x.transferPrice <= '${transferPriceEnd}'
+			</#if>
+			<#if wholesalePriceStart?exists> 
+				AND x.wholesalePrice >= '${wholesalePriceStart}'
+			</#if>
+			<#if wholesalePriceEnd?exists> 
+				AND x.wholesalePrice <= '${wholesalePriceEnd}'
+			</#if>
+			<#if costPriceStart?exists> 
+				AND x.costPrice >= '${costPriceStart}'
+			</#if>
+			<#if costPriceEnd?exists> 
+				AND x.costPrice <= '${costPriceEnd}'
+			</#if>
+			
+			<#if promotionPriceStart?exists> 
+				AND x.promotionPrice >= '${promotionPriceStart}'
+			</#if>
+			<#if promotionPriceEnd?exists> 
+				AND x.promotionPrice <= '${promotionPriceEnd}'
+			</#if>
+			
+			<#if remark?exists> 
+				AND x.remark LIKE '%${remark}%'
+			</#if>
+			<#if transferType?exists>
+			    AND x.transferType = '${transferType}'
+			</#if>
+			<#if ptype?exists>
+			    AND bc1.value = '${ptype}'
+			</#if>
+			<#if pkind?exists>
+			    AND bc2.value = '${pkind}'
+			</#if>	
+			
+		]]>	
+			order by productNum			
+   	</sql>
+
+	<sql name="materialOutput, materialInput" title="物料调出明细表,物料调入明细表">   	   		     	   	 
+		select b.num materialNum,
+				o1.name sourceOrgName,
+				o2.name targetOrgName,
+				x.sdateStr,
+				x.rdateStr,
+				x.remark,
+				bc1.name statusText,
+				bc.name materialTypeText,
+				b.name materialName,
+				x.quantity,
+				x.materialWholesalePrice		
+		  from (
+				select a.target_id material_id,
+						source_org_id, 
+						target_org_id,
+						CONVERT(VARCHAR(100), a.SDATE, 23) sdateStr,
+						CONVERT(VARCHAR(100), a.RDATE, 23) rdateStr,
+						a.remark,
+						a.status,
+						quantity,
+						material_wholesale_price materialWholesalePrice
+				  from mzf_transfer a
+				 where a.target_type = 'material' 
+			   		<![CDATA[
+						<#if sstartDate?exists> 
+							AND CONVERT(VARCHAR(100), a.SDATE, 23) >=  '${sstartDate}' 
+						</#if>
+						<#if sendDate?exists> 
+							AND CONVERT(VARCHAR(100), a.SDATE, 23) <=  '${sendDate}' 
+						</#if>						   		 
+						<#if rstartDate?exists> 
+							AND CONVERT(VARCHAR(100), a.RDATE, 23) >=  '${rstartDate}' 
+						</#if>
+						<#if rendDate?exists> 
+							AND CONVERT(VARCHAR(100), a.RDATE, 23) <=  '${rendDate}' 
+						</#if>					
+					]]>				 
+				) x
+				inner join mzf_material b on (x.material_id = b.id)
+		       	left join SYS_ORG o1 ON (x.source_org_id = o1.id)
+		       	left join SYS_ORG o2 ON (x.target_org_id = o2.id)
+				left join sys_biz_code bc on (b.type = bc.value and bc.type_code = 'materialType')
+				left join sys_biz_code bc1 on (x.status = bc1.value and bc1.type_code = 'transferStatus')		
+		 where 1 = 1
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if sourceOrgName?exists> 
+				AND o1.NAME LIKE '%${sourceOrgName}%'
+			</#if>
+			<#if targetOrgName?exists> 
+				AND o2.NAME LIKE '%${targetOrgName}%'
+			</#if>
+			<#if materialNum?exists> 
+				AND b.num LIKE '%${materialNum}%'
+			</#if>
+			<#if materialName?exists> 
+				AND b.name LIKE '%${materialName}%'
+			</#if>
+			<#if materialType?exists> 
+				AND  bc.value  = '${materialType}'
+			</#if>
+			<#if status?exists> 
+				AND  bc1.value  = '${status}'
+			</#if>
+			<#if remark?exists> 
+				AND x.remark LIKE '%${remark}%'
+			</#if>
+			<#if quantityStart?exists> 
+				AND  x.quantity  >= '${quantityStart}'
+			</#if>
+			<#if quantityEnd?exists> 
+				AND  x.quantity  <= '${quantityEnd}'
+			</#if>
+			<#if materialWholesalePriceStart?exists> 
+				AND  x.materialWholesalePrice  >= '${materialWholesalePriceStart}'
+			</#if>
+			<#if materialWholesalePriceEnd?exists> 
+				AND  x.materialWholesalePrice  <= '${materialWholesalePriceEnd}'
+			</#if>
+			<#if materialOutput?exists> 
+				order by sdateStr desc, sourceOrgName
+			</#if> 
+			<#if materialInput?exists> 
+				order by rdateStr desc, targetOrgName
+			</#if> 			
+		]]>
+				
+	</sql>
+</sqls> 

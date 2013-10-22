@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="salerule">
+	<sql name="customer" title="客户规则">
+		select a.type, grade, g.cdate grantDate, age, points totalPoints,
+			(select sum(case when type = 'returns' then -AMOUNT else AMOUNT end) 
+			   from mzf_sale 
+			  where cus_id = a.id) as totalAmount,
+			(select count(*) 
+			   from mzf_sale 
+			  where cus_id = a.id) totalSaleCount,
+			(select sum(case when type = 'returns' then -AMOUNT else AMOUNT end) 
+			   from v_mzf_sale 
+			  where cus_id = a.id
+			   		<![CDATA[			  
+					<#if xTotalAmountPtype?exists> 
+						and ptype = '${xTotalAmountPtype}'
+					</#if>
+					<#if xTotalAmountPkind?exists> 
+						and pkind = '${xTotalAmountPkind}'
+					</#if>					
+					<#if xTotalAmountDate1?exists> 
+						and convert(varchar, cdate, 23) >=  '${xTotalAmountDate1}' 
+					</#if>
+					<#if xTotalAmountDate2?exists> 
+						and convert(varchar, cdate, 23) <=  '${xTotalAmountDate2}' 
+					</#if>
+					]]>							  				 
+				) as xTotalAmount,
+			(select count(*) 
+			   from v_mzf_sale 
+			  where cus_id = a.id
+			   		<![CDATA[			  
+					<#if xTotalSaleCountPtype?exists> 
+						and ptype = '${xTotalSaleCountPtype}'
+					</#if>
+					<#if xTotalSaleCountPkind?exists> 
+						and pkind = '${xTotalSaleCountPkind}'
+					</#if>					
+					<#if xTotalSaleCountDate1?exists> 
+						and convert(varchar, cdate, 23) >=  '${xTotalSaleCountDate1}' 
+					</#if>
+					<#if xTotalSaleCountDate2?exists> 
+						and convert(varchar, cdate, 23) <=  '${xTotalSaleCountDate2}' 
+					</#if>
+					]]>			  				 
+				) as xTotalSaleCount
+	  from mzf_customer a
+			left join (select * from mzf_grant_card where id in (
+							select max(id) from mzf_grant_card group by cus_id
+						)) g on (a.id = g.cus_id)
+			left join mzf_customer_card c on (g.card_id = c.id)
+			inner join sys_org o on (a.org_id = o.id)
+	 where 1 = 1
+   		<![CDATA[			  
+		<#if customerId?exists> 
+			and a.id = ${customerId}
+		</#if>
+		]]>			 		
+	</sql>	
+	<sql name="chitType" title="代金券类型">
+	 select name type from mzf_chit group by name
+	</sql>
+</sqls> 

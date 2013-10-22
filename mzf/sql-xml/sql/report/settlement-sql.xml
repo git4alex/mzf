@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="settlement">
+   	<sql name="report" title="拆旧结算汇总报表,翻新结算汇总报表">
+	select p.num productNum,
+			p.name productName,
+			(select CAST(replace(code, ' ', '') AS VARCHAR(100)) + ', ' AS [text()] from MZF_PRODUCT_CERTIFICATE where product_id = sp.id FOR XML PATH(''))
+			 certificateCode,
+			bc1.name ptypeText,
+			bc2.name pkindText,
+			bc3.name goldClassmText,
+			p.diamond_size diamondSize,
+			case when b.product_source = 'secondProduct' then '旧饰'
+			     when b.product_source = 'product' then '商品'
+			     else ''
+			end productSource,
+ 			p.weight weight,			
+			p.cost_price costPrice,
+			p.wholesale_price wholesalePrice,
+			p.retail_base_price	retailBasePrice,
+			a.price settlementPrice,
+			o.name receptOrgName,
+			CONVERT(VARCHAR(100), a.cdate, 23) splitDate 
+	  from mzf_settlement a
+	        <![CDATA[
+	         <#if reportType == 'split'>
+	          inner join mzf_split b on (a.target_id = b.id and a.type = 'splitSecondProduct') 
+	         </#if>
+	          <#if reportType == 'renovate'>
+	           inner join mzf_renovate b on (a.target_id = b.id and a.type = 'renovateSecondProduct')
+	         </#if>
+	        ]]>
+			
+			inner join mzf_second_product p on (b.product_id = p.id)
+			left join mzf_product sp on (sp.num = p.num)
+			left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+			left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+			left join sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+			left join sys_org o on (a.recept_org_id = o.id)
+		WHERE  1 = 1				
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>
+			<#if productNum?exists> 
+				AND p.num LIKE '%${productNum}%'
+			</#if>
+			<#if productName?exists> 
+				AND p.name LIKE '%${productName}%'
+			</#if>
+			<#if ptype?exists> 
+				AND p.PTYPE = '${ptype}'
+			</#if>
+			<#if pkind?exists> 
+				AND p.PKIND = '${pkind}'
+			</#if>	
+			<#if goldClass?exists> 
+				AND bc3.value =  '${goldClass}' 
+			</#if>		   		 
+			<#if startDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${startDate}' 
+			</#if>
+			<#if endDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${endDate}' 
+			</#if>
+			<#if diamondSize1?exists> 
+				AND p.diamond_size >=  ${diamondSize1} 
+			</#if>
+			<#if diamondSize2?exists> 
+				AND p.diamond_size <=  ${diamondSize2} 
+			</#if>	
+			<#if weight1?exists> 
+				AND p.weight >=  ${weight1} 
+			</#if>
+			<#if weight2?exists> 
+				AND p.weight <=  ${weight2} 
+			</#if>	
+			<#if costPrice1?exists> 
+				AND p.cost_price >=  ${costPrice1} 
+			</#if>
+			<#if costPrice2?exists> 
+				AND p.cost_price <=  ${costPrice2} 
+			</#if>
+			<#if wholesalePrice1?exists> 
+				AND p.wholesale_price >=  ${wholesalePrice1} 
+			</#if>
+			<#if wholesalePrice2?exists> 
+				AND p.wholesale_price <=  ${wholesalePrice2} 
+			</#if>	
+			<#if retailBasePrice1?exists> 
+				AND p.retail_base_price >=  ${retailBasePrice1} 
+			</#if>
+			<#if retailBasePrice2?exists> 
+				AND p.retail_base_price <=  ${retailBasePrice2} 
+			</#if>
+			<#if settlementPrice1?exists> 
+				AND a.price >=  ${settlementPrice1} 
+			</#if>
+			<#if settlementPrice2?exists> 
+				AND a.price <=  ${settlementPrice2} 
+			</#if>		
+			<#if productSource?exists> 
+				AND b.product_source =  '${productSource}' 
+			</#if>					
+		]]>			
+			order by a.recept_org_id, a.cdate	
+   	</sql>
+   	<sql name="secondProductReport" title="旧饰结算汇总报表">
+   	 select * from  (
+   	  select p.num productNum,
+			p.name productName,
+			(select CAST(replace(code, ' ', '') AS VARCHAR(100)) + ', ' AS [text()] from MZF_PRODUCT_CERTIFICATE where product_id = sp.id FOR XML PATH(''))
+			 certificateCode,
+			bc1.name ptypeText,
+			bc2.name pkindText,
+			bc3.name goldClassmText,
+			p.diamond_size diamondSize,
+			p.weight weight,			
+			p.cost_price costPrice,
+			p.wholesale_price wholesalePrice,
+			p.retail_base_price	retailBasePrice,
+			p.buy_price buyPrice,
+			a.price settlementPrice,
+			o.name receptOrgName,
+			CONVERT(VARCHAR(100), a.cdate, 23) splitDate,
+			source = '拆旧'
+	  from mzf_settlement a
+	         inner join mzf_split b on (a.target_id = b.id and a.type = 'splitSecondProduct') 
+			inner join mzf_second_product p on (b.product_id = p.id)
+			left join mzf_product sp on (sp.num = p.num)
+			left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+			left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+			left join sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+			left join sys_org o on (a.recept_org_id = o.id)
+			WHERE  1 = 1				
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>
+			<#if productNum?exists> 
+				AND p.num LIKE '%${productNum}%'
+			</#if>
+			<#if productName?exists> 
+				AND p.name LIKE '%${productName}%'
+			</#if>
+			<#if ptype?exists> 
+				AND p.PTYPE = '${ptype}'
+			</#if>
+			<#if pkind?exists> 
+				AND p.PKIND = '${pkind}'
+			</#if>			   		 
+			<#if startDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${startDate}' 
+			</#if>
+			<#if endDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${endDate}' 
+			</#if>
+			<#if goldClass?exists> 
+				AND bc3.value =  '${goldClass}' 
+			</#if>
+			<#if source?exists> 
+				AND a.type =  '${source}' 
+			</#if>			
+			<#if diamondSize1?exists> 
+				AND p.diamond_size >=  ${diamondSize1} 
+			</#if>
+			<#if diamondSize2?exists> 
+				AND p.diamond_size <=  ${diamondSize2} 
+			</#if>	
+			<#if weight1?exists> 
+				AND p.weight >=  ${weight1} 
+			</#if>
+			<#if weight2?exists> 
+				AND p.weight <=  ${weight2} 
+			</#if>	
+			<#if costPrice1?exists> 
+				AND p.cost_price >=  ${costPrice1} 
+			</#if>
+			<#if costPrice2?exists> 
+				AND p.cost_price <=  ${costPrice2} 
+			</#if>
+			<#if wholesalePrice1?exists> 
+				AND p.wholesale_price >=  ${wholesalePrice1} 
+			</#if>
+			<#if wholesalePrice2?exists> 
+				AND p.wholesale_price <=  ${wholesalePrice2} 
+			</#if>	
+			<#if retailBasePrice1?exists> 
+				AND p.retail_base_price >=  ${retailBasePrice1} 
+			</#if>
+			<#if retailBasePrice2?exists> 
+				AND p.retail_base_price <=  ${retailBasePrice2} 
+			</#if>
+			<#if settlementPrice1?exists> 
+				AND a.price >=  ${settlementPrice1} 
+			</#if>
+			<#if settlementPrice2?exists> 
+				AND a.price <=  ${settlementPrice2} 
+			</#if>				
+		]]>			
+	    union
+		 select p.num productNum,
+			p.name productName,
+			(select CAST(replace(code, ' ', '') AS VARCHAR(100)) + ', ' AS [text()] from MZF_PRODUCT_CERTIFICATE where product_id = sp.id FOR XML PATH(''))
+			 certificateCode,
+			bc1.name ptypeText,
+			bc2.name pkindText,
+			bc3.name goldClassmText,
+			p.diamond_size diamondSize,
+			p.weight weight,			
+			p.cost_price costPrice,
+			p.wholesale_price wholesalePrice,
+			p.retail_base_price	retailBasePrice,
+			p.buy_price buyPrice,
+			a.price settlementPrice,
+			o.name receptOrgName,
+			CONVERT(VARCHAR(100), a.cdate, 23) splitDate,
+			source = '翻新' 
+	  from mzf_settlement a
+	        inner join mzf_renovate b on (a.target_id = b.id and a.type = 'renovateSecondProduct')
+			inner join mzf_second_product p on (b.product_id = p.id)
+			left join mzf_product sp on (sp.num = p.num)
+			left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+			left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+			left join sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+			left join sys_org o on (a.recept_org_id = o.id)
+			WHERE  1 = 1				
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>
+		    <#if productNum?exists> 
+				AND p.num LIKE '%${productNum}%'
+			</#if>
+			<#if productName?exists> 
+				AND p.name LIKE '%${productName}%'
+			</#if>
+			<#if ptype?exists> 
+				AND p.PTYPE = '${ptype}'
+			</#if>
+			<#if pkind?exists> 
+				AND p.PKIND = '${pkind}'
+			</#if>			   		 
+			<#if startDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${startDate}' 
+			</#if>
+			<#if endDate?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${endDate}' 
+			</#if>	
+			<#if goldClass?exists> 
+				AND bc3.value =  '${goldClass}' 
+			</#if>	
+			<#if source?exists> 
+				AND a.type =  '${source}' 
+			</#if>	
+			<#if diamondSize1?exists> 
+				AND p.diamond_size >=  ${diamondSize1} 
+			</#if>
+			<#if diamondSize2?exists> 
+				AND p.diamond_size <=  ${diamondSize2} 
+			</#if>	
+			<#if weight1?exists> 
+				AND p.weight >=  ${weight1} 
+			</#if>
+			<#if weight2?exists> 
+				AND p.weight <=  ${weight2} 
+			</#if>	
+			<#if costPrice1?exists> 
+				AND p.cost_price >=  ${costPrice1} 
+			</#if>
+			<#if costPrice2?exists> 
+				AND p.cost_price <=  ${costPrice2} 
+			</#if>
+			<#if wholesalePrice1?exists> 
+				AND p.wholesale_price >=  ${wholesalePrice1} 
+			</#if>
+			<#if wholesalePrice2?exists> 
+				AND p.wholesale_price <=  ${wholesalePrice2} 
+			</#if>	
+			<#if retailBasePrice1?exists> 
+				AND p.retail_base_price >=  ${retailBasePrice1} 
+			</#if>
+			<#if retailBasePrice2?exists> 
+				AND p.retail_base_price <=  ${retailBasePrice2} 
+			</#if>
+			<#if settlementPrice1?exists> 
+				AND a.price >=  ${settlementPrice1} 
+			</#if>
+			<#if settlementPrice2?exists> 
+				AND a.price <=  ${settlementPrice2} 
+			</#if>				
+		]]>		
+   	 
+   	 )  as a order by a.receptOrgName, a.splitDate
+				
+   	</sql>
+   	
+   	<sql name="reportDetailByMonth" title="连锁店结算明细表">
+		<![CDATA[
+		select *
+		  from (select CONVERT(VARCHAR(7), sdate, 23) smonth, 
+						payOrgName, 
+						receptOrgName,
+						sum(transferProductPrice) transferProductPrice,
+						sum(transferMaterialPrice) transferMaterialPrice,
+						sum(transferSecondProductPrice) transferSecondProductPrice,
+						sum(transferSecondGoldPrice) transferSecondGoldPrice,
+						sum(transferProductPrice + transferMaterialPrice + transferProductPrice + transferSecondGoldPrice) transferTotalPrice
+				  from (select a.sdate, 
+				  				po.name payOrgName,
+								ro.name receptOrgName,
+								case when a.type = 'transferProduct' then isnull(price, 0) else 0 end transferProductPrice,
+								case when a.type = 'transferMaterial' then isnull(price, 0) else 0 end transferMaterialPrice,
+								case when a.type in ('splitSecondProduct', 'renovateSecondProduct') then isnull(price, 0) else 0 end transferSecondProductPrice,
+								case when a.type = 'transferSecondGold' then isnull(price, 0) else 0 end transferSecondGoldPrice
+						  from v_mzf_settlement a
+						 		inner join sys_org po on (a.pay_org_id = po.id)
+						 		inner join sys_org ro on (a.recept_org_id = ro.id)
+						 where status = 'over'				 
+						 		and ((po.type = 'store' and ro.type = 'HQ') or (po.type = 'HQ' and ro.type = 'store'))
+								<#if payOrgName?exists> AND po.name LIKE '%${payOrgName}%' </#if>
+								<#if receptOrgName?exists> AND ro.name LIKE '%${receptOrgName}%' </#if>
+								<#if startDate?exists> AND datediff(dd, sdate, '${startDate}') <= 0 </#if>
+								<#if endDate?exists> AND datediff(dd, sdate, '${endDate}') >= 0 </#if>
+  						) x
+				 group by CONVERT(VARCHAR(7), sdate, 23), payOrgName, receptOrgName
+				) y  									 
+		 where 1 = 1  		
+				<#if transferProductPrice1?exists> AND transferProductPrice >= ${transferProductPrice1} </#if>
+				<#if transferProductPrice2?exists> AND transferProductPrice <= ${transferProductPrice2} </#if>					
+				<#if transferMaterialPrice1?exists> AND transferMaterialPrice >= ${transferMaterialPrice1} </#if>
+				<#if transferMaterialPrice2?exists> AND transferMaterialPrice <= ${transferMaterialPrice2} </#if>					
+				<#if transferSecondProductPrice1?exists> AND transferSecondProductPrice >= ${transferSecondProductPrice1} </#if>
+				<#if transferSecondProductPrice2?exists> AND transferSecondProductPrice <= ${transferSecondProductPrice2} </#if>					
+				<#if transferSecondGoldPrice1?exists> AND transferSecondGoldPrice >= ${transferSecondGoldPrice1} </#if>
+				<#if transferSecondGoldPrice2?exists> AND transferSecondGoldPrice <= ${transferSecondGoldPrice2} </#if>					
+				<#if transferTotalPrice1?exists> AND transferTotalPrice >= ${transferTotalPrice1} </#if>
+				<#if transferTotalPrice2?exists> AND transferTotalPrice <= ${transferTotalPrice2} </#if>   
+		 order by smonth, payOrgName, receptOrgName												
+		]]>         
+   	</sql>   
+   	
+   	<sql name="reportByMonth" title="连锁店结算汇总表">
+		<![CDATA[
+		
+		select *
+		  from (select CONVERT(VARCHAR(7), sdate, 23) smonth, 
+						payOrgName, 
+						receptOrgName,
+						sum(transferProductPrice * flag) transferProductPrice,
+						sum(transferMaterialPrice * flag) transferMaterialPrice,
+						sum(transferSecondProductPrice * flag) transferSecondProductPrice,
+						sum(transferSecondGoldPrice) transferSecondGoldPrice,
+						sum(transferProductPrice * flag + transferMaterialPrice * flag + transferProductPrice * flag + transferSecondGoldPrice * flag) transferTotalPrice
+				  from (select a.sdate, 
+								case when po.type = 'store' then po.name else ro.name end payOrgName,							 
+								case when ro.type = 'HQ' then ro.name else po.name end receptOrgName,							 							 
+								case when po.type = 'store' then 1 else -1 end flag,
+								case when a.type = 'transferProduct' then isnull(price, 0) else 0 end transferProductPrice,
+								case when a.type = 'transferMaterial' then isnull(price, 0) else 0 end transferMaterialPrice,
+								case when a.type in ('splitSecondProduct', 'renovateSecondProduct') then isnull(price, 0) else 0 end transferSecondProductPrice,
+								case when a.type = 'transferSecondGold' then isnull(price, 0) else 0 end transferSecondGoldPrice
+						  from v_mzf_settlement a
+						 		inner join sys_org po on (a.pay_org_id = po.id)
+						 		inner join sys_org ro on (a.recept_org_id = ro.id)
+						 where status = 'over'				 
+						 		and ((po.type = 'store' and ro.type = 'HQ') or (po.type = 'HQ' and ro.type = 'store'))
+								<#if payOrgName?exists> AND po.name LIKE '%${payOrgName}%' </#if>
+								<#if receptOrgName?exists> AND ro.name LIKE '%${receptOrgName}%' </#if>
+								<#if startDate?exists> AND datediff(dd, sdate, '${startDate}') <= 0 </#if>
+								<#if endDate?exists> AND datediff(dd, sdate, '${endDate}') >= 0 </#if>
+  						) x
+				 group by CONVERT(VARCHAR(7), sdate, 23), payOrgName, receptOrgName
+				) y  									 
+		 where 1 = 1  		
+				<#if transferProductPrice1?exists> AND transferProductPrice >= ${transferProductPrice1} </#if>
+				<#if transferProductPrice2?exists> AND transferProductPrice <= ${transferProductPrice2} </#if>					
+				<#if transferMaterialPrice1?exists> AND transferMaterialPrice >= ${transferMaterialPrice1} </#if>
+				<#if transferMaterialPrice2?exists> AND transferMaterialPrice <= ${transferMaterialPrice2} </#if>					
+				<#if transferSecondProductPrice1?exists> AND transferSecondProductPrice >= ${transferSecondProductPrice1} </#if>
+				<#if transferSecondProductPrice2?exists> AND transferSecondProductPrice <= ${transferSecondProductPrice2} </#if>					
+				<#if transferSecondGoldPrice1?exists> AND transferSecondGoldPrice >= ${transferSecondGoldPrice1} </#if>
+				<#if transferSecondGoldPrice2?exists> AND transferSecondGoldPrice <= ${transferSecondGoldPrice2} </#if>					
+				<#if transferTotalPrice1?exists> AND transferTotalPrice >= ${transferTotalPrice1} </#if>
+				<#if transferTotalPrice2?exists> AND transferTotalPrice <= ${transferTotalPrice2} </#if>   
+		 order by smonth, payOrgName, receptOrgName	
+		]]>         
+   	</sql>    	
+</sqls> 

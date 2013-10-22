@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:tx="http://www.springframework.org/schema/tx"	
+	xsi:schemaLocation="http://www.springframework.org/schema/beans   
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd  
+           http://www.springframework.org/schema/context   
+           http://www.springframework.org/schema/context/spring-context-3.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"		           
+	default-autowire="no" default-lazy-init="true">
+	
+	<tx:advice id="txAdviceApp" transaction-manager="txManager">
+		<tx:attributes>
+			<tx:method name="batch*" rollback-for="Exception" />
+			<tx:method name="recreate*" rollback-for="Exception" />
+			<tx:method name="receive*" rollback-for="Exception" />
+			<tx:method name="settle*" rollback-for="Exception" />
+			<tx:method name="send*" rollback-for="Exception" />
+			<tx:method name="cancel*" rollback-for="Exception" />
+			<tx:method name="allocate*" rollback-for="Exception" />
+			<tx:method name="purchase*" rollback-for="Exception" />
+			<tx:method name="oem*" rollback-for="Exception" />
+			<tx:method name="reject*" rollback-for="Exception" />
+			<tx:method name="approve*" rollback-for="Exception" />
+			<tx:method name="warehouse*" rollback-for="Exception" />
+			<tx:method name="delivery*" rollback-for="Exception" />
+			<tx:method name="lock*" rollback-for="Exception" />
+			<tx:method name="free*" rollback-for="Exception" />
+			<tx:method name="obsolete*" rollback-for="Exception" />			
+			<tx:method name="add*" rollback-for="Exception" />
+			<tx:method name="apply*" rollback-for="Exception" />
+			<tx:method name="grant*" rollback-for="Exception" />
+			<tx:method name="hand*" rollback-for="Exception" />
+			<tx:method name="take*" rollback-for="Exception" />
+			<tx:method name="reset*" rollback-for="Exception" />
+			<tx:method name="convert*" rollback-for="Exception" />
+			<tx:method name="handler*" rollback-for="Exception" />
+			<tx:method name="checkIn*" rollback-for="Exception" />
+			<tx:method name="checkOut*" rollback-for="Exception" />
+			<tx:method name="checkCount*" rollback-for="Exception" />
+			<tx:method name="transfer*" rollback-for="Exception" />
+			<tx:method name="finish*" rollback-for="Exception" />
+			<tx:method name="drop*" rollback-for="Exception" />
+			<tx:method name="submit*" rollback-for="Exception" />
+			<tx:method name="refund*" rollback-for="Exception" />
+			<tx:method name="append*" rollback-for="Exception" />
+			<tx:method name="match*" rollback-for="Exception" />
+			<tx:method name="confirm*" rollback-for="Exception" />
+			<tx:method name="translate*" rollback-for="Exception" />
+			<tx:method name="register*" rollback-for="Exception" />
+			<tx:method name="over*" rollback-for="Exception" />
+			<tx:method name="adjust*" rollback-for="Exception" />
+			<tx:method name="pass*" rollback-for="Exception" />
+			<tx:method name="*" read-only="true" />
+		</tx:attributes>
+	</tx:advice>	
+	
+	<aop:config proxy-target-class="true">
+		<aop:advisor
+			pointcut="execution(* com.zonrong..*.service..*Service.*(..))"
+			advice-ref="txAdviceApp" />
+	</aop:config>	 		
+</beans>

@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="inventoryCheck">  
+   	<sql name="forProduct" title="商品盘点" params="checkId!">
+		<![CDATA[
+		select * from (
+			select cd.id,
+					${checkId} checkId,
+					case when a.id is not null and cd.id is not null then 'right'
+						 when a.id is null and cd.id is not null then 'profit'
+						 when a.id is not null and cd.id is null and a.status = 'onStorage' then 'losses'
+						 when a.id is not null and cd.id is null and a.status = 'onPassage' then 'onPassage' end type,
+					case when a.id is not null then 1 end inventoryQuantity,
+					case when cd.id is not null then 1 end actualQuantity,
+					p.id targetId, 
+					case when p.num is not null then p.num
+						 when cd.target_num is not null then cd.target_num end targetNum,					 
+					p.name targetName,	
+					vsp.showcase_name showcaseName,					
+					p.cost_price costPrice,
+					p.wholesale_price wholesalePrice,
+					p.retail_base_price retailBasePrice,
+					p.promotion_price promotionPrice
+			from mzf_inventory a inner join mzf_product p on (a.target_type = 'product' and a.target_id = p.id)
+			  		left join v_mzf_showcase_product vsp on (p.id = vsp.product_id) 
+					inner join mzf_inventory_check c on (c.id = ${checkId} and a.storage_type = c.storage_type and a.org_id = c.org_id)
+					full join (select * from mzf_inventory_check_detail where check_id = ${checkId}) cd on (p.num = cd.target_num)
+					) x					
+		 where 1 = 1				
+			<#if types?exists> 
+				and type IN (${types}) 
+			</#if>		   	
+			<#if type?exists> 
+				and type = '${type}' 
+			</#if>		   	
+			order by type, id desc
+		]]>		 				
+   	</sql>
+   	
+   	<sql name="forTemporaryProduct" title="临时库商品盘点" params="checkId!">
+		<![CDATA[
+		select * from (
+			select cd.id,
+					${checkId} checkId,
+					case when a.id is not null and cd.id is not null then 'right'
+						 when a.id is null and cd.id is not null then 'profit'
+						 when a.id is not null and cd.id is null and a.status = 'onStorage' then 'losses'
+						 when a.id is not null and cd.id is null and a.status = 'onPassage' then 'onPassage' end type,
+					case when a.id is not null then 1 end inventoryQuantity,
+					case when cd.id is not null then 1 end actualQuantity,
+					p.id targetId, 
+					case when p.product_temp_num is not null then p.product_temp_num
+						 when cd.target_num is not null then cd.target_num end targetNum,					 
+					p.name targetName,					
+					p.cost_price costPrice,
+					p.wholesale_price wholesalePrice,
+					p.retail_base_price retailBasePrice,
+					p.promotion_price promotionPrice
+			from mzf_inventory a inner join v_mzf_product p on (a.target_type = 'product' and a.target_id = p.id)
+					inner join mzf_inventory_check c on (c.id = ${checkId} and a.storage_type = c.storage_type and a.org_id = c.org_id)
+					full join (select * from mzf_inventory_check_detail where check_id = ${checkId}) cd on (p.product_temp_num = cd.target_num)
+					) x					
+		 where 1 = 1				
+			<#if types?exists> 
+				and type IN (${types}) 
+			</#if>		   	
+			<#if type?exists> 
+				and type = '${type}' 
+			</#if>		   	
+			order by type, id desc
+		]]>		 				
+   	</sql>   	
+   	
+   	<sql name="forSecondProduct" title="旧饰盘点" params="checkId!">
+		<![CDATA[
+		select * from (
+			select cd.id,
+					${checkId} checkId,
+					case when a.id is not null and cd.id is not null then 'right'
+						 when a.id is null and cd.id is not null then 'profit'
+						 when a.id is not null and cd.id is null and a.status = 'onStorage' then 'losses'
+						 when a.id is not null and cd.id is null and a.status = 'onPassage' then 'onPassage' end type,
+					case when a.id is not null then 1 end inventoryQuantity,
+					case when cd.id is not null then 1 end actualQuantity,
+					p.id targetId, 
+					case when p.num is not null then p.num
+						 when cd.target_num is not null then cd.target_num end targetNum,					 
+					p.name targetName,					
+					p.cost_price costPrice,
+					p.wholesale_price wholesalePrice,
+					p.retail_base_price retailBasePrice
+			from mzf_inventory a inner join mzf_second_product p on (a.target_type = 'secondProduct' and a.target_id = p.id)
+					inner join mzf_inventory_check c on (c.id = ${checkId} and a.storage_type = c.storage_type and a.org_id = c.org_id)
+					full join (select * from mzf_inventory_check_detail where check_id = ${checkId}) cd on (p.num = cd.target_num)
+					) x					
+		 where 1 = 1				
+			<#if types?exists> 
+				and type IN (${types}) 
+			</#if>		   	
+			<#if type?exists> 
+				and type = '${type}' 
+			</#if>		   	
+			order by type, id desc
+		]]>		 				
+   	</sql>
+   	
+   	<sql name="forSecondGold" title="旧金盘点" params="checkId!">
+		<![CDATA[
+		select *, isnull(inventoryQuantity, 0) -  isnull(actualQuantity,0) difference
+		  from (select  
+		  				cd.id,
+		                ${checkId} checkId,
+						case when a.id is not null and cd.id is not null and a.quantity = cd.actual_quantity then 'right'
+							 when a.id is not null and cd.id is not null and a.quantity < cd.actual_quantity then 'profit'
+							 when a.id is not null and cd.id is not null and a.quantity > cd.actual_quantity then 'losses'
+							 when a.id is null and cd.id is not null then 'profit'
+							 when a.id is not null and cd.id is null then 'losses' end type,
+						case when a.id is not null then a.quantity end inventoryQuantity,
+						case when cd.id is not null then cd.actual_quantity end actualQuantity,
+						p.id targetId, 
+						case when p.num is not null then p.num
+							 when cd.target_num is not null then cd.target_num end targetNum, 
+						bc.name targetName
+				from mzf_inventory a inner join mzf_rawmaterial p on (a.target_type = 'secondGold' and p.type = 'secondGold' and a.target_id = p.id and a.quantity != 0)
+						inner join sys_biz_code bc on (bc.type_code = 'secondGoldClass' and p.gold_class = bc.value)
+						inner join mzf_inventory_check c on (c.id = ${checkId} and a.storage_type = c.storage_type  and a.org_id = c.org_id)
+						full join (select * from mzf_inventory_check_detail where check_id = ${checkId}) cd on (p.num = cd.target_num)			
+				)x
+		  where 1 = 1
+		    <#if types?exists> 
+				and type IN (${types}) 
+			</#if>		
+		    <#if type?exists> 
+				and type =  '${type}' 
+			</#if>	
+			order by type
+		]]>		 				
+   	</sql>
+   	
+   	<sql name="forRawmaterial" title="原料盘点" params="checkId!">
+		<![CDATA[
+			select *, isnull(inventoryQuantity, 0) -  isnull(actualQuantity,0) difference
+			  from (select ${checkId} checkId,
+							case when p.type in ('nakedDiamond') and a.id is not null and cd.id is not null then 'right'
+								 when p.type in ('nakedDiamond') and a.id is null and cd.id is not null then 'profit'
+								 when p.type in ('nakedDiamond') and a.id is not null and cd.id is null then 'losses'
+								 when a.id is not null and cd.id is not null and a.quantity = cd.actual_quantity then 'right'
+								 when a.id is not null and cd.id is not null and a.quantity < cd.actual_quantity then 'profit'
+								 when a.id is not null and cd.id is not null and a.quantity > cd.actual_quantity then 'losses'
+								 when a.id is null and cd.id is not null then 'profit'
+								 when a.id is not null and cd.id is null then 'losses' end type,
+					
+							case when p.type in ('nakedDiamond') and a.id is not null then 1
+								 when a.id is not null then a.quantity end inventoryQuantity,
+					
+							case when p.type in ('nakedDiamond') and cd.id is not null then 1
+								 when cd.id is not null then cd.actual_quantity end actualQuantity,
+							p.id targetId, 
+						    case when p.num is not null then p.num
+							     when cd.target_num is not null then cd.target_num end targetNum
+					from mzf_inventory a inner join mzf_rawmaterial p on (a.target_type = 'rawmaterial' and a.target_id = p.id)
+							inner join mzf_inventory_check c on (c.id = ${checkId} and a.storage_type = c.storage_type  and a.org_id = c.org_id)							 
+							full join (select * from mzf_inventory_check_detail where check_id = ${checkId}) cd on (p.num = cd.target_num)
+					) x						
+		    where 1 = 1
+		    <#if types?exists> 
+				and type IN (${types}) 
+			</#if>		
+		    <#if type?exists> 
+				and type =  '${type}' 
+			</#if>	
+			order by type							
+		]]>		 				
+   	</sql>
+   	
+   	<sql name="forMaterial" title="物料盘点" params="checkId!">
+		<![CDATA[
+			select *, isnull(inventoryQuantity, 0) -  isnull(actualQuantity,0) difference
+			  from (select				     
+				       ${checkId} checkId,
+						case when a.id is not null and cd.id is not null and a.quantity = cd.actual_quantity then 'right'
+							 when a.id is not null and cd.id is not null and a.quantity < cd.actual_quantity then 'profit'
+							 when a.id is not null and cd.id is not null and a.quantity > cd.actual_quantity then 'losses'
+							 when a.id is null and cd.id is not null then 'profit'
+							 when a.id is not null and cd.id is null then 'losses' end type,
+						case when a.id is not null then a.quantity end inventoryQuantity,
+						case when cd.id is not null then cd.actual_quantity end actualQuantity,
+						p.id targetId, 
+						case when p.num is not null then p.num
+							 when cd.target_num is not null then cd.target_num end targetNum, 						
+						p.name targetName
+					from mzf_inventory a inner join mzf_material p on (a.target_type = 'material' and a.target_id = p.id and a.quantity != 0)
+							inner join mzf_inventory_check c on (c.id = ${checkId} and a.storage_type = c.storage_type  and a.org_id = c.org_id)
+							full join (select * from mzf_inventory_check_detail where check_id = ${checkId}) cd on (p.num = cd.target_num)
+					) x	
+		    where 1 = 1
+		    <#if types?exists> 
+				and type IN (${types}) 
+			</#if>		
+		    <#if type?exists> 
+				and type =  '${type}' 
+			</#if>	
+			order by type
+		]]>		 				
+   	</sql>
+   	
+	<sql name="checkDetailRemarkView" title="盘点备注" params="checkId!">
+		<![CDATA[
+			select
+			  a.ID id,
+			  a.CHECK_DETAIL_ID checkDetailId,
+			  a.REMARK remark,
+			  a.CUSER_ID cuserId,
+			  a.CUSER_NAME cuserName,
+			  a.CDATE cdate,
+			  a.ORG_ID orgId,
+			  a.ORG_NAME orgName,			  
+			  b.target_num targetNum 
+			  from mzf_inventory_check_detail_remark a
+			  		inner join mzf_inventory_check_detail b on (a.check_detail_id = b.id)
+			where 1 = 1			  		
+			    <#if checkDetailIds?exists> and a.check_detail_id in (${checkDetailIds}) </#if>
+			    <#if checkDetailId?exists> and a.check_detail_id = '${checkDetailId}' </#if>
+			order by a.id desc
+		]]>		 				
+   	</sql>   	   	  	   	
+</sqls> 

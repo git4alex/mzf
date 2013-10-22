@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls namespace="maintain">     	
+   	<sql name="maintain" title="连锁店维修明细表">
+		SELECT o.name         orgName,
+		       CONVERT(VARCHAR(100), a.cdate, 23) cdate,
+		       CONVERT(VARCHAR(100), c.sdate, 23) sdate,
+		       CONVERT(VARCHAR(100), c.rdate, 23) rdate,
+		       p.num          productNum,
+		       p.style_code   styleCode,
+		       bc1.name       ptypeText,
+		       bc2.name       pkindText,
+		       bc3.name       goldClassmText,
+		       p.weight,
+		       p.retail_base_price retailBasePrice,
+		       p.diamond_size diamondSize,
+		       sdiamondCount,
+		       sdiamondWeight
+		FROM   mzf_maintain a 
+				inner join v_mzf_product p on (a.product_id = p.id)
+				left join (select product_id, sum([count]) sdiamondCount, sum(weight) sdiamondWeight from mzf_product_diamond group by product_id) p1 on (p1.product_id = p.id)
+				inner join mzf_transfer c on (c.target_type = 'maintainProduct' and c.target_id = a.product_id)
+				left join sys_org o on (a.org_id = o.id)
+				LEFT JOIN sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				LEFT JOIN sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+				LEFT JOIN sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+		WHERE c.rdate is not null	
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>   		 
+			<#if productNum?exists> 
+				AND  p.num  LIKE '%${productNum}%'
+			</#if>   		 
+			<#if styleCode?exists> 
+				AND  p.style_code  LIKE '%${styleCode}%'
+			</#if>   		 
+			<#if ptype?exists> 
+				AND  bc1.value = '${ptype}'
+			</#if>   		 
+			<#if pkind?exists> 
+				AND  bc2.value = '${pkind}'
+			</#if>   		 
+			<#if goldClass?exists> 
+				AND  bc3.value = '${goldClass}'
+			</#if>   		 
+			<#if cdateStart?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${cdateStart}' 
+			</#if>
+			<#if cdateEnd?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${cdateEnd}' 
+			</#if>						
+			<#if sdateStart?exists> 
+				AND CONVERT(VARCHAR(100), c.sdate, 23) >=  '${sdateStart}' 
+			</#if>
+			<#if sdateEnd?exists> 
+				AND CONVERT(VARCHAR(100), c.sdate, 23) <=  '${sdateEnd}' 
+			</#if>						
+			<#if rdateStart?exists> 
+				AND CONVERT(VARCHAR(100), c.rdate, 23) >=  '${rdateStart}' 
+			</#if>
+			<#if rdateEnd?exists> 
+				AND CONVERT(VARCHAR(100), c.rdate, 23) <=  '${rdateEnd}' 
+			</#if>						
+			<#if diamondSizeStart?exists> 
+				AND   p.diamond_size >=  '${diamondSizeStart}' 
+			</#if>
+			<#if diamondSizeEnd?exists> 
+				AND   p.diamond_size <=  '${diamondSizeEnd}' 
+			</#if>						
+			<#if sdiamondWeightStart?exists> 
+				AND   sdiamondWeight >=  '${sdiamondWeightStart}' 
+			</#if>
+			<#if sdiamondWeightEnd?exists> 
+				AND   sdiamondWeight <=  '${sdiamondWeightEnd}' 
+			</#if>						
+			<#if sdiamondCountStart?exists> 
+				AND   sdiamondCount >=  '${sdiamondCountStart}' 
+			</#if>
+			<#if sdiamondCountEnd?exists> 
+				AND   sdiamondCount <=  '${sdiamondCountEnd}' 
+			</#if>						
+			<#if weightStart?exists> 
+				AND   p.weight >=  '${weightStart}' 
+			</#if>
+			<#if weightEnd?exists> 
+				AND   p.weight <=  '${weightEnd}' 
+			</#if>						
+			<#if retailBasePriceStart?exists> 
+				AND   p.retail_base_price >=  '${retailBasePriceStart}' 
+			</#if>
+			<#if retailBasePriceEnd?exists> 
+				AND   p.retail_base_price <=  '${retailBasePriceEnd}' 
+			</#if>						
+		]]>			
+				order by cdate
+   	</sql>
+   	
+   	<sql name="productAnalyse" title="连锁店维修货品分析表">
+   	select * from (
+		SELECT o.name         orgName,
+		       CONVERT(VARCHAR(100), a.cdate, 23) cdate,
+		       b.value        maintainType,
+		       case when a.org_id = s.recept_org_id and a.price = 0 then '自修'
+		       		when a.org_id = s.recept_org_id and a.price > 0 then '外包维修'
+		       		when 1 = s.recept_org_id then '总部维修' end maintainer,
+		       p.num          productNum,
+		       p.style_code   styleCode,
+		       bc1.name ptypeText,
+		       bc2.name pkindText,
+		       bc3.name goldClassText,
+		       p.weight,
+		       p.retail_base_price retailBasePrice,
+		       p.diamond_size diamondSize,
+		       sdiamondCount,
+		       sdiamondWeight
+		FROM   mzf_maintain a 
+				inner join sys_biz_code b on (a.maintain_type like '%' + b.value + '%' and b.type_code = 'maintain_type') 
+				inner join v_mzf_product p on (a.product_id = p.id)
+				left join (select product_id, sum([count]) sdiamondCount, sum(weight) sdiamondWeight from mzf_product_diamond group by product_id) p1 on (p1.product_id = p.id)
+				inner join sys_org o on (a.org_id = o.id)
+				left join mzf_settlement s on (s.target_id = a.id and s.type = 'maintainProduct')
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+				left join sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+		where 1 = 1				
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>
+			<#if productNum?exists> 
+				AND  p.num  LIKE '%${productNum}%'
+			</#if>   		 
+			<#if styleCode?exists> 
+				AND  p.style_code  LIKE '%${styleCode}%'
+			</#if> 
+			<#if ptype?exists> 
+				AND  bc1.value = '${ptype}'
+			</#if>   		 
+			<#if pkind?exists> 
+				AND  bc2.value = '${pkind}'
+			</#if>   		 
+			<#if goldClass?exists> 
+				AND  bc3.value = '${goldClass}'
+			</#if>   		    		 
+			<#if maintainType?exists> 
+				AND  b.value = '${maintainType}'
+			</#if>   		    		 
+			<#if cdateStart?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${cdateStart}' 
+			</#if>
+			<#if cdateEnd?exists> 
+				AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${cdateEnd}' 
+			</#if>	
+			<#if diamondSizeStart?exists> 
+				AND   p.diamond_size >=  '${diamondSizeStart}' 
+			</#if>
+			<#if diamondSizeEnd?exists> 
+				AND   p.diamond_size <=  '${diamondSizeEnd}' 
+			</#if>						
+			<#if sdiamondWeightStart?exists> 
+				AND   sdiamondWeight >=  '${sdiamondWeightStart}' 
+			</#if>
+			<#if sdiamondWeightEnd?exists> 
+				AND   sdiamondWeight <=  '${sdiamondWeightEnd}' 
+			</#if>						
+			<#if sdiamondCountStart?exists> 
+				AND   sdiamondCount >=  '${sdiamondCountStart}' 
+			</#if>
+			<#if sdiamondCountEnd?exists> 
+				AND   sdiamondCount <=  '${sdiamondCountEnd}' 
+			</#if>						
+			<#if weightStart?exists> 
+				AND   p.weight >=  '${weightStart}' 
+			</#if>
+			<#if weightEnd?exists> 
+				AND   p.weight <=  '${weightEnd}' 
+			</#if>						
+			<#if retailBasePriceStart?exists> 
+				AND   p.retail_base_price >=  '${retailBasePriceStart}' 
+			</#if>
+			<#if retailBasePriceEnd?exists> 
+				AND   p.retail_base_price <=  '${retailBasePriceEnd}' 
+			</#if>
+			   )  x where 1=1
+			<#if maintainer?exists> 
+				AND   x.maintainer like  '%${maintainer}%' 
+			</#if>	
+			order by  x.maintainer, maintainType				
+		]]>
+		
+		
+   	</sql>	 
+   	
+   	<sql name="list" title="维修单明细表">
+		select o.name orgName,
+				a.num cusOrderNum,
+				bc.name statusText,
+				CONVERT(VARCHAR(100), a.cdate, 23) cdate,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				p.num productNum,
+				p.style_code styleCode,
+				p.diamond_size diamondSize,
+				a.price,
+				a.sale_amount saleAmount,
+				a.amount totalAmount,
+				a.employee_name employeeName,
+				a.remark
+		  from v_mzf_maintain a
+				left join v_mzf_product p on (a.product_id = p.id)
+				left join sys_org o on (a.org_id = o.id)		
+				left join sys_biz_code bc on (a.status = bc.value and bc.type_code = 'cusOrderStatus')
+				left join sys_biz_code bc1 on (bc1.value = a.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = a.pkind and bc2.type_code = 'productKind') 
+		  where 1 = 1
+	   		<![CDATA[
+				<#if accessFilter?exists> 
+					${accessFilter}
+				</#if>	   		
+				<#if orgName?exists> 
+					AND o.NAME LIKE '%${orgName}%'
+				</#if>   		 
+				<#if cusOrderNum?exists> 
+					AND a.num LIKE '%${cusOrderNum}%'
+				</#if>   		 
+				<#if styleCode?exists> 
+					AND p.style_code LIKE '%${styleCode}%'
+				</#if>   		 
+				<#if productNum?exists> 
+					AND p.num LIKE '%${productNum}%'
+				</#if>   		 
+				<#if employeeName?exists> 
+					AND a.employee_name LIKE '%${employeeName}%'
+				</#if>   		 
+				<#if status?exists> 
+					AND bc.value  = '${status}'
+				</#if>   		 
+				<#if ptype?exists> 
+					AND bc1.value  = '${ptype}'
+				</#if>   		 
+				<#if pkind?exists> 
+					AND bc2.value  = '${pkind}'
+				</#if> 
+				<#if diamondSizeStart?exists> 
+				    AND   p.diamond_size >=  '${diamondSizeStart}' 
+			    </#if>
+			    <#if diamondSizeEnd?exists> 
+			    	AND   p.diamond_size <=  '${diamondSizeEnd}' 
+			    </#if>	  		 
+				<#if cdateStart?exists> 
+					AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${cdateStart}' 
+				</#if>
+				<#if cdateEnd?exists> 
+					AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${cdateEnd}' 
+				</#if>
+				<#if priceStart?exists> 
+					AND  a.price >=  '${priceStart}' 
+				</#if>
+				<#if priceEnd?exists> 
+					AND  a.price <=  '${priceEnd}' 
+				</#if>
+				<#if totalAmountStart?exists> 
+					AND  a.amount >=  '${totalAmountStart}' 
+				</#if>
+				<#if totalAmountEnd?exists> 
+					AND  a.amount <=  '${totalAmountEnd}' 
+				</#if>
+				<#if remark?exists> 
+					AND a.remark LIKE '%${remark}%'
+				</#if>   
+			]]>
+			order by cdate						 	
+   	</sql>
+</sqls> 

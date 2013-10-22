@@ -1,0 +1,94 @@
+<html>
+	<head>
+		<title>ERP-MZF</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<!--
+		<link rel="stylesheet" type="text/css" href="/tplt/scripts/ext-3.0+/resources/css/ext-all.css" />
+		 -->
+		<link rel="stylesheet" type="text/css" href="/styles/theme-mzf/css/ext-all-mzf.css" />
+
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/designer.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/icons.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/icons_fm.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/imagefield.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/shCore.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/RowEditor.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/fileuploadfield.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/CheckTreePanel.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/scripts/ext-3.0+/treegrid/treegrid.css" />
+		<link rel="stylesheet" type="text/css" href="/tplt/styles/tplt.css" />
+
+		<link rel="stylesheet" type="text/css" href="/styles/theme-mzf/css/ext-all-mzf-special.css" />
+		<link rel="stylesheet" type="text/css" href="styles/preview.css" />
+		<link rel="stylesheet" type="text/css" href="styles/report.css" />
+
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/adapter/ext/ext-base-debug.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/ext-all-debug.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/ext.ux.js"></script>
+		<!--
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/adapter/ext/ext-base.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/ext-all.js"></script>
+		 -->
+
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/RowEditor.js"></script>
+
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/ImageField.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/FileUploadField.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/GroupGridPanel.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/CheckTreePanel.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/CheckTreeNodeUI.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/treegrid/TreeGridSorter.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/treegrid/TreeGridColumnResizer.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/treegrid/TreeGridNodeUI.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/treegrid/TreeGridLoader.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/treegrid/TreeGridColumns.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/treegrid/TreeGrid.js"></script>
+
+		<script type="text/javascript" src="/tplt/scripts/tplt.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/tplt.com.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/codeGenerator.js"></script>
+
+		<script type="text/javascript" src="/tplt/scripts/xds.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/xds.types.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/beautify.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/shCore.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/shBrushJScript.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/codemirror/codemirror.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/codemirror/Ext.ux.panel.CodeMirror.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/CodeWindow.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/SEWin.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/tplt.types.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/AjaxPlugin.js"></script>
+
+		<script type="text/javascript" src="/tplt/scripts/model/Constants.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/vTypes.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/DynamicGrid.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/DynamicForm.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/FormUtil.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/DefaultWin.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/Framework.js"></script>
+
+		<script type="text/javascript" src="/tplt/scripts/model/EntityTree.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/EntityForm.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/EntityFieldGrid.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/EntityModule.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/BizCodeForm.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/BizCodeTypeForm.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/BizCodeModule.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/LoggorGrid.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/model/LoggorMgrModule.js"></script>
+
+		<script type="text/javascript" src="/scripts/common.js"></script>
+		<script type="text/javascript" src="/scripts/func.js"></script>
+		<script type="text/javascript" src="/scripts/productSale.js"></script>
+		<script type="text/javascript" src="/scripts/sale.js"></script>
+
+		<script type="text/javascript" src="/scripts/app.js"></script>
+	</head>
+	<body>
+		<form id="history-form" class="x-hidden">
+		    <input type="hidden" id="x-history-field" />
+		    <iframe id="x-history-frame"></iframe>
+		</form>
+	</body>
+</html>

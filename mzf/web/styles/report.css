@@ -1,0 +1,24 @@
+#report table{
+	line-height:18px;
+	margin:6px; 
+	font-size: 9px;
+	
+}
+#report table td{
+	border:1px solid black;
+	padding: 2px;  
+}
+
+#report table th{
+	border:1px solid black;
+	background-color:#DDDFDF;
+	padding: 2px; 
+	text-align: center;
+	font-size:12px;
+	font-weight: bold;
+	white-space: nowrap;
+}
+#report table .label{color:gray;}
+#report table .print{color:red;}
+#report table .title{font-size:18pt; font-weight:bold;  text-align: center;}
+#report input{border:0px none; border-bottom:1px solid black;}

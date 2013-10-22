@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqls namespace="changePrice">
+    <sql name="updateProduct" title="批量更新商品价格">
+        <![CDATA[
+            <#setting number_format="0.##">
+            update mzf_product
+            set <#if costD?exists>
+                cost_price = round(${costD},0),
+            <#else>
+                cost_price = round(p.cost_price * ${costM!1} + ${costI!0},0),
+            </#if>
+            <#if wPriceD?exists>
+                wholesale_price =round( ${wPriceD},0),
+            <#else>
+                wholesale_price = round(p.wholesale_price * ${wPriceM!1} + ${wPriceI!0},0),
+            </#if>
+            <#if priceD?exists>
+                retail_base_price = round(${priceD},0)
+            <#else>
+                retail_base_price = round(p.retail_base_price * ${priceM!1} + ${priceI!0},0)
+            </#if>
+            <#if pPriceD?exists>
+                ,promotion_price = round(${pPriceD},0)
+            <#elseif pPriceM?exists || pPriceI?exists>
+                ,promotion_price = round(p.retail_base_price * ${pPriceM!1} + ${pPriceI!0},0)
+            </#if>
+            from mzf_product p
+                inner join V_MZF_PRODUCT_INVENTORY pi on p.id = pi.id
+            where pi.status <> 'selled' and pi.num is not null
+            	<#if accessFilter?exists>${accessFilter}</#if>
+                <#if num?exists> and pi.num IN (${num})</#if>
+                <#if name?exists> and pi.name like '%${name}%'</#if>
+                <#if styleCode?exists> and pi.style_Code like '%${styleCode}%'</#if>
+                <#if vendorStyleCode?exists> and pi.vendor_Style_Code like '%${vendorStyleCode}%'</#if>
+                <#if sourceOrgName?exists> and pi.source_Org_Name like '%${sourceOrgName}%'</#if>
+                <#if orgName?exists> and pi.org_Name like '%${orgName}%'</#if>
+                <#if ptype?exists> and pi.ptype = '${ptype}'</#if>
+                <#if pkind?exists> and pi.pkind = '${pkind}'</#if>
+                <#if stoneKind?exists> and pi.stone_Kind = '${stoneKind}'</#if>
+                <#if status?exists> and pi.status = '${status}'</#if>
+                <#if diamondShape?exists> and pi.diamond_Shape IN (${diamondShape})</#if>
+                <#if diamondColor?exists> and pi.diamond_Color IN (${diamondColor})</#if>
+                <#if diamondClean?exists> and pi.diamond_Clean IN (${diamondClean})</#if>
+                <#if diamondCut?exists> and pi.diamond_Cut IN (${diamondCut})</#if>
+                <#if goldClass?exists> and pi.gold_Class = '${goldClass}'</#if>
+                <#if kgoldColor?exists> and pi.kgold_Color = '${kgoldColor}'</#if>
+                <#if inventoryStatus?exists> and pi.inventory_Status = '${inventoryStatus}'</#if>
+                <#if adjustStatus?exists> and pi.adjust_Status = '${adjustStatus}'</#if>
+                <#if isSplit?exists> and pi.is_Split = '${isSplit}'</#if>
+                <#if retailBasePriceStart?exists> and pi.retail_Base_Price >= '${retailBasePriceStart}'</#if>
+                <#if retailBasePriceEnd?exists> and pi.retail_Base_Price <= '${retailBasePriceEnd}'</#if>
+                <#if diamondSizeStart?exists> and pi.diamond_Size >= '${diamondSizeStart}'</#if>
+                <#if diamondSizeEnd?exists> and pi.diamond_Size <= '${diamondSizeEnd}'</#if>
+                <#if promotionPriceStart?exists> and pi.promotion_Price >= '${promotionPriceStart}'</#if>
+                <#if promotionPriceEnd?exists> and pi.promotion_Price <= '${promotionPriceEnd}'</#if>
+                <#if cuserName?exists> and pi.cuser_Name like '%${cuserName}%'</#if>
+                <#if statusRemark?exists> and pi.status_Remark like '%${statusRemark}%'</#if>
+                <#if otherRemark?exists> and pi.other_Remark like '%${otherRemark}%'</#if>
+                <#if remark?exists> and pi.remark like '%${remark}%'</#if>
+
+                <#if cdateStrStart?exists> and CONVERT(VARCHAR(100), pi.cdate, 23) >=  '${cdateStrStart}' </#if>
+                <#if cdateStrEnd?exists> and CONVERT(VARCHAR(100), pi.cdate, 23) <=  '${cdateStrEnd}' </#if>
+
+                <#if lastAdjuxtDateStrStart?exists> and CONVERT(VARCHAR(100), pi.last_Adjuxt_Date, 23) >=  '${lastAdjuxtDateStrStart}' </#if>
+                <#if lastAdjuxtDateStrEnd?exists> and CONVERT(VARCHAR(100), pi.last_Adjuxt_Date, 23) <=  '${lastAdjuxtDateStrEnd}' </#if>
+		]]>
+    </sql>
+
+    <sql name="insertPriceChangeLog" title="插入价格更新记录">
+        <![CDATA[
+            <#setting number_format="0.##">
+            insert into mzf_change_price(PRODUCT_ID,
+                PRODUCT_NUM,
+                PTYPE,
+                PKIND,
+                CUSER,
+                CUSER_NAME,
+                COST_PRICE,
+                NEW_COST_PRICE,
+                WHOLESALE_PRICE,
+                NEW_WHOLESALE_PRICE,
+                RETAIL_BASE_PRICE,
+                NEW_RETAIL_BASE_PRICE,
+                PROMOTION_PRICE,
+                NEW_PROMOTION_PRICE,
+                CDATE,
+                REMARK)
+            select ID,NUM,pi.ptype,pi.pkind,${ouser} cuser,'${ouserName}' cuserName,
+                COST_PRICE,
+                <#if costD?exists>
+                    round(${costD},0)
+                <#else>
+                    round(COST_PRICE * ${costM!1} + ${costI!0},0)
+                </#if> NEW_COST_PRICE,
+
+                WHOLESALE_PRICE,
+                <#if wPriceD?exists>
+                    round(${wPriceD},0)
+                <#else>
+                    round(WHOLESALE_PRICE * ${wPriceM!1} + ${wPriceI!0},0)
+                </#if> NEW_WHOLESALE_PRICE,
+
+                RETAIL_BASE_PRICE,
+                <#if priceD?exists>
+                    round(${priceD},0)
+                <#else>
+                    round(RETAIL_BASE_PRICE * ${priceM!1} + ${priceI!0},0)
+                </#if> NEW_RETAIL_BASE_PRICE,
+
+                PROMOTION_PRICE,
+                <#if pPriceD?exists>
+                    round(${pPriceD},0)
+                <#elseif pPriceM?exists || pPriceI?exists>
+                    round(RETAIL_BASE_PRICE * ${pPriceM!1} + ${pPriceI!0},0)
+                <#else>
+                    PROMOTION_PRICE
+                </#if> NEW_PROMOTION_PRICE,
+                '${cdate}' cdate,
+                '${changeRemark!}' remark
+            from V_MZF_PRODUCT_INVENTORY pi
+            where pi.status <> 'selled' and pi.num is not null
+                <#if accessFilter?exists>${accessFilter}</#if>
+                <#if num?exists> and pi.num IN (${num})</#if>
+                <#if name?exists> and pi.name like '%${name}%'</#if>
+                <#if styleCode?exists> and pi.style_Code like '%${styleCode}%'</#if>
+                <#if vendorStyleCode?exists> and pi.vendor_Style_Code like '%${vendorStyleCode}%'</#if>
+                <#if sourceOrgName?exists> and pi.source_Org_Name like '%${sourceOrgName}%'</#if>
+                <#if orgName?exists> and pi.org_Name like '%${orgName}%'</#if>
+                <#if ptype?exists> and pi.ptype = '${ptype}'</#if>
+                <#if pkind?exists> and pi.pkind = '${pkind}'</#if>
+                <#if stoneKind?exists> and pi.stone_Kind = '${stoneKind}'</#if>
+                <#if status?exists> and pi.status = '${status}'</#if>
+                <#if diamondShape?exists> and pi.diamond_Shape IN (${diamondShape})</#if>
+                <#if diamondColor?exists> and pi.diamond_Color IN (${diamondColor})</#if>
+                <#if diamondClean?exists> and pi.diamond_Clean IN (${diamondClean})</#if>
+                <#if diamondCut?exists> and pi.diamond_Cut IN (${diamondCut})</#if>
+                <#if goldClass?exists> and pi.gold_Class = '${goldClass}'</#if>
+                <#if kgoldColor?exists> and pi.kgold_Color = '${kgoldColor}'</#if>
+                <#if inventoryStatus?exists> and pi.inventory_Status = '${inventoryStatus}'</#if>
+                <#if adjustStatus?exists> and pi.adjust_Status = '${adjustStatus}'</#if>
+                <#if isSplit?exists> and pi.is_Split = '${isSplit}'</#if>
+                <#if retailBasePriceStart?exists> and pi.retail_Base_Price >= '${retailBasePriceStart}'</#if>
+                <#if retailBasePriceEnd?exists> and pi.retail_Base_Price <= '${retailBasePriceEnd}'</#if>
+                <#if diamondSizeStart?exists> and pi.diamond_Size >= '${diamondSizeStart}'</#if>
+                <#if diamondSizeEnd?exists> and pi.diamond_Size <= '${diamondSizeEnd}'</#if>
+                <#if promotionPriceStart?exists> and pi.promotion_Price >= '${promotionPriceStart}'</#if>
+                <#if promotionPriceEnd?exists> and pi.promotion_Price <= '${promotionPriceEnd}'</#if>
+                <#if cuserName?exists> and pi.cuser_Name like '%${cuserName}%'</#if>
+                <#if statusRemark?exists> and pi.status_Remark like '%${statusRemark}%'</#if>
+                <#if otherRemark?exists> and pi.other_Remark like '%${otherRemark}%'</#if>
+                <#if remark?exists> and pi.remark like '%${remark}%'</#if>
+
+                <#if cdateStrStart?exists> and CONVERT(VARCHAR(100), pi.cdate, 23) >=  '${cdateStrStart}' </#if>
+                <#if cdateStrEnd?exists> and CONVERT(VARCHAR(100), pi.cdate, 23) <=  '${cdateStrEnd}' </#if>
+
+                <#if lastAdjuxtDateStrStart?exists> and CONVERT(VARCHAR(100), pi.last_Adjuxt_Date, 23) >=  '${lastAdjuxtDateStrStart}' </#if>
+                <#if lastAdjuxtDateStrEnd?exists> and CONVERT(VARCHAR(100), pi.last_Adjuxt_Date, 23) <=  '${lastAdjuxtDateStrEnd}' </#if>
+		]]>
+    </sql>
+</sqls>

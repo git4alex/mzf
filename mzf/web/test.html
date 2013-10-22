@@ -1,0 +1,17 @@
+<html>
+	<head>
+		<title>Ext Designer Preview</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/adapter/ext/ext-base-debug.js"></script>
+		<script type="text/javascript" src="/tplt/scripts/ext-3.0+/ext-all-debug.js"></script>
+
+		<script type="text/javascript" src="/scripts/func.js"></script> 
+	</head>
+	<body>
+		<input type="button" value="下载" onclick="exportExcel('/entity/org', null, ['id=ID', 'text=名称'])"/>
+		<form id="history-form" class="x-hidden">
+		    <input type="hidden" id="x-history-field" />
+		    <iframe id="x-history-frame"></iframe>
+		</form>
+	</body>
+</html>

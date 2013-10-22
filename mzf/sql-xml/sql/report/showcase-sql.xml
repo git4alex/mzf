@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="showcase">  
+   	<sql name="product" title="位置货品明细表">
+		select o.name orgName,
+				b.name showcaseName,
+				p.num productNum,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				p.weight,
+				p.wholesale_price wholesalePrice,
+				p.retail_base_price retailBasePrice
+		  from mzf_showcase_product a
+				left join mzf_showcase b on (a.showcase_id = b.id)
+				left join mzf_store st on (b.store_id = st.id)
+				left join v_mzf_product p on (a.product_id = p.id)
+				left join sys_org o on (st.org_id = o.id)
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+		 where 1 = 1				
+   		<![CDATA[
+			<#if accessFilter?exists> 
+				${accessFilter}
+			</#if>   		
+			<#if orgName?exists> 
+				AND o.NAME LIKE '%${orgName}%'
+			</#if>   		 
+			<#if showcaseName?exists> 
+				AND b.name LIKE '%${showcaseName}%'
+			</#if>			
+			<#if productNum?exists> 
+				AND p.num LIKE '%${productNum}%'
+			</#if>			
+			<#if ptype?exists> 
+				AND p.PTYPE = '${ptype}'
+			</#if>
+			<#if pkind?exists> 
+				AND p.PKIND = '${pkind}'
+			</#if>
+			<#if weightStart?exists> 
+				AND p.weight >= '${weightStart}'
+			</#if>
+			<#if weightEnd?exists> 
+				AND p.weight <= '${weightEnd}'
+			</#if>
+			<#if retailBasePriceStart?exists> 
+				AND p.retail_base_price >= '${retailBasePriceStart}'
+			</#if>
+			<#if retailBasePriceEnd?exists> 
+				AND p.retail_base_price <= '${retailBasePriceEnd}'
+			</#if>
+		]]>
+				order by orgName, showcaseName, ptypeText, pkindText			
+   	</sql>
+</sqls> 

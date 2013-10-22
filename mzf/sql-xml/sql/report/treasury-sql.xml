@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqls namespace="treasury">
+   	<sql name="sale" title="实收明细表">
+   	<![CDATA[
+		select o.name orgName,
+				org_id,
+				s.num saleNum,
+				s.employee_name employeeName,
+				s.cdate,
+				case when s.type = 'returns' then -1 else 1 end *
+					(isnull(bank_card, 0) + isnull(value_card, 0) +
+					isnull(cash, 0) + isnull(chit, 0) +
+					isnull(transfer, 0) + isnull(other, 0)) myself,
+				case when s.type = 'returns' then -1 else 1 end * isnull(amount, 0) amount,
+				front_money frontMoney,
+				gold_pay goldPay,
+				product_pay productPay,
+				case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy, 0)	marketProxy,
+				case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_bank_card, 0) marketProxyBankCard,
+				case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_value_card, 0) marketProxyValueCard,
+				case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_cash, 0) marketProxyCash,
+				case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_chit, 0) marketProxyChit,
+				case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_other, 0) marketProxyOther,
+				case when s.type = 'returns' then -1 else 1 end * isnull(bank_card, 0) bankCard,
+				case when s.type = 'returns' then -1 else 1 end * isnull(value_card, 0) valueCard,
+				case when s.type = 'returns' then -1 else 1 end * isnull(cash, 0) cash,
+				case when s.type = 'returns' then -1 else 1 end * isnull(chit, 0) chit,
+				case when s.type = 'returns' then -1 else 1 end * isnull(transfer, 0) transfer,
+				case when s.type = 'returns' then -1 else 1 end * isnull(other, 0) other
+		  from mzf_sale s
+				inner join sys_org o on (s.org_id = o.id)
+		 where 1 = 1
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if employeeName?exists> AND s.employee_name  LIKE '%${employeeName}%' </#if>
+			<#if saleNum?exists> AND s.num  LIKE '%${saleNum}%' </#if>
+			<#if frontMoneyStart?exists> AND front_money >= ${frontMoneyStart} </#if>
+			<#if frontMoneyEnd?exists> AND front_money <= ${frontMoneyEnd} </#if>
+			<#if goldPayStart?exists> AND gold_pay >= ${goldPayStart}	</#if>
+			<#if goldPayEnd?exists> AND gold_pay <= ${goldPayEnd} </#if>
+			<#if productPayStart?exists> AND product_pay >= ${productPayStart} </#if>
+			<#if productPayEnd?exists> AND product_pay <= ${productPayEnd} </#if>
+			<#if marketProxyStart?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy, 0) >= ${marketProxyStart} </#if>
+			<#if marketProxyEnd?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy, 0) <= ${marketProxyEnd} </#if>
+			<#if marketProxyCash1?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_cash, 0) >= ${marketProxyCash1} </#if>
+			<#if marketProxyCash2?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_cash, 0) <= ${marketProxyCash2} </#if>
+			<#if marketProxyBankCard1?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_bank_card, 0) >= ${marketProxyBankCard1} </#if>
+			<#if marketProxyBankCard2?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_bank_card, 0) <= ${marketProxyBankCard2} </#if>
+			<#if marketProxyValueCard1?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_value_card, 0) >= ${marketProxyValueCard1} </#if>
+			<#if marketProxyValueCard2?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_value_card, 0) <= ${marketProxyValueCard2} </#if>
+			<#if marketProxyChit1?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_chit, 0) >= ${marketProxyChit1} </#if>
+			<#if marketProxyChit2?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_chit, 0) <= ${marketProxyChit2} </#if>
+			<#if marketProxyOther1?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_other, 0) >= ${marketProxyOther1} </#if>
+			<#if marketProxyOther2?exists> AND case when s.type = 'returns' then -1 else 1 end * isnull(market_proxy_other, 0) <= ${marketProxyOther2} </#if>
+			<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+			<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>
+
+			union
+			  select o.name orgName,
+							org_id, s.num saleNum,s.employee_name employeeName,s.cdate, isnull(s.sale_amount, 0) myself,
+							0 amount,	isnull(s.amount, 0) frontMoney, 0 goldPay, 0 productPay,
+							0	marketProxy, 0 marketProxyBankCard, 0 marketProxyValueCard,
+							0 marketProxyCash, 0 marketProxyChit, 0 marketProxyOther,
+							0 bankCard, 0 valueCard, isnull(s.sale_amount, 0)  cash,
+							0 chit, 0 transfer, 0 other
+			from V_MZF_MAINTAIN s
+			         inner join sys_org o on (s.org_id = o.id)
+			         where 1 = 1 and s.product_source = 'selled' and status = 'over'
+			          <#if accessFilter?exists> ${accessFilter} </#if>
+			          <#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+					  <#if employeeName?exists> AND s.employee_name  LIKE '%${employeeName}%' </#if>
+					  <#if saleNum?exists> AND s.num  LIKE '%${saleNum}%' </#if>
+					  <#if frontMoneyStart?exists> AND s.amount >= ${frontMoneyStart} </#if>
+					  <#if frontMoneyEnd?exists> AND s.amount <= ${frontMoneyEnd} </#if>
+					  <#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+			          <#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>
+		order by org_id, cdate
+
+
+	]]>
+   	</sql>
+
+   	<sql name="saleForPtype" title="商品销售明细核对表">
+   	<![CDATA[
+   	select
+		o.name orgName,
+                o1.name as ptypeText,
+                o2.name as pkindText,
+                p.num productNum,
+                s.saleNum saleNum,
+                s.employee_name employeeName,
+                p.weight,
+                p.diamond_size diamondSize,
+                cast(p.retail_base_price as money) retailBasePrice,
+                cast(p.cost_price as money) costPrice,
+                cast(p.wholesale_price as money)  wholesalePrice,
+                cast(isnull(s.price,0) - isnull(s.total_discount,0) as money) as price,
+				case when s.sale_type = 'returns' then -1 else 1 end *
+					cast((isnull(bank_card, 0) + isnull(value_card, 0) +
+					isnull(cash, 0) + isnull(chit, 0) +
+					isnull(transfer, 0) + isnull(other, 0)) as money) myself,
+				cast(FRONT_MONEY_DETAIL as money) frontMoney,
+				cast(gold_pay as money) goldPay,
+				cast(product_pay as money) productPay,
+				case when s.sale_type = 'returns' then -1 else 1 end *  cast(isnull(market_proxy, 0) as money)	marketProxy,
+				case when s.sale_type = 'returns' then -1 else 1 end * cast(isnull(bank_card, 0) as money) bankCard,
+				case when s.sale_type = 'returns' then -1 else 1 end * cast(isnull(value_card, 0) as money) valueCard,
+				case when s.sale_type = 'returns' then -1 else 1 end * cast(isnull(cash, 0) as money) cash,
+				case when s.sale_type = 'returns' then -1 else 1 end * cast(isnull(chit, 0) as money) chit,
+				case when s.sale_type = 'returns' then -1 else 1 end * cast(isnull(transfer, 0) as money) transfer,
+				case when s.sale_type = 'returns' then -1 else 1 end * cast(isnull(other, 0) as money) other
+		  from V_MZF_SALE_DETAIL_REPORT s
+				inner join sys_org o on (s.org_id = o.id)
+                left join sys_biz_code o1 on(o1.value = s.ptype and o1.type_code = 'productType')
+                left join sys_biz_code o2 on(o2.value = s.pkind and o2.type_code = 'productKind')
+                left join mzf_product p on(p.id = s.target_id)
+                where 1=1
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if ptype?exists> AND s.PTYPE  = '${ptype}' </#if>
+			<#if pkind?exists> AND s.pkind  = '${pkind}' </#if>
+			<#if saleNum?exists> AND s.saleNum  like '%${saleNum}%' </#if>
+			<#if productNum?exists> AND p.num  = '${productNum}' </#if>
+			<#if employeeName?exists> AND s.employee_name  like '%${employeeName}'% </#if>
+			<#if costPriceStart?exists> AND p.cost_price >= ${costPriceStart}	</#if>
+			<#if costPriceEnd?exists> AND p.cost_price <= ${costPriceEnd} </#if>
+			<#if retailBasePriceStart?exists> AND p.retail_base_price >= ${retailBasePriceStart}	</#if>
+			<#if retailBasePriceEnd?exists> AND p.retail_base_price <= ${retailBasePriceEnd} </#if>
+			<#if wholesalePriceStart?exists> AND p.wholesale_price >= ${wholesalePriceStart}</#if>
+			<#if wholesalePriceEnd?exists> AND p.wholesale_price <= ${wholesalePriceEnd} </#if>
+			<#if priceStart?exists> AND (isnull(s.price,0) - isnull(s.discount,0)) >= ${priceStart}</#if>
+			<#if priceEnd?exists> AND (isnull(s.price,0) - isnull(s.discount,0)) <= ${priceEnd} </#if>
+			<#if goldPayStart?exists> AND s.gold_pay >= ${goldPayStart}	</#if>
+			<#if goldPayEnd?exists> AND s.gold_pay <= ${goldPayEnd} </#if>
+			<#if productPayStart?exists> AND s.product_pay >= ${productPayStart} </#if>
+			<#if productPayEnd?exists> AND s.product_pay <= ${productPayEnd} </#if>
+			<#if weightStart?exists> AND p.weight >= ${weightStart} </#if>
+			<#if weightEnd?exists> AND p.weight <= ${weightEnd} </#if>
+			<#if diamondSizeStart?exists> AND p.diamond_size >= ${diamondSizeStart} </#if>
+			<#if diamondSizeEnd?exists> AND p.diamond_size <= ${diamondSizeEnd} </#if>
+			<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+			<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>
+
+		order by orgName,ptypeText
+
+
+	]]>
+   	</sql>
+
+   	<sql name="earnest" title="定金明细表">
+   	<![CDATA[
+		select o.name orgName,
+				a.num cusOrderNum,
+				a.employee_name employeeName,
+				case when is_agent = 'true' then '商场代收' else '自收银' end type,
+				totalAmount,
+				case when pay_type = 'cash' then totalAmount else null end cashAmount,
+				case when pay_type = 'bankCard' then totalAmount else null end backCardAmount,
+				convert(varchar(64),cdate,23)  cdate
+		  from mzf_cus_order a
+				left join (select target_id, is_agent, pay_type, sum(amount) as totalAmount from MZF_EARNEST_FLOW where target_type = 'cusOrder' group by target_id, is_agent, pay_type) b on (a.id = b.target_id)
+				inner join sys_org o on (a.org_id = o.id)
+		 where 1 = 1
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%'	</#if>
+			<#if cusOrderNum?exists> AND a.num LIKE '%${cusOrderNum}%'	</#if>
+		    <#if employeeName?exists> AND a.employee_name LIKE '%${employeeName}%' </#if>
+			<#if startDate?exists> AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${startDate}' </#if>
+			<#if endDate?exists> AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${endDate}' </#if>
+			<#if type?exists> AND is_agent = '${type}' </#if>
+            <#if totalAmount1?exists> AND totalAmount >= ${totalAmount1} </#if>
+            <#if totalAmount2?exists> AND totalAmount <= ${totalAmount2} </#if>
+            <#if cashAmount1?exists> AND case when pay_type = 'cash' then totalAmount else null end >= ${cashAmount1} </#if>
+            <#if cashAmount2?exists> AND case when pay_type = 'cash' then totalAmount else null end <= ${cashAmount2} </#if>
+            <#if backCardAmount1?exists> AND case when pay_type = 'bankCard' then totalAmount else null end >= ${backCardAmount1} </#if>
+            <#if backCardAmount2?exists> AND case when pay_type = 'bankCard' then totalAmount else null end <= ${backCardAmount2} </#if>
+		order by orgName
+	]]>
+   	</sql>
+</sqls>

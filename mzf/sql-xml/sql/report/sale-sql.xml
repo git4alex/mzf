@@ -1,0 +1,858 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqls namespace="sale">
+   	<sql name="secondProduct" title="连锁店旧饰回收明细表">
+   		<![CDATA[
+		SELECT o.name              orgName,
+		       CONVERT(VARCHAR(100), c.cdate, 23) returnsDate,
+		       c.num               saleNum,
+		       c.employee_name     employeeName,
+		       p.num               secondProductNum,
+		       style_code          styleCode,
+		       bc1.name             ptypeText,
+		       bc2.name             pkindText,
+		       bc3.name             goldClassmText,
+		       p.weight,
+		       p.retail_base_price retailBasePrice,
+		       b.price             productPayPrice,
+		       p.diamond_size      diamondSize,
+		       bc4.name             diamondColorText,
+		       bc5.name             diamondCleanText,
+		       bc6.name             diamondCutText
+		FROM   mzf_second_product p
+				inner join mzf_sale_detail b ON (p.id = b.target_id AND b.type = 'secondJewel' and b.id not in(select sale_detail_id from mzf_returns_detail))
+				inner join mzf_sale c ON (b.sale_id = c.id)
+				left join sys_org o ON (c.org_id = o.id)
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+				left join sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+				left join sys_biz_code bc4 on (bc4.value = p.diamond_color and bc4.type_code = 'diamondColor')
+				left join sys_biz_code bc5 on (bc5.value = p.diamond_clean and bc5.type_code = 'diamondClean')
+				left join sys_biz_code bc6 on (bc6.value = p.diamond_cut and bc6.type_code = 'diamondCut')
+		WHERE  1 = 1
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if saleNum?exists> AND c.num LIKE '%${saleNum}%' </#if>
+			<#if employeeName?exists> AND c.employee_name LIKE '%${employeeName}%' </#if>
+			<#if secondProductNum?exists> AND p.num LIKE '%${secondProductNum}%' </#if>
+			<#if styleCode?exists> AND style_code LIKE '%${styleCode}%' </#if>
+			<#if goldClass?exists> AND  p.gold_class = '${goldClass}' </#if>
+			<#if ptype?exists> AND p.PTYPE = '${ptype}' </#if>
+			<#if pkind?exists> AND p.PKIND = '${pkind}' </#if>
+			<#if diamondColor?exists> AND p.diamond_color = '${diamondColor}' </#if>
+			<#if diamondClean?exists> AND p.diamond_clean = '${diamondClean}' </#if>
+			<#if diamondCut?exists> AND p.diamond_cut = '${diamondCut}' </#if>
+			<#if cdateStart?exists> AND CONVERT(VARCHAR(100), c.cdate, 23) >=  '${cdateStart}' </#if>
+			<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), c.cdate, 23) <=  '${cdateEnd}' </#if>
+			<#if weightStart?exists> AND p.weight >=  '${weightStart}' </#if>
+			<#if weightEnd?exists> AND p.weight <=  '${weightEnd}' </#if>
+			<#if diamondSizeStart?exists> AND p.diamond_size >= '${diamondSizeStart}' </#if>
+			<#if diamondSizeEnd?exists> AND p.diamond_size  <=  '${diamondSizeEnd}' </#if>
+			<#if retailBasePriceStart?exists> AND p.retail_base_price >= '${retailBasePriceStart}' </#if>
+			<#if retailBasePriceEnd?exists> AND p.retail_base_price  <=  '${retailBasePriceEnd}' </#if>
+		ORDER  BY orgName, returnsDate
+		]]>
+   	</sql>
+
+   	<sql name="product, productDiscount" title="连锁店销售明细表(不含当日退货),打折销售明细表(不含当日退货)">
+   		<![CDATA[
+		select o.name orgName,
+				s.num saleNum,
+				case when sd.sale_id is not null then '是' else '否' end isChange,
+				CONVERT(VARCHAR(100), s.cdate, 23) cdate,
+				bc.name cusGradeText,
+				s.employee_name employeeName,
+				p.num productNum,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				bc3.name goldClassmText,
+				a.price price,
+				p.cost_price costPrice,
+				p.diamond_size diamondSize,
+				p.wholesale_price wholesalePrice,
+				a.gold_price goldPrice,
+				a.weight goldWeight,
+				a.price - isnull(a.total_discount, 0) finalPrice,
+				s.clear_discount clearDiscount,
+				a.total_discount totalDiscount,
+				case when a.price is null or a.price = 0 then 0
+					else (a.price - isnull(a.total_discount, 0))/a.price end discountRate
+		  from mzf_sale_detail a
+				inner join v_mzf_product p on (a.target_id = p.id and a.type = 'product')
+				inner join mzf_sale s on (a.sale_id = s.id and s.type = 'sale')
+				inner join sys_org o on (s.org_id = o.id)
+				left join (select distinct sale_id from mzf_sale_detail where type = 'secondJewel') sd on (s.id = sd.sale_id)
+				left join mzf_customer cus on (s.cus_id = cus.id)
+				left join sys_biz_code bc on (cus.grade = bc.value and bc.type_code = 'cusGrade')
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+				left join sys_biz_code bc3 on (bc3.value = p.gold_class and bc3.type_code = 'goldClass')
+		 where not exists (
+					select * from mzf_returns_detail rd inner join mzf_sale rs on (rd.sale_id = rs.id)
+					where a.id = rd.sale_detail_id and datediff(dd, rs.cdate, s.cdate) = 0 and rs.cdate > s.cdate
+				)
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if saleNum?exists> AND s.num LIKE '%${saleNum}%' </#if>
+			<#if cusGrade?exists> AND bc.value = '${cusGrade}' </#if>
+			<#if ptype?exists> AND bc1.value = '${ptype}' </#if>
+			<#if pkind?exists> AND bc2.value = '${pkind}' </#if>
+			<#if goldClass?exists> AND bc3.value = '${goldClass}' </#if>
+			<#if employeeName?exists> AND s.employee_name LIKE '%${employeeName}%' </#if>
+			<#if productNum?exists> AND p.num LIKE '%${productNum}%' </#if>
+			<#if cdateStart?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${cdateStart}' </#if>
+			<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${cdateEnd}' </#if>
+			<#if diamondSizeStart?exists> AND p.diamond_size  >=  '${diamondSizeStart}' </#if>
+			<#if diamondSizeEnd?exists> AND p.diamond_size  <=  '${diamondSizeEnd}' </#if>
+			<#if goldPriceStart?exists> AND a.gold_price  >=  '${goldPriceStart}' </#if>
+			<#if goldPriceEnd?exists> AND a.gold_price  <=  '${goldPriceEnd}' </#if>
+			<#if goldWeightStart?exists> AND a.weight  >=  '${goldWeightStart}' </#if>
+			<#if goldWeightEnd?exists> AND a.weight  <=  '${goldWeightEnd}' </#if>
+			<#if costPriceStart?exists> AND p.cost_price  >=  '${costPriceStart}' </#if>
+			<#if costPriceEnd?exists> AND p.cost_price  <=  '${costPriceEnd}' </#if>
+			<#if wholesalePriceStart?exists> AND p.wholesale_price  >=  '${wholesalePriceStart}' </#if>
+			<#if wholesalePriceEnd?exists> AND p.wholesale_price  <=  '${wholesalePriceEnd}' </#if>
+			<#if priceStart?exists> AND a.price  >=  '${priceStart}' </#if>
+			<#if priceEnd?exists> AND a.price  <=  '${priceEnd}' </#if>
+			<#if finalPriceStart?exists> AND  a.price - isnull(a.total_discount, 0) >=  '${finalPriceStart}' </#if>
+			<#if finalPriceEnd?exists> AND  a.price - isnull(a.total_discount, 0)  <=  '${finalPriceEnd}' </#if>
+			<#if totalDiscountStart?exists> AND  a.total_discount >=  '${totalDiscountStart}' </#if>
+			<#if totalDiscountEnd?exists> AND  a.total_discount  <=  '${totalDiscountEnd}' </#if>
+			<#if clearDiscountStart?exists> AND s.clear_discount >=  '${clearDiscountStart}' </#if>
+			<#if clearDiscountEnd?exists> AND s.clear_discount <=  '${clearDiscountEnd}' </#if>
+			<#if totalDiscountFlag?exists> AND a.total_discount > 0 </#if>
+		order by s.cdate, employeeName
+		]]>
+   	</sql>
+
+   	<sql name="productAnalyse" title="连锁店销售统计表（不含当日退货）">
+   		<![CDATA[
+		select o.name orgName,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				count(*) quantity,
+				sum(p.weight) totalWeight,
+				sum(a.price - isnull(a.total_discount, 0)) totalFinalPrice
+		  from mzf_sale_detail a
+				inner join v_mzf_product p on (a.target_id = p.id and a.type = 'product')
+				inner join mzf_sale s on (a.sale_id = s.id and s.type = 'sale')
+				inner join sys_org o on (s.org_id = o.id)
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+		 where not exists (
+					select * from mzf_returns_detail rd inner join mzf_sale rs on (rd.sale_id = rs.id)
+					where a.id = rd.sale_detail_id and datediff(dd, rs.cdate, s.cdate) = 0 and rs.cdate > s.cdate
+				)
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if ptype?exists> AND bc1.value =  '${ptype}' </#if>
+			<#if pkind?exists> AND bc2.value =  '${pkind}' </#if>
+			<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+			<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>
+				group by o.name, bc1.name, bc2.name
+				order by ptypeText, pkindText
+		]]>
+   	</sql>
+
+   	<sql name="productSaleAndReturns" title="连锁店当日退货及销售表">
+		<![CDATA[
+		select o.name orgName,
+				p.num productNum,
+				cdate,
+				CONVERT(VARCHAR(100), cdate, 23) cdateStr,
+				saleTypeText,
+				finalSelledPrice,
+				employeeName
+		  from (
+		 		select s.org_id,
+						a.target_id product_id,
+						s.cdate,
+						'销售' saleTypeText,
+						a.price - isnull(a.total_discount, 0) finalSelledPrice,
+						s.employee_name employeeName
+				  from v_mzf_sale_detail a
+						inner join mzf_sale s on (a.sale_id = s.id and s.type = 'sale' and a.type = 'product')
+				union
+				select s.org_id,
+						a.target_id product_id,
+						s.cdate,
+						'退货' saleTypeText,
+						a.price - isnull(a.total_discount, 0) finalSelledPrice,
+						s.employee_name employeeName
+				  from v_mzf_sale_detail a
+						inner join mzf_sale s on (a.returns_sale_id = s.id and s.type = 'returns' and a.type = 'product')
+				) us
+				inner join mzf_product p on (us.product_id = p.id)
+				inner join sys_org o on (us.org_id = o.id)
+		  where product_id in (
+				select x.product_id
+				  from (
+						select a.target_id product_id, s.cdate
+						  from v_mzf_sale_detail a
+								inner join mzf_sale s on (a.sale_id = s.id and s.type = 'sale' and a.type = 'product')
+						) x
+						inner join
+						(
+						select a.target_id product_id, s.cdate
+						  from v_mzf_sale_detail a
+								inner join mzf_sale s on (a.returns_sale_id = s.id and s.type = 'returns' and a.type = 'product')
+						) y on (x.product_id = y.product_id and datediff(dd, x.cdate, y.cdate) = 0 and x.cdate < y.cdate)
+				)
+					<#if accessFilter?exists> ${accessFilter} </#if>
+					<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+					<#if productNum?exists> AND p.num LIKE '%${productNum}%' </#if>
+					<#if employeeName?exists> AND employeeName LIKE '%${employeeName}%' </#if>
+					<#if finalSelledPriceStart?exists> AND  finalSelledPrice >=  '${finalSelledPriceStart}' </#if>
+					<#if finalSelledPriceEnd?exists> AND  finalSelledPrice <=  '${finalSelledPriceEnd}' </#if>
+					<#if startDate?exists> AND CONVERT(VARCHAR(100), cdate, 23) >=  '${startDate}' </#if>
+					<#if endDate?exists> AND CONVERT(VARCHAR(100), cdate, 23) <=  '${endDate}' </#if>
+				order by productNum, cdate
+		]]>
+   	</sql>
+   	<sql name="orgSaleAmountReport" title="连锁店业绩汇总表" param="startDate,endDate">
+   	  <![CDATA[
+	    select
+			   o1.name as areaName,
+			   o.name as orgName,
+			   s.saleTotal,
+			   s2.saleCurAmount,
+			   (isnull(s2.saleCurAmount,0) + s.saleTotal) as total,
+			   s1.returnSaleTotal,
+			   (isnull(s2.saleCurAmount,0) + s.saleTotal - isnull(s1.returnSaleTotal,0)) clearAmount
+		from mzf_sale as a
+		    left join sys_org o on(o.id = a.org_id)
+		    left join sys_org o1 on(o.code like  o1.code + '%' and o1.biz_code is null and o1.pid = 1)
+			left join (
+				select org_id,(sum(AMOUNT)- sum(PRODUCT_PAY)) saleTotal from mzf_sale
+				where type = 'sale'
+				<#if startDate?exists> and convert(varchar(64),cdate,23) >= '${startDate}' </#if>
+				<#if lastEndDate?exists> and convert(varchar(64),cdate,23) <= '${lastEndDate}' </#if>
+				group by org_id
+			) s on(a.org_id = s.org_id)
+			left join (
+				select org_id,(sum(AMOUNT)- sum(PRODUCT_PAY)) saleCurAmount from mzf_sale
+				where type = 'sale'
+				<#if endDate?exists> and convert(varchar(64),cdate,23) = '${endDate}' </#if>
+				group by org_id
+			) s2 on(a.org_id = s2.org_id)
+			left join (
+				select org_id,sum(AMOUNT) returnSaleTotal from mzf_sale
+				where type = 'returns'
+				<#if startDate?exists> and convert(varchar(64),cdate,23) >= '${startDate}' </#if>
+				<#if endDate?exists> and convert(varchar(64),cdate,23) <= '${endDate}' </#if>
+				group by org_id
+			) s1 on(a.org_id = s1.org_id)
+		where s.saleTotal is not null
+		    <#if accessFilter?exists> ${accessFilter} </#if>
+		    <#if orgName?exists> AND o.name like '%${orgName}%' </#if>
+			group by a.org_id,s.saleTotal,s1.returnSaleTotal,s2.saleCurAmount,o.name,o1.name
+		    order by o.name
+   	  ]]>
+   	</sql>
+   	<sql name="productReturns" title="连锁店退货明细表（隔日）">
+   		<![CDATA[
+		select o.name orgName,
+				CONVERT(VARCHAR(100), s.cdate, 23) cdate,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				p.num productNum,
+				p.weight,
+				a.price - case when a.total_discount is null then 0 else a.total_discount end finalPrice,
+				s.employee_name employeeName,
+				u.user_name checkerName
+		  from mzf_sale_detail a
+				inner join v_mzf_product p on (a.target_id = p.id and a.type = 'product')
+				inner join mzf_sale s on (a.sale_id = s.id)
+				inner join sys_org o on (s.org_id = o.id)
+				inner join mzf_returns_detail rd on (a.ID = rd.SALE_DETAIL_ID)
+				inner join MZF_SALE rs on (rd.SALE_ID = rs.id)
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+				left join sys_user u on rs.cuser_id = u.id
+		 where datediff(dd, rs.cdate, s.cdate) != 0
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if productNum?exists> AND p.num LIKE '%${productNum}%' </#if>
+			<#if employeeName?exists> AND s.employee_name LIKE '%${employeeName}%' </#if>
+			<#if checkerName?exists> AND s.checker_name LIKE '%${checkerName}%' </#if>
+			<#if ptype?exists> AND bc1.value = '${ptype}' </#if>
+			<#if pkind?exists> AND bc2.value = '${pkind}' </#if>
+			<#if weightStart?exists> AND p.weight >= '${weightStart}' </#if>
+			<#if weightEnd?exists> AND p.weight <= '${weightEnd}' </#if>
+			<#if finalPriceStart?exists> AND a.price - case when a.total_discount is null then 0 else a.total_discount end >= '${finalPriceStart}' </#if>
+			<#if finalPriceEnd?exists> AND a.price - case when a.total_discount is null then 0 else a.total_discount end <= '${finalPriceEnd}' </#if>
+			<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+			<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>
+				order by ptypeText, pkindText
+		]]>
+   	</sql>
+
+   	<sql name="productAndMaterial" title="零销售明细表（不含物料）">
+   		<![CDATA[
+		select o.name orgName,
+				s.num saleNum,
+				CONVERT(VARCHAR(100), s.cdate, 23) cdate,
+				a.target_num targetNum,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				a.price,
+				a.price - isnull(a.total_discount, 0) finalSelledPrice,
+				s.employee_name employeeName,
+				s.checker_name checkerName
+		  from mzf_sale_detail a
+				inner join v_mzf_product p on (a.target_id = p.id and a.type = 'product')
+				inner join mzf_sale s on (a.sale_id = s.id and s.type = 'sale')
+				inner join sys_org o on (s.org_id = o.id)
+		       	left join sys_biz_code bc1 ON (p.PTYPE = bc1.VALUE AND bc1.TYPE_CODE = 'productType')
+		       	left join sys_biz_code bc2 ON (p.PKIND = bc2.VALUE AND bc2.TYPE_CODE = 'productKind')
+		 where a.price - isnull(a.total_discount, 0) = 0
+				and a.type in ('product', 'material')
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if saleNum?exists> AND s.num LIKE '%${saleNum}%' </#if>
+			<#if targetNum?exists> AND a.target_num LIKE '%${targetNum}%' </#if>
+			<#if employeeName?exists> AND s.employee_name LIKE '%${employeeName}%' </#if>
+			<#if checkerName?exists> AND s.checker_name LIKE '%${checkerName}%' </#if>
+			<#if ptype?exists> AND bc1.VALUE = '${ptype}' </#if>
+			<#if pkind?exists> AND bc2.VALUE = '${pkind}' </#if>
+			<#if priceStart?exists> AND a.price >= '${priceStart}' </#if>
+			<#if priceEnd?exists> AND a.price <= '${priceEnd}' </#if>
+			<#if finalSelledPriceStart?exists> AND a.price - isnull(a.total_discount, 0) >= '${finalSelledPriceStart}' </#if>
+			<#if finalSelledPriceEnd?exists> AND a.price - isnull(a.total_discount, 0) <= '${finalSelledPriceEnd}' </#if>
+			<#if cdateStart?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${cdateStart}' </#if>
+			<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${cdateEnd}' </#if>
+				order by cdate
+		]]>
+   	</sql>
+
+   	<sql name="productByEmployee" title="珠宝顾问销售明细表">
+   		<![CDATA[
+		select o.name orgName,
+				st.type storeType,
+				me.name employeeName,
+				bcme.name employeeLevelText,
+				s.num saleNum,
+				CONVERT(VARCHAR(100), s.cdate, 23) cdate,
+				p.num productNum,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				a.price,
+				a.price - isnull(a.total_discount, 0) finalPrice,
+				a.total_discount totalDiscount,
+				case when a.price is null or a.price = 0 then 0
+					else (a.price - isnull(a.total_discount, 0))/a.price end discountRate
+		  from v_mzf_sale_detail a
+				inner join v_mzf_product p on (a.target_id = p.id and a.type = 'product' and a.is_returns = 'false')
+				inner join mzf_sale s on (a.sale_id = s.id)
+				inner join sys_org o on (s.org_id = o.id)
+				left join mzf_store st on (s.org_id = st.org_id)
+				left join mzf_employee me on (s.employee_id = me.id)
+				left join sys_biz_code bcme on (me.[elevel] = bcme.value and bcme.type_code = 'employeeLevel')
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+		 where 1 = 1
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if saleNum?exists> AND s.num LIKE '%${saleNum}%' </#if>
+			<#if productNum?exists> AND p.num LIKE '%${productNum}%' </#if>
+			<#if employeeName?exists> AND me.name LIKE '%${employeeName}%' </#if>
+			<#if employeeLevel?exists> AND bcme.value = '${employeeLevel}' </#if>
+			<#if storeType?exists> AND st.type = '${storeType}' </#if>
+			<#if ptype?exists> AND bc1.VALUE = '${ptype}' </#if>
+			<#if pkind?exists> AND bc2.VALUE = '${pkind}' </#if>
+			<#if priceStart?exists> AND a.price >= '${priceStart}' </#if>
+			<#if priceEnd?exists> AND a.price <= '${priceEnd}' </#if>
+			<#if finalPriceStart?exists> AND a.price - isnull(a.total_discount, 0) >= '${finalPriceStart}' </#if>
+			<#if finalPriceEnd?exists> AND a.price - isnull(a.total_discount, 0) <= '${finalPriceEnd}' </#if>
+			<#if totalDiscountStart?exists> AND  a.total_discount >= '${totalDiscountStart}' </#if>
+			<#if totalDiscountEnd?exists> AND  a.total_discount <= '${totalDiscountEnd}' </#if>
+			<#if cdateStart?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${cdateStart}' </#if>
+			<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${cdateEnd}' </#if>
+				order by employeeName, s.cdate
+		]]>
+   	</sql>
+
+    <sql name="employeeCharts2" title="珠宝顾问销售排行">
+        <![CDATA[
+			select *,
+				diamondBankCard + diamondValueCard + diamondCash + diamondFrontMoney + diamondGoldPay * 0.7  +
+				ptBankCard * 0.7 + ptValueCard * 0.7 + ptCash * 0.7 + ptFrontMoney * 0.7 + ptGoldPay * 0.7 +
+				kBankCard + kValueCard + kCash + kFrontMoney + kGoldPay * 0.7  total
+			from
+			(SELECT P.EMPLOYEE_NAME employeeName,O.NAME orgName,B.NAME employeeLevelText,
+				SUM(case when p.GOLD_PAY = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.GOLD_PAY * p.IS_RETURN end) diamondGoldPay,
+				SUM(case when p.GOLD_PAY = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.GOLD_PAY * p.IS_RETURN end) ptGoldPay,
+				SUM(case when p.GOLD_PAY = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.GOLD_PAY * p.IS_RETURN end) kGoldPay,
+
+				SUM(case when p.PRODUCT_PAY = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.PRODUCT_PAY * p.IS_RETURN end) diamondProductPay,
+				SUM(case when p.PRODUCT_PAY = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.PRODUCT_PAY * p.IS_RETURN end) ptProductPay,
+				SUM(case when p.PRODUCT_PAY = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.PRODUCT_PAY * p.IS_RETURN end) kProductPay,
+
+				SUM(case when p.BANK_CARD = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.BANK_CARD * p.IS_RETURN end) diamondBankCard,
+				SUM(case when p.BANK_CARD = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.BANK_CARD * p.IS_RETURN end) ptBankCard,
+				SUM(case when p.BANK_CARD = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.BANK_CARD * p.IS_RETURN end) kBankCard,
+
+				SUM(case when p.CASH = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.CASH * p.IS_RETURN end) diamondCash,
+				SUM(case when p.CASH = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.CASH * p.IS_RETURN end) ptCash,
+				SUM(case when p.CASH = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.CASH * p.IS_RETURN end) kCash,
+
+				SUM(case when p.VALUE_CARD = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.VALUE_CARD * p.IS_RETURN end) diamondValueCard,
+				SUM(case when p.VALUE_CARD = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.VALUE_CARD * p.IS_RETURN end) ptValueCard,
+				SUM(case when p.VALUE_CARD = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.VALUE_CARD * p.IS_RETURN end) kValueCard,
+
+				SUM(case when p.FRONT_MONEY = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.FRONT_MONEY * p.IS_RETURN end) diamondFrontMoney,
+				SUM(case when p.FRONT_MONEY = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.FRONT_MONEY * p.IS_RETURN end) ptFrontMoney,
+				SUM(case when p.FRONT_MONEY = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.FRONT_MONEY * p.IS_RETURN end) kFrontMoney,
+
+				SUM(case when p.CHIT = 0 then 0 else t.diamond/(p.AMOUNT-t.material) * p.CHIT * p.IS_RETURN end) diamondChit,
+				SUM(case when p.CHIT = 0 then 0 else t.pt/(p.AMOUNT-t.material) * p.CHIT * p.IS_RETURN end) ptChit,
+				SUM(case when p.CHIT = 0 then 0 else t.kgold/(p.AMOUNT-t.material) * p.CHIT * p.IS_RETURN end) kChit
+			FROM V_MZF_SUM_SALE_PAY P
+				INNER JOIN V_MZF_SUM_SALE_PTYPE T ON (P.ID = T.SALE_ID)
+				LEFT JOIN MZF_EMPLOYEE E ON (P.EMPLOYEE_ID = E.ID)
+				LEFT JOIN SYS_ORG O ON (P.ORG_ID = O.ID)
+				LEFT JOIN SYS_BIZ_CODE B ON (E.ELEVEL = B.VALUE)
+			WHERE p.AMOUNT - t.material >0
+				and p.EMPLOYEE_ID is not null
+				AND B.TYPE_CODE = 'employeeLevel'
+				<#if accessFilter?exists>${accessFilter}</#if>
+				<#if orgName?exists>AND O.ORG_NAME LIKE '%${orgName}%'</#if>
+				<#if cdateStart?exists> AND CONVERT(VARCHAR(100), P.cdate, 23) >=  '${cdateStart}' </#if>
+				<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), P.cdate, 23) <=  '${cdateEnd}' </#if>
+				<#if employeeName?exists> AND E.name LIKE '%${employeeName}%' </#if>
+				<#if employeeLevel?exists> AND B.value = '${employeeLevel}' </#if>
+			GROUP BY P.EMPLOYEE_NAME,P.ORG_ID,O.NAME,B.NAME,P.EMPLOYEE_ID) q
+			order by total desc
+		]]>
+    </sql>
+
+   	<sql name="employeeRank" title="珠宝顾问销售统计">
+		<![CDATA[
+   		select o.name orgName,
+				st.type storeType,
+				me.name employeeName,
+				bcme.name employeeLevelText,
+				p.ptype,
+				bc1.name ptypeText,
+				a1.quantity,
+				a1.sales
+		from mzf_sale_detail a
+				inner join (
+					select max(id) sale_detail_id, count(*) quantity,
+						sum(price) - sum(isnull(total_discount, 0)) sales from v_mzf_sale_detail
+					where type = 'product' and is_returns = 'false' group by sale_id
+				) a1 on (a.id = a1.sale_detail_id)
+				inner join mzf_sale s on (a.sale_id = s.id and employee_id is not null and (s.is_returns is null or s.is_returns != 'false'))
+				inner join v_mzf_product p on (a.target_id = p.id and a.type = 'product')
+				inner join sys_org o on (s.org_id = o.id)
+				left join mzf_store st on (s.org_id = st.org_id)
+				left join mzf_employee me on (s.employee_id = me.id)
+				left join sys_biz_code bcme on (me.[elevel] = bcme.value and bcme.type_code = 'employeeLevel')
+				left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+		where 1 = 1
+				<#if accessFilter?exists> ${accessFilter} </#if>
+				<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+				<#if employeeName?exists> AND me.name LIKE '%${employeeName}%' </#if>
+				<#if employeeLevel?exists> AND bcme.value = '${employeeLevel}' </#if>
+				<#if storeType?exists> AND st.type = '${storeType}' </#if>
+				<#if cdateStart?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${cdateStart}' </#if>
+				<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${cdateEnd}' </#if>
+		]]>
+   	</sql>
+
+   	<sql name="employeeCharts" title="珠宝顾问销售排行">
+  		<![CDATA[
+		select * from (select *,
+				diamondBankCard + diamondValueCard + diamondCash + diamondFrontMoney + diamondGoldPay * 0.7 +
+				ptBankCard * 0.7 + ptValueCard * 0.7 + ptCash * 0.7 + ptFrontMoney * 0.7 + ptGoldPay * 0.7 +
+				kBankCard + kValueCard + kCash + kFrontMoney + kGoldPay * 0.7 total
+		  from (
+				select o.name orgName,
+						o.type storeType,
+						me.name employeeName,
+						bcme.name employeeLevelText,
+						isnull(diamond.bankCard, 0) diamondBankCard, isnull(diamond.valueCard, 0) diamondValueCard, isnull(diamond.cash, 0) diamondCash, isnull(diamond.chit, 0) diamondChit,
+						isnull(diamond.frontMoney, 0) diamondFrontMoney, isnull(diamond.goldPay, 0) diamondGoldPay, isnull(diamond.productPay, 0) diamondProductPay,
+
+						isnull(pt.bankCard, 0) ptBankCard, isnull(pt.valueCard, 0) ptValueCard, isnull(pt.cash, 0) ptCash,
+						isnull(pt.chit, 0) ptChit, isnull(pt.frontMoney, 0) ptFrontMoney, isnull(pt.goldPay, 0) ptGoldPay, isnull(pt.productPay, 0) ptProductPay,
+
+						isnull(k.bankCard, 0) kBankCard, isnull(k.valueCard, 0) kValueCard, isnull(k.cash, 0) kCash,
+						isnull(k.chit, 0) kChit, isnull(k.frontMoney, 0) kFrontMoney, isnull(k.goldPay, 0) kGoldPay, isnull(k.productPay, 0) kProductPay
+				  from (select org_id, employee_id
+						  from v_mzf_sale
+						 where employee_id is not null
+							<#if accessFilter?exists>
+								${accessFilter}
+							</#if>
+							<#if orgName?exists>
+								AND ORG_NAME LIKE '%${orgName}%'
+							</#if>
+						 group by org_id, employee_id) a
+						inner join v_mzf_store o on (a.org_id = o.org_id)
+						left join (
+							select org_id, employee_id,
+									sum(isnull(bank_card, 0) + isnull(market_proxy_bank_card, 0)) bankCard,
+									sum(isnull(value_card, 0) + isnull(market_proxy_value_card, 0)) valueCard,
+									sum(isnull(cash, 0) + isnull(market_proxy_cash, 0)) cash,
+									sum(isnull(chit, 0) + isnull(market_proxy_chit, 0)) chit,
+									sum(isnull(front_Money, 0)) frontMoney,
+									sum(isnull(gold_pay, 0)) goldPay,
+									sum(isnull(product_pay, 0)) productPay
+							  from v_mzf_sale
+							 where ptype in ('diamond', 'nakedDiamond', 'gemstone', 'pearl') and (is_returns is null or is_returns = 'false')
+								<#if cdateStart?exists> AND CONVERT(VARCHAR(100), cdate, 23) >=  '${cdateStart}' </#if>
+								<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), cdate, 23) <=  '${cdateEnd}' </#if>
+							 group by org_id, employee_id
+						) diamond on (a.org_id = diamond.org_id and a.employee_id = diamond.employee_id)
+						left join (
+							select org_id, employee_id,
+									sum(isnull(bank_card, 0) + isnull(market_proxy_bank_card, 0)) bankCard,
+									sum(isnull(value_card, 0) + isnull(market_proxy_value_card, 0)) valueCard,
+									sum(isnull(cash, 0) + isnull(market_proxy_cash, 0)) cash,
+									sum(isnull(chit, 0) + isnull(market_proxy_chit, 0)) chit,
+									sum(isnull(front_Money, 0)) frontMoney,
+									sum(isnull(gold_pay, 0)) goldPay,
+									sum(isnull(product_pay, 0)) productPay
+							  from v_mzf_sale
+							 where ptype in ('pt') and (is_returns is null or is_returns = 'false')
+								<#if cdateStart?exists>
+									AND CONVERT(VARCHAR(100), cdate, 23) >=  '${cdateStart}'
+								</#if>
+								<#if cdateEnd?exists>
+									AND CONVERT(VARCHAR(100), cdate, 23) <=  '${cdateEnd}'
+								</#if>
+							 group by org_id, employee_id
+						) pt on (a.org_id = pt.org_id and a.employee_id = pt.employee_id)
+						left join (
+							select org_id, employee_id,
+									sum(isnull(bank_card, 0) + isnull(market_proxy_bank_card, 0)) bankCard,
+									sum(isnull(value_card, 0) + isnull(market_proxy_value_card, 0)) valueCard,
+									sum(isnull(cash, 0) + isnull(market_proxy_cash, 0)) cash,
+									sum(isnull(chit, 0) + isnull(market_proxy_chit, 0)) chit,
+									sum(isnull(front_Money, 0)) frontMoney,
+									sum(isnull(gold_pay, 0)) goldPay,
+									sum(isnull(product_pay, 0)) productPay
+							  from v_mzf_sale
+							 where ptype in ('kGold') and (is_returns is null or is_returns = 'false')
+								<#if cdateStart?exists> AND CONVERT(VARCHAR(100), cdate, 23) >=  '${cdateStart}' </#if>
+								<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), cdate, 23) <=  '${cdateEnd}' </#if>
+							 group by org_id, employee_id
+						) k on (a.org_id = k.org_id and a.employee_id = k.employee_id)
+						left join mzf_employee me on (a.employee_id = me.id and me.is_Normal = 'true')
+						left join sys_biz_code bcme on (me.[elevel] = bcme.value and bcme.type_code = 'employeeLevel')
+				  where 1 = 1
+						<#if storeType?exists> AND o.type = '${storeType}' </#if>
+						<#if employeeName?exists> AND me.name LIKE '%${employeeName}%' </#if>
+						<#if employeeLevel?exists> AND bcme.value = '${employeeLevel}' </#if>
+				) x ) x0 where total > 0 order by total desc
+		]]>
+   	</sql>
+
+   	<sql name="material" title="物料销售日报">
+   		<![CDATA[
+		select o.name orgName,
+				x.cdate,
+				m.num materialNum,
+				m.name materialName,
+				m.RETAIL_PRICE retailPrice,
+				x.quantity
+		  from (
+				select CONVERT(VARCHAR(100), s.cdate, 23) cdate,
+						s.org_id,
+						a.target_id material_id,
+						sum(quantity) quantity
+				  from mzf_sale_detail a
+						inner join mzf_sale s on (a.sale_id = s.id and s.type = 'sale' and a.type = 'material')
+				  where 1 = 1
+						<#if cdateStart?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${cdateStart}' </#if>
+						<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${cdateEnd}' </#if>
+					   group by CONVERT(VARCHAR(100), s.cdate, 23), s.org_id, a.target_id
+				) x
+				inner join mzf_material m on (x.material_id = m.id)
+				inner join sys_org o on (x.org_id = o.id)
+		  where 1 = 1
+				<#if accessFilter?exists> ${accessFilter} </#if>
+				<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+				<#if materialNum?exists> AND m.num LIKE '%${materialNum}%' </#if>
+				<#if materialName?exists> AND m.name LIKE '%${materialName}%' </#if>
+				<#if quantityStart?exists> AND x.quantity >= '${quantityStart}' </#if>
+				<#if quantityEnd?exists> AND x.quantity <= '${quantityEnd}' </#if>
+				order by orgName desc,  materialNum desc, cdate desc
+		]]>
+   	</sql>
+
+   	<sql name="secondGold" title="旧金回收明细表">
+ 		<![CDATA[
+		select o.name orgName,
+				s.num saleNum,
+				CONVERT(VARCHAR(100), s.cdate, 23) cdate,
+				bc.name secondGoldClassText,
+				x.weight,
+				x.gold_price goldPrice,
+				x.goldPayPrice,
+				s.employee_name employeeName
+		  from (
+				select sale_id,
+						gold_class,
+						weight,
+						gold_price,
+						(isnull(price,0) - isnull(total_discount,0)) goldPayPrice
+				  from v_mzf_sale_detail a
+				 where a.type = 'secondGold' and is_returns = 'false'
+				) x
+				inner join mzf_sale s on (x.sale_id = s.id and s.type = 'sale')
+				left join sys_org o on (s.org_id = o.id)
+				left join sys_biz_code bc on (x.gold_class = bc.value and bc.type_code = 'secondGoldClass')
+		  where 1 = 1
+				<#if accessFilter?exists> ${accessFilter} </#if>
+				<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+				<#if saleNum?exists> AND s.num LIKE '%${saleNum}%' </#if>
+				<#if employeeName?exists> AND s.employee_name LIKE '%${employeeName}%' </#if>
+				<#if secondGoldClass?exists> AND bc.value = '${secondGoldClass}' </#if>
+				<#if weightStart?exists> AND x.weight >= '${weightStart}' </#if>
+				<#if weightEnd?exists> AND x.weight <= '${weightEnd}' </#if>
+				<#if goldPriceStart?exists> AND x.gold_price >= '${goldPriceStart}' </#if>
+				<#if goldPriceEnd?exists> AND x.gold_price <= '${goldPriceEnd}' </#if>
+				<#if cdateStart?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${cdateStart}' </#if>
+				<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${cdateEnd}' </#if>
+				order by s.cdate
+			]]>
+   	</sql>
+
+   	<sql name="reportByDay" title="总部销售日报（销售管理中心用）" params="currentDate!, area, orgName">
+   		<![CDATA[
+		select o3.name area, a.name,
+				'${currentDate}' currentDay,
+				isnull(currentDay.totalAmount, 0) currentDayTotalAmount,
+				isnull(currentMonth.totalAmount, 0) currentMonthTotalAmount,
+				isnull(currentReturns.amount, 0) currentReturnsAmount,
+				isnull(currentDay.totalAmount, 0) + isnull(currentMonth.totalAmount, 0) - isnull(currentReturns.amount, 0) currentDayAmount
+		  from v_mzf_store a
+				left join sys_org o1 on (a.org_id = o1.id)
+				left join sys_org o2 on (o1.pid = o2.id)
+				inner join sys_org o3 on (o2.pid = o3.id and o3.type = 'subdept')
+				left join (select org_id, sum(amount-product_pay) totalAmount
+						     from v_mzf_sale
+							where type = 'sale' and dateDiff(dd, '${currentDate}', cdate) = 0
+							group by org_id
+							) currentDay on (currentDay.org_id = a.org_id)
+				left join (select org_id, sum(amount-product_pay) totalAmount
+							 from v_mzf_sale
+							where type = 'sale'
+									and dateDiff(dd, '${currentDate}', cdate) < 0
+									and dateDiff(m, '${currentDate}', cdate) = 0
+							group by org_id
+							) currentMonth on (currentMonth.org_id = a.org_id)
+				left join (select org_id, sum(amount) amount
+							 from v_mzf_sale where type = 'returns'
+									and dateDiff(dd, '${currentDate}', cdate) < 0
+									and dateDiff(m, '${currentDate}', cdate) = 0
+							group by org_id
+							) currentReturns on (currentReturns.org_id = a.org_id)
+		 where 1 = 1
+				<#if accessFilter?exists> ${accessFilter} </#if>
+				<#if area?exists> AND o3.NAME LIKE '%${area}%' </#if>
+				<#if orgName?exists> AND a.NAME LIKE '%${orgName}%' </#if>
+				<#if currentDayTotalAmountStart?exists> AND  isnull(currentDay.totalAmount, 0) >= '${currentDayTotalAmountStart}' </#if>
+				<#if currentDayTotalAmountEnd?exists> AND isnull(currentDay.totalAmount, 0) <= '${currentDayTotalAmountEnd}' </#if>
+				<#if currentMonthTotalAmountStart?exists> AND isnull(currentMonth.totalAmount, 0) >= '${currentMonthTotalAmountStart}' </#if>
+				<#if currentMonthTotalAmountEnd?exists> AND isnull(currentMonth.totalAmount, 0) <= '${currentMonthTotalAmountEnd}' </#if>
+				<#if currentReturnsAmountStart?exists> AND isnull(currentReturns.amount, 0) >= '${currentReturnsAmountStart}' </#if>
+				<#if currentReturnsAmountEnd?exists> AND isnull(currentReturns.amount, 0) <= '${currentReturnsAmountEnd}' </#if>
+				<#if currentDayAmountStart?exists> AND isnull(currentDay.totalAmount, 0) - isnull(currentReturns.amount, 0) >= '${currentDayAmountStart}' </#if>
+				<#if currentDayAmountEnd?exists> AND isnull(currentDay.totalAmount, 0) - isnull(currentReturns.amount, 0) <= '${currentDayAmountEnd}' </#if>
+				order by area, a.name
+		]]>
+   	</sql>
+
+   	<sql name="reportForStyleByMonth" title="推广货销售月报（销售管理中心用）" params="currentMonth!, area, orgName, styleCode, styleName">
+   		<![CDATA[
+		select top 10 q.smonth, o3.name area, a.name, bc1.name grade, a.type,
+				style.mode_code modeCode, bc2.name promotionGroup, style.code styleCode, style.name styleName,
+				q.quantity, q.quantityByOld
+		  from v_mzf_store a
+				left join sys_org o1 on (a.org_id = o1.id)
+				left join sys_org o2 on (o1.pid = o2.id)
+				inner join sys_org o3 on (o2.pid = o3.id and o3.type = 'subdept')
+				left join mzf_style style on (1 = 1)
+				left join sys_biz_code bc1 on (a.grade = bc1.value and bc1.type_code = 'storeGrade')
+				left join sys_biz_code bc2 on (style.promotion_group = bc2.value and bc2.type_code = 'stylePromotionGroup')
+				inner join (
+							select x1.*, isnull(x2.quantity, 0) quantityByOld
+							  from (
+									select CONVERT(VARCHAR(7), s.cdate, 23) smonth, org_id, p.style_id, count(*) quantity
+									  from mzf_sale_detail sd inner join mzf_sale s
+											on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+											    AND	sd.sale_id not in (SELECT distinct sale_id FROM   mzf_sale_detail WHERE  sale_id = s.id AND type = 'secondJewel'))
+											inner join mzf_product p on (sd.target_id = p.id)
+									 group by CONVERT(VARCHAR(7), s.cdate, 23), org_id, p.style_id
+									) x1 left join (
+									select CONVERT(VARCHAR(7), s.cdate, 23) smonth, org_id, p.style_id, count(*) quantity
+									  from mzf_sale_detail sd inner join mzf_sale s
+											on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+												AND	sd.sale_id  in (SELECT distinct sale_id FROM   mzf_sale_detail WHERE  sale_id = s.id AND type = 'secondJewel'))
+											inner join mzf_product p on (sd.target_id = p.id)
+									 group by CONVERT(VARCHAR(7), s.cdate, 23), org_id, p.style_id
+									) x2 on (x1.smonth = x2.smonth and x1.org_id = x2.org_id and x1.style_id = x2.style_id)
+							) q on (a.org_id = q.org_id and style.id = style_id)
+		  where 1 = 1 and style.promotion_group  in ('爱之物语','印象LOVE','梦巴黎','七宗坠-美人魅')
+		  		<#if promotionGroupFlag?exists> and style.promotion_group is not null </#if>
+				<#if area?exists> and o3.name like '%${area}%' </#if>
+				<#if orgName?exists> and a.name like '%${orgName}%' </#if>
+				<#if smonth?exists> and q.smonth = '${smonth}' </#if>
+				<#if styleCode?exists> and style.code LIKE '%${styleCode}%' </#if>
+				<#if styleName?exists> and style.name LIKE '%${styleName}%' </#if>
+				<#if promotionGroup?exists> and  bc2.value in ${promotionGroup} </#if>
+				<#if quantity1?exists> and q.quantity >= ${quantity1} </#if>
+				<#if quantity2?exists> and q.quantity <= ${quantity2} </#if>
+				<#if quantityByOld1?exists> and q.quantityByOld >= ${quantityByOld1} </#if>
+				<#if quantityByOld2?exists> and q.quantityByOld <= ${quantityByOld2} </#if>
+				order by q.quantity desc
+		]]>
+   	</sql>
+    <sql name="reportForStyle" title="推广货销售明细">
+     <![CDATA[
+		  select convert(varchar(64),s1.cdate, 23) cdate,
+		       o1.name as areaName,
+		       o.name                orgName,
+		       s2.type               orgType,
+		       bc1.name              orgGrade,
+		       s.promotion_group     promotionGroup,
+		       s.name                promotionName,
+		       p.num                 productNum,
+		       p.name                productName,
+		       p.DIAMOND_SIZE        diamondSize,
+		       p.DIAMOND_COLOR       diamondColor,
+		       P.DIAMOND_CLEAN       diamondClean,
+		       P.RETAIL_BASE_PRICE   retailBasePrice,
+		       P.PROMOTION_PRICE     promotionPrice,
+		      (ISNULL(D.PRICE,0) - ISNULL(D.TOTAL_DISCOUNT,0)) AS realPrice
+		 from v_mzf_sale_detail d
+				left join mzf_product p on(d.target_id = p.id)
+				left join mzf_style s on(p.style_id = s.id)
+				left join mzf_sale s1 on(d.sale_id = s1.id)
+				left join sys_org o on(o.id = s1.org_id)
+				left join sys_org o1 on(o.code like  o1.code + '%' and o1.biz_code is null and o1.pid = 1)
+				left join mzf_store s2 on(s2.org_id = s1.org_id)
+				left join sys_biz_code bc1 on (s2.grade = bc1.value and bc1.type_code = 'storeGrade')
+		where  1=1
+		  and d.type = 'product' and d.is_returns = 'false'
+		  and s.promotion_group is not null
+		<#if accessFilter?exists> ${accessFilter} </#if>
+		<#if area?exists> AND o1.NAME LIKE '%${area}%' </#if>
+		<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+		<#if startDate?exists> AND convert(varchar(20),S1.CDATE,23) 	>= '${startDate}' </#if>
+		<#if endDate?exists> AND convert(varchar(20),S1.CDATE,23) 	<= '${endDate}' </#if>
+		<#if promotionGroup?exists> AND s.promotion_group like '%${promotionGroup}%' </#if>
+		<#if promotionName?exists> AND s.name like '%${promotionName}%' </#if>
+        order by orgName,promotionGroup
+
+     ]]>
+    </sql>
+   	<sql name="reportForDiamondSize, reportForPrice" title="销售产品结构分析（主石重量）, 销售产品结构分析（一口价）" params="rowName!, area, orgName, isNewCus, startDate, endDate">
+  		<![CDATA[
+		select '${rowName}' diamondSize,
+				isnull(sum(isnull(p.retail_base_price, 0)),0) price,
+				count(*) productCount,
+				case when count(*) > 0 then sum(isnull(p.retail_base_price, 0))/count(*) end unitPrice
+		  from mzf_sale_detail sd inner join mzf_sale s on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale')
+				inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond'
+								<#if ltPointForDiamondSize?exists> and p.diamond_size < ${ltPointForDiamondSize} </#if>
+								<#if ltEqPointForDiamondSize?exists> and p.diamond_size <= ${ltEqPointForDiamondSize} </#if>
+								<#if gtPointForDiamondSize?exists> and p.diamond_size > ${gtPointForDiamondSize} </#if>
+								<#if gtEqPointForDiamondSize?exists> and p.diamond_size >= ${gtEqPointForDiamondSize} </#if>
+
+								<#if ltPointForPrice?exists> and isnull(p.retail_base_price, 0) < ${ltPointForPrice} </#if>
+								<#if ltEqPointForPrice?exists> and isnull(p.retail_base_price, 0) <= ${ltEqPointForPrice} </#if>
+								<#if gtPointForPrice?exists> and isnull(p.retail_base_price, 0) > ${gtPointForPrice} </#if>
+								<#if gtEqPointForPrice?exists> and isnull(p.retail_base_price, 0) >= ${gtEqPointForPrice} </#if>
+					 		)
+				left join sys_org o1 on (s.org_id = o1.id)
+				left join sys_org o2 on (o1.pid = o2.id)
+				left join sys_org o3 on (o2.pid = o3.id)
+		  where 1 = 1
+		  		<#if accessFilter?exists> ${accessFilter} </#if>
+				<#if area?exists> AND o3.NAME LIKE '%${area}%' </#if>
+				<#if orgName?exists> AND o1.NAME LIKE '%${orgName}%' </#if>
+				<#if isNewCus?exists> AND s.IS_NEW_CUS = '${isNewCus}' </#if>
+				<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+				<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>
+		]]>
+   	</sql>
+
+   	<sql name="reportForDiamondSizeOnCol" title="销售产品结构分析（主石重-按门店）" params="area, orgName, startDate, endDate" remark="门店权限控制">
+		<![CDATA[
+		select o3.name area, o1.name,
+				isnull(x.price, 0) price,
+				x.ct	ct,
+				isnull(x1.price, 0)  ct2,
+				x1.ct	ct2Ct,
+				isnull(x2.price, 0)  ct299,
+				x2.ct	ct299Ct,
+				isnull(x3.price, 0)  ct399,
+				x3.ct	ct399Ct,
+				isnull(x4.price, 0)  ct999,
+				x4.ct	ct999Ct,
+				isnull(x5.price, 0)  ct1,
+				x5.ct	ct1Ct
+		  from (select org_id from mzf_sale group by org_id) a
+				inner join sys_org o1 on (a.org_id = o1.id and o1.type = 'store')
+				left join sys_org o2 on (o1.pid = o2.id)
+				inner join sys_org o3 on (o2.pid = o3.id and o3.type = 'subdept')
+				left join (select s.org_id, sum(isnull(price, 0) - isnull(total_discount, 0)) price, count(*) ct
+						     from mzf_sale_detail sd inner join mzf_sale s
+						     		on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+										<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+										<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>)
+									inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond' and p.diamond_size is not null)
+						    group by s.org_id
+							) x on (x.org_id = a.org_id)
+				left join (select s.org_id, sum(isnull(price, 0) - isnull(total_discount, 0)) price, count(*) ct
+						     from mzf_sale_detail sd inner join mzf_sale s
+						     		on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+										<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+										<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>)
+									inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond' and p.diamond_size < 0.2)
+						    group by s.org_id
+							) x1 on (x1.org_id = a.org_id)
+				left join (select s.org_id, sum(isnull(price, 0) - isnull(total_discount, 0)) price, count(*) ct
+						     from mzf_sale_detail sd inner join mzf_sale s
+						     		on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+										<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+										<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>)
+									inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond' and  p.diamond_size >= 0.2 and p.diamond_size <= 0.299)
+							group by s.org_id
+							) x2 on (x2.org_id = a.org_id)
+				left join (select s.org_id, sum(isnull(price, 0) - isnull(total_discount, 0)) price, count(*) ct
+						     from mzf_sale_detail sd inner join mzf_sale s
+						     		on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+										<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+										<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>)
+									inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond' and p.diamond_size >= 0.3 and p.diamond_size <= 0.399)
+							group by s.org_id
+							) x3 on (x3.org_id = a.org_id)
+				left join (select s.org_id, sum(isnull(price, 0) - isnull(total_discount, 0)) price, count(*) ct
+						     from mzf_sale_detail sd inner join mzf_sale s
+						     		on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+										<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+										<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>)
+									inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond' and p.diamond_size >= 0.4 and p.diamond_size <= 0.999)
+							group by s.org_id
+							) x4 on (x4.org_id = a.org_id)
+				left join (select s.org_id, sum(isnull(price, 0) - isnull(total_discount, 0)) price, count(*) ct
+						     from mzf_sale_detail sd inner join mzf_sale s
+						     		on (sd.sale_id = s.id and sd.type = 'product' and s.type = 'sale'
+										<#if startDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) >=  '${startDate}' </#if>
+										<#if endDate?exists> AND CONVERT(VARCHAR(100), s.cdate, 23) <=  '${endDate}' </#if>)
+									inner join mzf_product p on (sd.target_id = p.id and p.ptype = 'diamond' and p.diamond_size >= 1)
+							group by s.org_id
+						) x5 on (x5.org_id = a.org_id)
+		  where 1 = 1
+				<#if accessFilter?exists> ${accessFilter} </#if>
+				<#if area?exists> AND o3.NAME LIKE '%${area}%' </#if>
+				<#if orgName?exists> AND o1.NAME LIKE '%${orgName}%' </#if>
+		order by o3.id, a.org_id
+		]]>
+   	</sql>
+</sqls>

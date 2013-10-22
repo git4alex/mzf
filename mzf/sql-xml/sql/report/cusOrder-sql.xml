@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqls namespace="cusOrder">
+   	<sql name="list" title="客订单明细表">
+   	<![CDATA[
+		select o.name orgName,
+				a.num cusOrderNum,
+				bc.name statusText,
+				CONVERT(VARCHAR(100), a.cdate, 23) cdate,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				p.num productNum,
+				p.style_code styleCode,
+				a.diamond_weight diamondSize,
+				a.price,
+				a.total_amount totalAmount,
+				a.employee_name employeeName,
+				a.remark
+		  from v_mzf_cus_order a
+				left join v_mzf_product p on (a.product_id = p.id)
+				left join sys_org o on (a.org_id = o.id)
+				left join sys_biz_code bc on (a.status = bc.value and bc.type_code = 'cusOrderStatus')
+				left join sys_biz_code bc1 on (bc1.value = a.ptype and bc1.type_code = 'productType')
+				left join sys_biz_code bc2 on (bc2.value = a.pkind and bc2.type_code = 'productKind')
+		  where 1 = 1
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if cusOrderNum?exists> AND a.num LIKE '%${cusOrderNum}%' </#if>
+			<#if productNum?exists> AND p.num LIKE '%${productNum}%' </#if>
+			<#if styleCode?exists> AND p.style_code LIKE '%${styleCode}%' </#if>
+			<#if employeeName?exists> AND a.employee_name LIKE '%${employeeName}%' </#if>
+			<#if remark?exists> AND a.remark LIKE '%${remark}%' </#if>
+			<#if ptype?exists> AND bc1.value = '${ptype}' </#if>
+			<#if pkind?exists> AND bc2.value = '${pkind}' </#if>
+			<#if status?exists> AND  bc.value = '${status}' </#if>
+			<#if cdateStart?exists> AND CONVERT(VARCHAR(100), a.cdate, 23) >=  '${cdateStart}' </#if>
+			<#if cdateEnd?exists> AND CONVERT(VARCHAR(100), a.cdate, 23) <=  '${cdateEnd}' </#if>
+			<#if diamondSizeStart?exists> AND a.diamond_weight >=  '${diamondSizeStart}' </#if>
+			<#if diamondSizeEnd?exists> AND a.diamond_weight <=  '${diamondSizeEnd}' </#if>
+			<#if totalAmountStart?exists> AND a.total_amount >=  '${totalAmountStart}' </#if>
+			<#if totalAmountEnd?exists> AND a.total_amount <=  '${totalAmountEnd}' </#if>
+			<#if priceStart?exists> AND a.price >=  '${priceStart}' </#if>
+			<#if priceEnd?exists> AND a.price <=  '${priceEnd}' </#if>
+			order by cdate
+	]]>
+   	</sql>
+</sqls>

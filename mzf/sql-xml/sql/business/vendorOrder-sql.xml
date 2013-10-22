@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="vendorOrder">  
+   	<sql name="summaryDosing" title="委外订单配料汇总">
+		<![CDATA[
+		select x.*
+		  from (select rawmaterial_type rawmaterialType, 
+		  				rawmaterial_num rawmaterialNum, 
+						null gravelStandard,
+						null goldClass, 
+						null partsType, 
+						null partsStandard,
+						1 totalQuantity
+				  from [V_MZF_DOSING] 
+				 where rawmaterial_type = 'nakedDiamond' 
+					<#if orderIds?exists> 
+						AND order_id in (${orderIds})
+					</#if>		 
+				union
+				select rawmaterial_type rawmaterialType, 
+						rawmaterial_num rawmaterialNum, 
+						gravel_standard gravelStandard,
+						null goldClass, 
+						null partsType, 
+						null partsStandard,
+						sum(dosing_quantity) totalQuantity 
+				  from [V_MZF_DOSING] 
+				 where rawmaterial_type = 'gravel'
+					<#if orderIds?exists> 
+						AND order_id in (${orderIds})
+					</#if>				 
+				 group by rawmaterial_type, rawmaterial_num, gravel_standard
+				union
+				select rawmaterial_type rawmaterialType, 
+						rawmaterial_num rawmaterialNum, 
+						null gravelStandard,
+						gold_class goldClass, 
+						null partsType, 
+						null partsStandard,
+						sum(dosing_quantity) totalQuantity 
+				  from [V_MZF_DOSING] 
+				 where rawmaterial_type = 'gold' 
+					<#if orderIds?exists> 
+						AND order_id in (${orderIds})
+					</#if>				 
+				 group by rawmaterial_type, rawmaterial_num, gold_class
+				union
+				select rawmaterial_type rawmaterialType, 
+						rawmaterial_num rawmaterialNum, 
+						null gravelStandard,
+						gold_class goldClass, 
+						parts_type partsType, 
+						parts_standard partsStandard,
+						sum(dosing_quantity) totalQuantity
+				  from [V_MZF_DOSING] 
+				 where rawmaterial_type = 'parts'
+					<#if orderIds?exists> 
+						AND order_id in (${orderIds})
+					</#if>				 
+				 group by rawmaterial_type, rawmaterial_num, gold_class, parts_type, parts_standard) x
+		]]>		 				
+   	</sql>
+</sqls> 

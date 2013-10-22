@@ -1,0 +1,23 @@
+2013-01-18
+1. alter view [V_MZF_BOM_DOSING];
+2. update com.zonrong.purchase.dosing.service.DosingService;
+
+2013-02-28
+1. alert view [V_MZF_RECEIVE_PRODUCT]. add FACTORY_ORDER_NUM
+2. update entity 商品收货登记明细信息，增加 厂家单号
+3. update module 收货登记
+
+2013-04-07
+1. create table MZF_OEM_MATERIAL
+2. add column OEM_MATERIAL_ID on table MZF_DOSING
+
+2013-06-23
+1. UPDATE ProductDemandCRUDService,修改主石大小的拼写错误
+2. update modeul 要货申请，修改主石大小的拼写错误
+3. 对表MZF_VENDOR_ORDER增加唯一约束（NUM）
+
+==============================================================================
+
+2013-09-25
+1. UPDATE V_MZF_PRODUCT_ORDER_DETAIL,增加委外/采购订单编号（VENDOR_ORDER_NUM）
+2. UPDATE V_MZF_PRODUCT_INVENTORY_FLOW

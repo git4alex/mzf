@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+	  
+<sqls namespace="customer">  
+   	<sql name="cusProductRecord" title="客户商品记录">
+		<![CDATA[
+			SELECT s.cus_id      cusId,
+			       s.num,
+			       s.cdate,
+			       bc.name       typeText,
+			       d.target_num  targetNum,
+			       d.target_name targetName
+			FROM   dbo.MZF_SALE s
+			       INNER JOIN dbo.MZF_SALE_DETAIL d ON s.id = d.sale_id AND d.type IN ( 'product', 'secondJewel' )
+			       LEFT JOIN sys_biz_code bc ON ( d.type = bc.value AND bc.type_code = 'saleDetailType' )
+			WHERE  1 = 1 and (s.is_returns is null or s.is_returns != 'true')
+				 <#if cusId?exists> AND s.cus_id = '${cusId}' </#if>	
+		]]>		 				
+   	</sql>
+   	<sql name="cusMaterialRecord" title="客户物料记录">
+		<![CDATA[
+		    SELECT s.cus_id          cusId,
+			       bc.name           typeText,
+			       d.target_id       targetId,
+			       d.target_num      targetNum,
+			       d.target_name     targetName,
+			       d.quantity,
+			       s.cdate,
+			       d.exchange_points exchangePoints,
+				   m.type targetType
+			FROM   dbo.MZF_SALE s
+				       INNER JOIN dbo.MZF_SALE_DETAIL d ON s.id = d.sale_id AND d.type = 'material'
+				       INNER JOIN dbo.MZF_MATERIAL m  ON (m.id = d.target_id AND m.type in ('VIP礼品','赠品'))
+				       LEFT JOIN sys_biz_code bc  ON ( d.type = bc.value   AND bc.type_code = 'saleDetailType' )
+			WHERE  1 = 1 and (s.is_returns is null or s.is_returns != 'true')
+ 				<#if cusId?exists> AND s.cus_id = '${cusId}' </#if>	
+		]]>		 				
+   	</sql>
+</sqls> 

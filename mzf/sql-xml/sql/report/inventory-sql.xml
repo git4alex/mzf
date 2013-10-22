@@ -1,0 +1,702 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<sqls namespace="inventory">
+   	<sql name="product, productOfMaintain" title="存货一口价明细表(即时)/存货批发价明细表(即时)/存货成本价明细表(即时), 维修存货明细表(即时)">
+		SELECT o.name              orgName,
+			   p.num 			   productNum,
+		       bc1.name            ptypeText,
+		       bc2.name            pkindText,
+			   bc3.name			   goldClassText,
+			   bc4.name			   diamondCleanText,
+		       bc5.name            diamondColorText,
+		       bc6.name            diamondCutText,
+		       bc7.name            inventoryStatusText,
+			   diamond_size		   diamondSize,
+		       1                   quantity,
+		       p.weight,
+		       p.cost_price        costPrice,
+			   p.promotion_price   promotionPrice,
+		       p.wholesale_price   wholesalePrice,
+		       p.retail_base_price retailBasePrice,
+		       s.showcase_name     showcaseName
+		 FROM mzf_inventory a
+				inner join v_mzf_product p ON ( a.target_type = 'product' AND a.target_id = p.id )
+				left join mzf_storage st on (a.storage_type = st.type)
+				left join sys_biz_code bc1 ON ( p.ptype = bc1.value and bc1.type_code = 'productType' )
+				left join sys_biz_code bc2 ON ( p.pkind = bc2.value and bc2.type_code = 'productKind' )
+				left join sys_biz_code bc3 ON ( p.gold_class = bc3.value and bc3.type_code = 'goldClass' )
+				left join sys_biz_code bc4 ON ( p.diamond_clean = bc4.value and bc4.type_code = 'diamondClean' )
+				left join sys_biz_code bc5 ON ( p.diamond_color = bc5.value and bc5.type_code = 'diamondColor' )
+				left join sys_biz_code bc6 ON ( p.diamond_cut = bc6.value and bc6.type_code = 'diamondCut' )
+				left join sys_biz_code bc7 ON ( a.status = bc7.value and bc7.type_code = 'inventoryStatus' )
+				LEFT JOIN sys_org o ON ( a.org_id = o.id )
+				left join v_mzf_showcase_product s on(s.product_id = p.id)
+		where 1 = 1
+   		<![CDATA[
+			<#if accessFilter?exists> ${accessFilter}</#if>
+			<#if orgName?exists>  AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if productNum?exists> AND p.num  LIKE '%${productNum}%' </#if>
+			<#if ptype?exists> AND p.PTYPE = '${ptype}' </#if>
+			<#if pkind?exists>  AND p.PKIND = '${pkind}'</#if>
+			<#if inventoryStatus?exists>  AND a.status = '${inventoryStatus}'</#if>
+			<#if goldClass?exists>  AND p.gold_class = '${goldClass}'</#if>
+			<#if weightStart?exists>  AND p.weight >= '${weightStart}' </#if>
+			<#if weightEnd?exists> AND p.weight <= '${weightEnd}'</#if>
+			<#if costPriceStart?exists> AND p.cost_price >= '${costPriceStart}' </#if>
+			<#if costPriceEnd?exists>  AND p.cost_price <= '${costPriceEnd}' </#if>
+			<#if wholesalePriceStart?exists>  AND p.wholesale_price >= '${wholesalePriceStart}' </#if>
+			<#if wholesalePriceEnd?exists> AND p.wholesale_price <= '${wholesalePriceEnd}' </#if>
+			<#if retailBasePriceStart?exists>  AND p.retail_base_price >= '${retailBasePriceStart}' </#if>
+			<#if retailBasePriceEnd?exists>  AND p.retail_base_price <= '${retailBasePriceEnd}' </#if>
+			<#if productStorageKind?exists>  AND st.kind = 'product' </#if>
+			<#if productOfMaintainStorageKind?exists>  AND st.kind = 'productOfMaintain' </#if>
+			<#if promotionPrice1?exists>  AND p.promotion_Price >= ${promotionPrice1} </#if>
+			<#if promotionPrice2?exists>  AND p.promotion_Price <= ${promotionPrice2} </#if>
+			<#if diamondSize1?exists>  AND p.diamond_size >= ${diamondSize1} </#if>
+			<#if diamondSize2?exists>  AND p.diamond_size <= ${diamondSize2} </#if>
+			<#if diamondCut?exists>  AND p.diamond_cut in (${diamondCut}) </#if>
+		    <#if diamondColor?exists> AND p.diamond_color in (${diamondColor}) </#if>
+			<#if diamondClean?exists>  AND p.diamond_clean in (${diamondClean}) </#if>
+		]]>
+				order by orgName, ptypeText, pkindText
+   	</sql>
+
+   	<sql name="secondProduct" title="旧饰存货明细表(即时)">
+		SELECT o.name              orgName,
+			   p.num 			   productNum,
+		       bc1.name            ptypeText,
+		       bc2.name            pkindText,
+		       1                   quantity,
+		       p.weight,
+		       p.final_price		finalPrice,
+		       p.WHOLESALE_PRICE     wholesalePrice,
+		       p.RETAIL_BASE_PRICE  retailBasePrice
+		 FROM mzf_inventory a
+				inner join mzf_second_product p ON ( a.target_type = 'secondProduct' AND a.target_id = p.id )
+				left join sys_biz_code bc1 ON ( p.ptype = bc1.value and bc1.type_code = 'productType' )
+				left join sys_biz_code bc2 ON ( p.pkind = bc2.value and bc2.type_code = 'productKind' )
+				LEFT JOIN sys_org o ON ( a.org_id = o.id )
+		where 1 = 1
+   		<![CDATA[
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists>  AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if productNum?exists>  AND p.num  LIKE '%${productNum}%' </#if>
+			<#if ptype?exists>  AND p.PTYPE = '${ptype}' </#if>
+			<#if pkind?exists>  AND p.PKIND = '${pkind}' </#if>
+			<#if weightStart?exists> AND p.weight >= '${weightStart}' </#if>
+			<#if weightEnd?exists> AND p.weight <= '${weightEnd}' </#if>
+			<#if finalPriceStart?exists>  AND p.final_price >= '${finalPriceStart}' </#if>
+			<#if finalPriceEnd?exists>  AND p.final_price <= '${finalPriceEnd}' </#if>
+		]]>
+				order by orgName, ptypeText, pkindText
+   	</sql>
+
+   	<sql name="secondGold" title="旧金存货报表(即时)">
+		SELECT o.name  orgName,
+			   b.num   secondGoldNum,
+			   bc.name goldClassText,
+			   quantity
+		  FROM mzf_inventory a
+				inner join mzf_rawmaterial b on (a.target_type = 'secondGold' and b.type = 'secondGold' and a.target_id = b.id)
+				left join sys_biz_code bc ON ( b.gold_class = bc.value AND bc.type_code = 'secondGoldClass' )
+				left join sys_org o ON (a.org_id = o.id)
+		 where 1 = 1
+   		<![CDATA[
+			<#if accessFilter?exists>  ${accessFilter} </#if>
+			<#if orgName?exists>  AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if secondGoldNum?exists>  AND  b.num  LIKE '%${secondGoldNum}%' </#if>
+			<#if goldClass?exists>  AND b.type = '${goldClass}' </#if>
+			<#if quantityStart?exists>  AND quantity >= '${quantityStart}' </#if>
+			<#if quantityEnd?exists>  AND quantity <= '${quantityEnd}' </#if>
+		]]>
+				order by orgName, secondGoldNum
+   	</sql>
+
+   	<sql name="material" title="物料存货明细表(即时)">
+		SELECT o.name  orgName,
+			   b.num   materialNum,
+			   b.name  materialName,
+			   bc.name materialTypeText,
+			   b.retail_price     retailPrice,
+			   b.retail_price * quantity totalRetailPrice,
+			   b.wholesale_price * quantity totalWholesalePrice,
+               b.wholesale_price wholeSalePrice,
+               b.COST   cost,
+			   quantity
+		  FROM mzf_inventory a
+				inner join mzf_material b ON ( a.target_type = 'material' AND a.target_id = b.id )
+				left join sys_biz_code bc ON ( b.type = bc.value AND bc.type_code = 'materialType' )
+				left join sys_org o ON (a.org_id = o.id)
+		 where 1 = 1
+   		<![CDATA[
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if materialNum?exists>  AND b.num  LIKE '%${materialNum}%' </#if>
+			<#if materialName?exists>  AND b.name  LIKE '%${materialName}%' </#if>
+			<#if type?exists>  AND b.type = '${type}' </#if>
+			<#if quantityStart?exists>  AND quantity >= '${quantityStart}' </#if>
+			<#if quantityEnd?exists>  AND quantity <= '${quantityEnd}' </#if>
+			<#if wholeSalePriceStart?exists>  AND b.wholesale_price >= '${wholeSalePriceStart}' </#if>
+			<#if wholeSalePriceEnd?exists>  AND b.wholesale_price <= '${wholeSalePriceEnd}' </#if>
+			<#if retailPriceStart?exists>  AND b.retail_price >= '${retailPriceStart}' </#if>
+			<#if retailPriceEnd?exists>  AND b.retail_price <= '${retailPriceEnd}' </#if>
+		]]>
+				order by orgName, materialTypeText, materialNum
+   	</sql>
+   	<sql name="materialOrg" title="物料存货明细表(总成本)">
+		SELECT o.name  orgName,
+			   b.num   materialNum,
+			   b.name  materialName,
+			   bc.name materialTypeText,
+			   b.retail_price     retailPrice,
+			   b.retail_price * quantity totalRetailPrice,
+               b.wholesale_price wholeSalePrice,
+               b.COST   cost,
+			   quantity,
+			   locked_quantity lockedQuantity
+		  FROM mzf_inventory a
+				inner join mzf_material b ON ( a.target_type = 'material' AND a.target_id = b.id )
+				left join sys_biz_code bc ON ( b.type = bc.value AND bc.type_code = 'materialType' )
+				left join sys_org o ON (a.org_id = o.id)
+		 where 1 = 1 and a.org_id = 1
+   		<![CDATA[
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND o.NAME LIKE '%${orgName}%' </#if>
+			<#if materialNum?exists>  AND b.num  LIKE '%${materialNum}%' </#if>
+			<#if materialName?exists>  AND b.name  LIKE '%${materialName}%' </#if>
+			<#if type?exists>  AND b.type = '${type}' </#if>
+			<#if quantityStart?exists>  AND quantity >= '${quantityStart}' </#if>
+			<#if quantityEnd?exists>  AND quantity <= '${quantityEnd}' </#if>
+			<#if wholeSalePriceStart?exists>  AND b.wholesale_price >= '${wholeSalePriceStart}' </#if>
+			<#if wholeSalePriceEnd?exists>  AND b.wholesale_price <= '${wholeSalePriceEnd}' </#if>
+			<#if retailPriceStart?exists>  AND b.retail_price >= '${retailPriceStart}' </#if>
+			<#if retailPriceEnd?exists>  AND b.retail_price <= '${retailPriceEnd}' </#if>
+		]]>
+				order by orgName, materialTypeText, materialNum
+   	</sql>
+
+   	<sql name="nakedDiamondStore" title="裸石库存明细表(即时)">
+		select
+		 r.org_name as orgName,
+		 r.num ,
+		 r.clean,
+		 r.cut,
+		 b.name  as shapeName,
+		 r.quantity,
+		 r.cost,
+		 r.karat_unit_price karatUnitPrice,
+         r.cid1,
+         b1.name color,
+         r.spec
+	   from  V_MZF_RAWMATERIAL_INVENTORY as r
+         left join sys_biz_code as b on (r.shape = b.value and b.type_code = 'diamondShape')
+         left join sys_biz_code as b1 on (r.color = b1.value and b1.type_code = 'diamondColor')
+       where r.type = 'nakedDiamond'
+   		<![CDATA[
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists> AND r.org_name  LIKE '%${orgName}%' </#if>
+			<#if num?exists> AND r.num LIKE '%${num}%' </#if>
+			<#if cid1?exists>  AND r.cid1 LIKE '%${cid1}%' </#if>
+			<#if shape?exists>  AND b.value = '${shape}' </#if>
+		    <#if cut?exists>  AND r.cut = '${cut}' </#if>
+			<#if clean?exists>  AND r.clean = '${clean}' </#if>
+			<#if color?exists>  AND b1.value = '${color}' </#if>
+		    <#if specStart?exists>  AND r.spec >= '${specStart}' </#if>
+			<#if specEnd?exists>  AND r.spec <= '${specEnd}' </#if>
+		    <#if karatUnitPriceStart?exists>  AND  r.karat_unit_price >= '${karatUnitPriceStart}' </#if>
+			<#if karatUnitPriceEnd?exists>   AND  r.karat_unit_price <= '${karatUnitPriceEnd}' </#if>
+		    <#if costStart?exists>  AND r.cost >= '${costStart}' </#if>
+			<#if costEnd?exists>  AND r.cost <= '${costEnd}' </#if>
+		]]>
+				order by orgName,r.num
+   	</sql>
+
+   	<sql name="goldStore" title="金料库存明细表(即时)">
+		select
+		 r.org_name as orgName,
+		 r.num ,
+		 r.quantity as weight,
+         r.cost,
+         c.name as goldClass
+	   from  V_MZF_RAWMATERIAL_INVENTORY as r
+	   left join sys_biz_code as c on(c.value = r.gold_class and c.type_code = 'goldClass')
+       where r.type = 'gold'
+   		<![CDATA[
+			 <#if accessFilter?exists>  ${accessFilter} </#if>
+			 <#if orgName?exists>  AND r.org_name LIKE '%${orgName}%' </#if>
+			 <#if num?exists>  AND r.num LIKE '%${num}%' </#if>
+			 <#if goldClass?exists>  AND c.value = '${goldClass}' </#if>
+			 <#if weightStart?exists>  AND r.quantity >= '${weightStart}' </#if>
+			 <#if weightEnd?exists>  AND r.quantity <= '${weightEnd}' </#if>
+			 <#if costStart?exists>  AND r.cost >= '${costStart}' </#if>
+			 <#if costEnd?exists>  AND r.cost <= '${costEnd}' </#if>
+		]]>
+				order by orgName,r.num
+   	</sql>
+
+   	   	<sql name="partsStore" title="配件库存明细表(即时)">
+		select
+		 r.org_name as orgName,
+		 r.num ,
+		 r.quantity,
+         r.cost,
+         c1.name as partsStandard,
+         r.weight,
+         c.name as goldClass,
+         c2.name partsType
+	   from  V_MZF_RAWMATERIAL_INVENTORY as r
+	   left join sys_biz_code as c on(c.value = r.gold_class and c.type_code = 'goldClass')
+       left join sys_biz_code as c1 on(c1.value = r.PARTS_STANDARD and c1.type_code = 'partsStandard')
+       left join sys_biz_code as c2 on(c2.value = r.PARTS_TYPE and c2.type_code = 'partsType')
+       where r.type = 'parts'
+   		<![CDATA[
+			<#if accessFilter?exists> ${accessFilter} </#if>
+			<#if orgName?exists>  AND r.org_name LIKE '%${orgName}%' </#if>
+			<#if num?exists>  AND r.num LIKE '%${num}%' </#if>
+			<#if goldClass?exists>  AND c.value = '${goldClass}' </#if>
+			<#if partsStandard?exists>  AND  c1.value = '${partsStandard}' </#if>
+			<#if partsType?exists>  AND  c2.value = '${partsType}' </#if>
+			<#if weightStart?exists> AND  r.weight >= '${weightStart}' </#if>
+			<#if weightEnd?exists>  AND  r.weight <= '${weightEnd}' </#if>
+			<#if quantityStart?exists>  AND  r.quantity >= '${quantityStart}' </#if>
+			<#if quantityEnd?exists>  AND  r.quantity <= '${quantityEnd}' </#if>
+			<#if costStart?exists> AND  r.cost >= '${costStart}' </#if>
+			<#if costEnd?exists>  AND  r.cost <= '${costEnd}' </#if>
+		]]>
+				order by orgName,r.num
+   	</sql>
+
+   	 	<sql name="gravelStore" title="碎石库存明细表(即时)">
+		select
+		 r.org_name as orgName,
+		 r.num ,
+		 r.quantity,
+         r.karat_unit_price karatUnitPrice,
+         r.cost,
+         c1.name as gravelStandard,
+         r.weight
+	   from  V_MZF_RAWMATERIAL_INVENTORY as r
+	     left join sys_biz_code as c1 on(c1.value = r.GRAVEL_STANDARD and c1.type_code = 'gravelStandard')
+       where r.type = 'gravel'
+   		<![CDATA[
+			<#if accessFilter?exists>  ${accessFilter} </#if>
+			<#if orgName?exists>  AND  r.org_name LIKE '%${orgName}%' </#if>
+			<#if num?exists>  AND  r.num LIKE '%${num}%' </#if>
+			<#if gravelStandard?exists>  AND  c1.value = '${gravelStandard}' </#if>
+			<#if weightStart?exists>  AND   r.weight >= '${weightStart}' </#if>
+			<#if weightEnd?exists>  AND   r.weight <= '${weightEnd}' </#if>
+			<#if quantityStart?exists>  AND   r.quantity >= '${quantityStart}' </#if>
+			<#if quantityEnd?exists>  AND   r.quantity <= '${quantityEnd}' </#if>
+			<#if karatUnitPriceStart?exists>   AND   r.karat_unit_price >= '${karatUnitPriceStart}' </#if>
+			<#if karatUnitPriceEnd?exists>  AND   r.karat_unit_price <= '${karatUnitPriceEnd}' </#if>
+			<#if costStart?exists>  AND    r.cost >= '${costStart}' </#if>
+			<#if costEnd?exists>  AND    r.cost <= '${costEnd}' </#if>
+
+		]]>
+				order by orgName,r.num
+   	</sql>
+   	<sql name="productHistoryInventory" title="商品历史库存" params="tableDate!,date!">
+   	  <![CDATA[
+   	   select
+   	          o.name as orgName,
+			  p.num as productNum,
+			  p.weight,
+			  1 as quantity,
+			  bc1.name as pkindText,
+			  bc2.name as ptypeText,
+			  h.RETAIL_BASE_PRICE as  retailBasePrice,
+			  h.WHOLESALE_PRICE  as   wholesalePrice,
+			  h.COST_PRICE as costPrice,
+			  p.gold_class as goldClass,
+			  p.DIAMOND_SIZE as diamondSize,
+			  p.DIAMOND_COLOR as diamondColor,
+			  p.DIAMOND_CLEAN as diamondClean,
+			  p.DIAMOND_CUT as diamondCut,
+			  p.PROMOTION_PRICE as promotionPrice
+      from HIST_PRODUCT_INVENTORY_BANK_${tableDate} as h
+		      left join mzf_product p on(p.id = h.product_id)
+			  left join sys_org o on(o.id = h.org_id)
+			  left join sys_biz_code bc1 on(bc1.type_code = 'productKind' and p.pkind = bc1.value)
+			  left join sys_biz_code bc2 on(bc2.type_code = 'productType' and p.ptype = bc2.value)
+	  where 1=1
+			   AND convert(varchar(64),h.CDATE,23) = '${date}'
+		       <#if accessFilter?exists> ${accessFilter} </#if>
+			   <#if orgName?exists> AND o.name LIKE '%${orgName}%' </#if>
+			   <#if ptype?exists> AND p.PTYPE = '${ptype}' </#if>
+			   <#if pkind?exists>  AND p.PKIND = ${pkind} </#if>
+			   <#if weight1?exists> AND p.weight >= ${weight1} </#if>
+			   <#if weight2?exists> AND p.weight <= ${weight2} </#if>
+	 order by orgName, ptypeText, pkindText
+   	  ]]>
+   	</sql>
+
+
+   	<sql name="nakedDiamondWarehouse" title="裸石入库明细表" params="vendorName, inventoryDate1, inventoryDate2, num, cid1, inventoryDate1, inventoryDate2, shape, color, clean, cut">
+   	  <![CDATA[
+		select vo.vendor_name vendorName,
+				case when vo.type = 'splitRawmaterial' then '拆旧'
+					when vo.type = 'rawmaterial' then '采购' end source,
+				convert(varchar, a.cdate, 23) inventoryDate,
+				r.num, r.cid1, r.spec diamondSize, r.cost,
+				bc1.name diamondShapeText,
+				bc2.name diamondColorText,
+				bc3.name diamondCleanText,
+				bc4.name diamondCutText
+		  from (select *
+				  from mzf_inventory_flow
+				 where storage_type = 'rawmaterial_nakedDiamond' and
+						storage_type = 'rawmaterial_nakedDiamond' and biz_type = 'register' and
+						type = 'warehouse' and target_type = 'rawmaterial') a
+				inner join
+				(select *
+				   from mzf_rawmaterial
+				  where type = 'nakedDiamond') r on (a.target_id = r.id)
+				left join sys_biz_code bc1 on (bc1.value = r.shape and bc1.type_code = 'diamondShape')
+				left join sys_biz_code bc2 on (bc2.value = r.color and bc2.type_code = 'diamondColor')
+				left join sys_biz_code bc3 on (bc3.value = r.clean and bc3.type_code = 'diamondClean')
+				left join sys_biz_code bc4 on (bc4.value = r.cut and bc4.type_code = 'diamondCut')
+				left join mzf_rawmaterial_order_detail d on (d.type = 'nakedDiamond' and d.rawmaterial_id = r.id)
+				left join v_mzf_vendor_order vo on (d.order_id = vo.id)
+		 where 1 = 1
+			  <#if vendorName?exists> AND vo.vendor_name like '%${vendorName}%' </#if>
+			  <#if inventoryDate1?exists> AND datediff(dd, a.cdate, '${inventoryDate1}') <= 0  </#if>
+			  <#if inventoryDate2?exists> AND datediff(dd, a.cdate, '${inventoryDate2}') >= 0  </#if>
+			  <#if num?exists> AND r.num like '%${num}%' </#if>
+			  <#if cid1?exists> AND r.cid1 like '%${cid1}%' </#if>
+			  <#if diamondSize1?exists> AND r.spec >= '${diamondSize1}' </#if>
+			  <#if diamondSize2?exists> AND r.spec <= '${diamondSize2}' </#if>
+			  <#if shape?exists> AND r.shape = '${shape}' </#if>
+			  <#if color?exists> AND r.color = '${color}' </#if>
+			  <#if clean?exists> AND r.clean = '${clean}' </#if>
+			  <#if cut?exists> AND r.cut = '${cut}' </#if>
+		  order by a.cdate desc
+   	  ]]>
+   	</sql>
+
+   	<sql name="nakedDiamondDelivery" title="裸石出库明细表" params="vendorName, inventoryDate1, inventoryDate2, num, cid1, inventoryDate1, inventoryDate2, shape, color, clean, cut">
+   	  <![CDATA[
+		select vo.vendor_name vendorName,
+				convert(varchar, a.cdate, 23) inventoryDate,
+				r.num, r.cid1, r.spec diamondSize, r.cost,
+				bc1.name diamondShapeText,
+				bc2.name diamondColorText,
+				bc3.name diamondCleanText,
+				bc4.name diamondCutText
+		  from (select *
+				  from mzf_inventory_flow
+				 where storage_type = 'rawmaterial_nakedDiamond' and
+						biz_type = 'OEM' and
+						type = 'delivery' and target_type = 'rawmaterial') a
+				inner join
+				(select *
+				   from mzf_rawmaterial
+				  where type = 'nakedDiamond') r on (a.target_id = r.id)
+				left join sys_biz_code bc1 on (bc1.value = r.shape and bc1.type_code = 'diamondShape')
+				left join sys_biz_code bc2 on (bc2.value = r.color and bc2.type_code = 'diamondColor')
+				left join sys_biz_code bc3 on (bc3.value = r.clean and bc3.type_code = 'diamondClean')
+				left join sys_biz_code bc4 on (bc4.value = r.cut and bc4.type_code = 'diamondCut')
+				left join mzf_dosing do on (do.rawmaterial_id = r.id)
+				left join mzf_product_order_detail d on (do.detail_id = d.id)
+				left join v_mzf_vendor_order vo on (d.order_id = vo.id)
+		 where 1 = 1
+			  <#if vendorName?exists> AND vo.vendor_name like '%${vendorName}%' </#if>
+			  <#if inventoryDate1?exists> AND datediff(dd, a.cdate, '${inventoryDate1}') <= 0  </#if>
+			  <#if inventoryDate2?exists> AND datediff(dd, a.cdate, '${inventoryDate2}') >= 0  </#if>
+			  <#if num?exists> AND r.num like '%${num}%' </#if>
+			  <#if cid1?exists> AND r.cid1 like '%${cid1}%' </#if>
+			  <#if diamondSize1?exists> AND r.spec >= '${diamondSize1}' </#if>
+			  <#if diamondSize2?exists> AND r.spec <= '${diamondSize2}' </#if>
+			  <#if shape?exists> AND r.shape = '${shape}' </#if>
+			  <#if color?exists> AND r.color = '${color}' </#if>
+			  <#if clean?exists> AND r.clean = '${clean}' </#if>
+			  <#if cut?exists> AND r.cut = '${cut}' </#if>
+		  order by a.cdate desc
+   	  ]]>
+   	</sql>
+
+   	<sql name="stockMovementReportForProduct" title="钻石商品进销存报表" params="vendorName, inventoryDate1, inventoryDate2, num, cid1, inventoryDate1, inventoryDate2, shape, color, clean, cut">
+   	  <![CDATA[
+		select o.name orgName,
+				bc1.name ptypeText,
+				bc2.name pkindText,
+				<#if stTable?exists>
+				st.quantity stQuantity,
+				st.costPrice stCostPrice,
+				st.wholesalePrice stWholesalePrice,
+				st.retailBasePrice stRetailBasePrice,
+				<#else>
+				null stQuantity,
+				null stCostPrice,
+				null stWholesalePrice,
+				null stRetailBasePrice,
+				</#if>
+
+				warehouse.quantity warehouseQuantity,
+				warehouse.costPrice warehouseCostPrice,
+				warehouse.wholesalePrice warehouseWholesalePrice,
+				warehouse.retailBasePrice warehouseRetailBasePrice,
+
+				delivery.quantity deliveryQuantity,
+				delivery.costPrice deliveryCostPrice,
+				delivery.wholesalePrice deliveryWholesalePrice,
+				delivery.retailBasePrice deliveryRetailBasePrice,
+
+				<#if stTable?exists>
+				st.quantity + warehouse.quantity - delivery.quantity rightQuantity,
+				st.costPrice + warehouse.costPrice - delivery.costPrice rightCostPrice,
+				st.wholesalePrice + warehouse.wholesalePrice - delivery.wholesalePrice rightWholesalePrice,
+				st.retailBasePrice + warehouse.retailBasePrice - delivery.retailBasePrice rightRetailBasePrice,
+				<#else>
+				null rightQuantity,
+				null rightCostPrice,
+				null rightWholesalePrice,
+				null rightRetailBasePrice,
+				</#if>
+
+				<#if edTable?exists>
+				ed.quantity edQuantity,
+				ed.costPrice edCostPrice,
+				ed.wholesalePrice edWholesalePrice,
+				ed.retailBasePrice edRetailBasePrice
+				<#else>
+				null edQuantity,
+				null edCostPrice,
+				null edWholesalePrice,
+				null edRetailBasePrice
+				</#if>
+		from sys_org o
+			  inner join (select ptype, pkind from mzf_product where len(pkind) > 0 group by ptype, pkind) p on (1 = 1 and o.type in ('HQ', 'store'))
+			  <#if stTable?exists>
+			  left join (select org_id orgId, pkind, ptype,
+								count(*) quantity,
+								sum(isnull(p.cost_price, 0)) costPrice,
+								sum(isnull(p.wholesale_price, 0)) wholesalePrice,
+								sum(isnull(p.retail_base_price, 0)) retailBasePrice
+						  from ${stTable} a
+								inner join mzf_product p on (a.product_id = p.id)
+						 where datediff(dd, cdate, '${stDate}') = 0
+						 group by org_id, pkind, ptype) st on (o.id = st.orgId and p.ptype = st.ptype and p.pkind = st.pkind)
+			  </#if>
+
+			  left join (select org_id orgId, pkind, ptype,
+								count(*) quantity,
+								sum(isnull(p.cost_price, 0)) costPrice,
+								sum(isnull(p.wholesale_price, 0)) wholesalePrice,
+								sum(isnull(p.retail_base_price, 0)) retailBasePrice
+						  from mzf_inventory_flow f inner join mzf_product p
+								on (type = 'warehouse' and f.target_type = 'product' and f.target_id = p.id
+									and f.storage_type in (select type from mzf_storage where kind = 'product'))
+						 where datediff(mm, cdate, '${edDate}') = 0 and datediff(dd, cdate, '${edDate}') >= 0  --日期范围
+						 group by org_id, p.ptype, p.pkind) warehouse on (o.id = warehouse.orgId and p.ptype = warehouse.ptype and p.pkind = warehouse.pkind)
+			  left join (select org_id orgId, pkind, ptype,
+								count(*) quantity,
+								sum(isnull(p.cost_price, 0)) costPrice,
+								sum(isnull(p.wholesale_price, 0)) wholesalePrice,
+								sum(isnull(p.retail_base_price, 0)) retailBasePrice
+						  from mzf_inventory_flow f inner join mzf_product p
+								on (type = 'delivery' and f.target_type = 'product' and f.target_id = p.id
+									and f.storage_type in (select type from mzf_storage where kind = 'product'))
+						 where datediff(mm, cdate, '${edDate}') = 0 and datediff(dd, cdate, '${edDate}') >= 0  --日期范围
+						 group by org_id, p.ptype, p.pkind) delivery on (o.id = delivery.orgId and p.ptype = delivery.ptype and p.pkind = delivery.pkind)
+
+			  <#if edTable?exists>
+			  left join (select org_id orgId, pkind, ptype,
+								count(*) quantity,
+								sum(isnull(p.cost_price, 0)) costPrice,
+								sum(isnull(p.wholesale_price, 0)) wholesalePrice,
+								sum(isnull(p.retail_base_price, 0)) retailBasePrice
+						  from ${edTable} a
+								inner join mzf_product p on (a.product_id = p.id)
+						 where datediff(dd, cdate, '${edDate}') = 0
+						 group by org_id, pkind, ptype) ed on (o.id = ed.orgId and p.ptype = ed.ptype and p.pkind = ed.pkind)
+			  </#if>
+			  left join sys_biz_code bc1 on (bc1.value = p.ptype and bc1.type_code = 'productType')
+			  left join sys_biz_code bc2 on (bc2.value = p.pkind and bc2.type_code = 'productKind')
+		where o.code like '${orgCode}%'
+			<#if orgName?exists> AND o.name like '%${orgName}%' </#if>
+			<#if ptypes?exists> AND p.ptype in (${ptypes}) </#if>
+		    <#if pkinds?exists> AND p.pkind in (${pkinds}) </#if>
+		order by o.id, p.pkind asc
+   	  ]]>
+   	</sql>
+
+    <sql name = "inventoryReport" title = "库存统计" params="orgName,ptype">
+   	  <![CDATA[
+   	   select o.* from (
+		       select v.org_name as orgName,
+			   case
+			   when v.INVENTORY_STATUS = 'onStorage' then '在库'
+			   else '在途(调出)'
+			   end  inventoryStatus,
+		       o.name ptypeText,
+		       o.value ptype,
+               s.code,
+		       sum(p.WHOLESALE_PRICE) as  wholesalePrice
+		from v_mzf_product_inventory v
+		       left join mzf_product p on(v.id = p.id)
+		       left join sys_biz_code o on(o.value = v.ptype and o.type_code = 'productType')
+               left join sys_org s on(s.name = v.org_name)
+        where v.storage_type != 'product_maintain'
+		group by v.org_name,v.ptype,v.INVENTORY_STATUS,o.name,o.value,s.code
+
+		union
+
+		select
+		       d.org_name orgName,
+		       '在途(调入)' as inventoryStatus,
+		       o.name ptypeText,
+		       o.value ptype,
+               s.code,
+		       sum(p.wholesale_price)
+		from V_MZF_TRANSFER t
+		       left join V_MZF_DEMAND d on (d.id = t.DEMAND_ID)
+		       left join mzf_product p on(d.product_num = p.num)
+		       left join sys_biz_code o on (o.value = d.ptype and o.type_code = 'productType')
+               left join sys_org s on(s.name = d.org_name)
+		where t.status = 'waitReceive' and  t.DEMAND_ID is not null and  t.target_type = 'product'
+		group by d.org_name,d.ptype,o.name,o.value,s.code
+       )   o
+      where 1=1
+           <#if accessFilter?exists> ${accessFilter} </#if>
+           <#if orgName?exists> AND o.orgName like '%${orgName}%' </#if>
+           <#if ptypeText?exists> AND o.ptype = '${ptypeText}' </#if>
+           <#if inventoryStatus?exists> AND o.inventoryStatus like '%${inventoryStatus}%' </#if>
+      order by orgName,inventoryStatus
+
+
+   	  ]]>
+   	</sql>
+   	<sql name = "inventoryOrgReport" title = "库存统计(门店)" params="orgName,ptype">
+   	  <![CDATA[
+   	   select o.* from (
+		      select v.org_name as orgName,
+			   case
+			   when v.INVENTORY_STATUS = 'onStorage' then '在库'
+			   else '在途(调出)'
+			   end  inventoryStatus,
+               s.code,
+		       sum(p.WHOLESALE_PRICE) as  wholesalePrice
+		from v_mzf_product_inventory v
+		       left join mzf_product p on(v.id = p.id)
+		       left join sys_biz_code o on(o.value = v.ptype and o.type_code = 'productType')
+               left join sys_org s on(s.name = v.org_name)
+		group by v.org_name,v.INVENTORY_STATUS,s.code
+
+		union
+
+		select
+		       d.org_name orgName,
+		       '在途(调入)' as inventoryStatus,
+               s.code,
+		       sum(p.wholesale_price)
+		from V_MZF_TRANSFER t
+		       left join V_MZF_DEMAND d on (d.id = t.DEMAND_ID)
+		       left join mzf_product p on(d.product_num = p.num)
+		       left join sys_biz_code o on (o.value = d.ptype and o.type_code = 'productType')
+               left join sys_org s on(s.name = d.org_name)
+		where t.status = 'waitReceive' and  t.DEMAND_ID is not null and  t.target_type = 'product'
+		group by d.org_name,s.code
+       )   o
+        where 1=1
+        <#if accessFilter?exists> ${accessFilter} </#if>
+
+      order by orgName
+
+
+   	  ]]>
+   	</sql>
+   	<sql name = "diamondMovementReport" title="裸石进销存报表（含碎石）" params="orgName,gravelStandard,year,month">
+   	   <![CDATA[
+   	    select o.name orgName,
+				p.GRAVEL_STANDARD as gravelStandard,
+				bc.name as typeText,
+				<#if stTable?exists>
+				st.quantity stQuantity,
+				st.cost stCost,
+				st.weight stWeight,
+				<#else>
+				null stQuantity,
+				null stCost,
+				null stWeight,
+				</#if>
+
+				warehouse.quantity warehouseQuantity,
+				warehouse.cost warehouseCost,
+				warehouse.weight warehouseWeight,
+
+				delivery.quantity deliveryQuantity,
+				delivery.cost deliveryCost,
+				delivery.weight deliveryWeight,
+
+				<#if stTable?exists>
+				st.quantity + warehouse.quantity - delivery.quantity rightQuantity,
+				st.cost + warehouse.cost - delivery.cost rightCost,
+				st.weight + warehouse.weight - delivery.weight rightWeight,
+				<#else>
+				null rightQuantity,
+				null rightCost,
+				null rightWeight,
+				</#if>
+
+				<#if edTable?exists>
+				ed.quantity edQuantity,
+				ed.cost edCost,
+				ed.weight edWeight
+				<#else>
+				null edQuantity,
+				null edCost,
+				null edWeight
+				</#if>
+		from sys_org o
+			  inner join (select GRAVEL_STANDARD,type from mzf_rawmaterial where type in('gravel','nakedDiamond') group by GRAVEL_STANDARD,type) p on (1 = 1 and o.type in ('HQ', 'store'))
+			  <#if stTable?exists>
+			  left join (select h.org_id orgId,r.GRAVEL_STANDARD,h.type,
+						        sum(isnull(h.quantity,0)) as quantity,
+						        sum(isnull(h.weight,0)) as weight,
+						        sum(isnull(h.cost,0)) as cost
+						from ${stTable} h
+							inner join mzf_rawmaterial r on(r.id = h.id)
+						where datediff(dd, cdate, '${stDate}') = 0
+						group by h.org_id,r.GRAVEL_STANDARD,h.type) st on (o.id = st.orgId and p.GRAVEL_STANDARD = st.GRAVEL_STANDARD and st.type = p.type)
+			  </#if>
+
+			  left join (select f.org_id orgId,r.GRAVEL_STANDARD,r.type,
+								 sum(isnull(f.quantity,0)) as quantity,
+								 sum(isnull(r.weight,0)) as weight,
+								 sum(isnull(r.cost,0)) as cost
+						from mzf_inventory_flow as f
+								inner join mzf_rawmaterial r on(f.type = 'warehouse' and f.target_type = 'rawmaterial' and f.target_id = r.id and r.type in('gravel','nakedDiamond')
+                                and f.storage_type in('rawmaterial_gravel','rawmaterial_nakedDiamond'))
+                        where datediff(mm, cdate, '${edDate}') = 0 and datediff(dd, cdate, '${edDate}') >= 0  --日期范围
+							    group by r.GRAVEL_STANDARD,f.org_id,r.type) warehouse on (o.id = warehouse.orgId and p.GRAVEL_STANDARD = warehouse.GRAVEL_STANDARD and p.type = warehouse.type)
+			  left join (select f.org_id orgId,r.GRAVEL_STANDARD,r.type,
+								 sum(isnull(f.quantity,0)) as quantity,
+								 sum(isnull(r.weight,0)) as weight,
+								 sum(isnull(r.cost,0)) as cost
+						from mzf_inventory_flow as f
+								inner join mzf_rawmaterial r on(f.type = 'delivery' and f.target_type = 'rawmaterial' and f.target_id = r.id and r.type in('gravel','nakedDiamond')
+                                and f.storage_type in('rawmaterial_gravel','rawmaterial_nakedDiamond'))
+                        where datediff(mm, cdate, '${edDate}') = 0 and datediff(dd, cdate, '${edDate}') >= 0  --日期范围
+							    group by r.GRAVEL_STANDARD,f.org_id,r.type) delivery on (o.id = delivery.orgId and p.GRAVEL_STANDARD = delivery.GRAVEL_STANDARD and p.type = delivery.type)
+
+			  <#if edTable?exists>
+			  left join (select a.org_id orgId,r.GRAVEL_STANDARD,a.type,
+						       sum(isnull(a.quantity,0)) as quantity,
+						       sum(isnull(a.weight,0)) as weight,
+						       sum(isnull(a.cost,0)) as cost
+						  from ${edTable} a
+								inner join mzf_rawmaterial r  on(r.id = a.id)
+						 where datediff(dd, cdate, '${edDate}') = 0
+						 group by a.org_id,r.GRAVEL_STANDARD,a.type) ed on (o.id = ed.orgId and p.GRAVEL_STANDARD = ed.GRAVEL_STANDARD and ed.type = p.type)
+			  </#if>
+			   left join sys_biz_code bc on(p.type = bc.value and bc.type_code = 'rowmaterialType')
+		where o.code like '${orgCode}%'
+			<#if orgName?exists> AND o.name like '%${orgName}%' </#if>
+			<#if gravelStandard?exists> AND p.gravel_Standard = '${gravelStandard}' </#if>
+		order by o.id, p.GRAVEL_STANDARD asc
+
+
+   	   ]]>
+   	</sql>
+
+</sqls>
