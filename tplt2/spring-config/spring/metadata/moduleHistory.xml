@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">	
+
+	<bean id="moduleHistory" class="com.zonrong.metadata.EntityMetadata">
+		<property name="pkCode" value="id"/>	
+		<property name="name" value="模块历史"/>
+		<property name="tableName" value="SYS_MODULE_HISTORY"/>
+		<property name="fieldList">
+			<list>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="主键"/>
+					<property name="code" value="id"/>
+					<property name="columnName" value="id"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="true"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="登录名"/>
+					<property name="code" value="name"/>
+					<property name="columnName" value="NAME"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="config"/>
+					<property name="code" value="config"/>
+					<property name="columnName" value="CONFIG"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="4000"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="模块ID"/>
+					<property name="code" value="moduleId"/>
+					<property name="columnName" value="MODULE_ID"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="128"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>															
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="category"/>
+					<property name="code" value="category"/>
+					<property name="columnName" value="CATEGORY"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="128"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="xdsConfig"/>
+					<property name="code" value="xdsConfig"/>
+					<property name="columnName" value="XDS_CONFIG"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="4000"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="自动保存"/>
+					<property name="code" value="autoSave"/>
+					<property name="columnName" value="AUTO_SAVE"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="修改时间"/>
+					<property name="code" value="updateTime"/>
+					<property name="columnName" value="UPDATE_TIME"/>
+					<property name="dataType" value="timestamp"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="dbId"/>
+					<property name="code" value="dbId"/>
+					<property name="columnName" value="DB_ID"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>												
+			</list>
+		</property>
+	</bean>
+</beans>

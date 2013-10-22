@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+           http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd"
+       default-autowire="no" default-lazy-init="true">
+
+    <bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+          destroy-method="close" p:driverClassName="${jdbc.driver}" p:url="${jdbc.url}" p:username="${jdbc.username}"
+          p:password="${jdbc.password}" p:maxActive="${maxActive}" p:maxWait="${maxWait}" p:maxIdle="${maxIdle}"
+          p:testOnBorrow="${testOnBorrow}" p:validationQuery="${validationQuery}" p:removeAbandoned="${removeAbandoned}"
+          p:removeAbandonedTimeout="${removeAbandonedTimeout}" p:logAbandoned="${logAbandoned}"/>
+
+
+    <bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
+        <property name="dataSource" ref="dataSource"/>
+    </bean>
+
+    <tx:advice id="txAdvice" transaction-manager="txManager">
+        <tx:attributes>
+            <tx:method name="create*" rollback-for="Exception"/>
+            <tx:method name="update*" rollback-for="Exception"/>
+            <tx:method name="set*" rollback-for="Exception"/>
+            <tx:method name="delete*" rollback-for="Exception"/>
+            <tx:method name="clear*" rollback-for="Exception"/>
+            <tx:method name="move*" rollback-for="Exception"/>
+            <tx:method name="do*" rollback-for="Exception"/>
+        </tx:attributes>
+    </tx:advice>
+
+    <aop:config proxy-target-class="true">
+        <aop:advisor
+                pointcut="execution(* com.zonrong..*.service..*Service.*(..))"
+                advice-ref="txAdvice"/>
+        <aop:advisor
+                advice-ref="entityOperateInterceptor"
+                pointcut="execution(* com.zonrong.entity.service.EntityService.*(..))"/>
+    </aop:config>
+</beans>

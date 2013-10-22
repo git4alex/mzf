@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">		
+	 	
+	<bean id="entity" class="com.zonrong.metadata.EntityMetadata">
+		<property name="pkCode" value="id"/>
+		<property name="name" value="实体元数据"/>
+		<property name="tableName" value="MD_ENTITY"/>
+		<property name="fieldList">
+			<list>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="主键"/>
+					<property name="code" value="id"/>
+					<property name="columnName" value="id"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="true"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="父键"/>
+					<property name="code" value="pid"/>
+					<property name="columnName" value="pid"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="名称"/>
+					<property name="code" value="text"/>
+					<property name="columnName" value="name"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="名称"/>
+					<property name="code" value="name"/>
+					<property name="columnName" value="name"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="编码"/>
+					<property name="code" value="code"/>
+					<property name="columnName" value="code"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="编码别名"/>
+					<property name="code" value="aliasCode"/>
+					<property name="columnName" value="alias_code"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="表名"/>
+					<property name="code" value="tableName"/>
+					<property name="columnName" value="table_name"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="删除标记"/>
+					<property name="code" value="delField"/>
+					<property name="columnName" value="del_field"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>																	
+			</list>
+		</property>
+	</bean>
+</beans>

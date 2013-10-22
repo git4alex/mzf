@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd">	
+
+	<bean id="user" class="com.zonrong.metadata.EntityMetadata">
+		<property name="pkCode" value="id"/>	
+		<property name="name" value="用户信息"/>
+		<property name="tableName" value="SYS_USER"/>
+		<property name="fieldList">
+			<list>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="主键"/>
+					<property name="code" value="id"/>
+					<property name="columnName" value="id"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="true"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="登录名"/>
+					<property name="code" value="loginName"/>
+					<property name="columnName" value="login_name"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="32"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="密码"/>
+					<property name="code" value="password"/>
+					<property name="columnName" value="password"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="32"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="用户名"/>
+					<property name="code" value="userName"/>
+					<property name="columnName" value="user_name"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="32"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>															
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="第一次登录时间"/>
+					<property name="code" value="firstLoginDate"/>
+					<property name="columnName" value="first_login_date"/>
+					<property name="dataType" value="timestamp"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>																											
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="最后登录时间"/>
+					<property name="code" value="lastLgoinDate"/>
+					<property name="columnName" value="last_login_date"/>
+					<property name="dataType" value="timestamp"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="状态"/>
+					<property name="code" value="state"/>
+					<property name="columnName" value="state"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>	
+					
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="头像"/>
+					<property name="code" value="photo"/>
+					<property name="columnName" value="photo"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="32"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="头像名称"/>
+					<property name="code" value="photoName"/>
+					<property name="columnName" value="photo_name"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="32"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>										
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="是否管理者"/>
+					<property name="code" value="isManager"/>
+					<property name="columnName" value="is_manager"/>
+					<property name="dataType" value="boolean"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="部门ID"/>
+					<property name="code" value="orgId"/>
+					<property name="columnName" value="org_Id"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="生日"/>
+					<property name="code" value="birthday"/>
+					<property name="columnName" value="birthday"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="年龄"/>
+					<property name="code" value="age"/>
+					<property name="columnName" value="age"/>
+					<property name="dataType" value="integer"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="性别"/>
+					<property name="code" value="sex"/>
+					<property name="columnName" value="sex"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+								
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="地址"/>
+					<property name="code" value="address"/>
+					<property name="columnName" value="address"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="1024"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="电话"/>
+					<property name="code" value="tel"/>
+					<property name="columnName" value="tel"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="手机"/>
+					<property name="code" value="mobile"/>
+					<property name="columnName" value="mobile"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>				
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="身份证"/>
+					<property name="code" value="idCard"/>
+					<property name="columnName" value="id_card"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="Email"/>
+					<property name="code" value="email"/>
+					<property name="columnName" value="email"/>
+					<property name="dataType" value="string"/>
+					<property name="length" value="64"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="true"/>
+				</bean>																
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="创建时间"/>
+					<property name="code" value="cdate"/>
+					<property name="columnName" value="cdate"/>
+					<property name="dataType" value="timestamp"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>																											
+				<bean class="com.zonrong.metadata.FieldMetadata">
+					<property name="name" value="修改时间"/>
+					<property name="code" value="mdate"/>
+					<property name="columnName" value="mdate"/>
+					<property name="dataType" value="timestamp"/>
+					<property name="primaryKey" value="false"/>
+					<property name="mandatory" value="false"/>
+				</bean>																							
+			</list>
+		</property>
+	</bean>
+</beans>
