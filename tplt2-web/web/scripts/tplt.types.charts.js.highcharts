@@ -1,0 +1,263 @@
+Ext.ns("xds.chart");
+Ext.ns("od.chart");
+
+xds.types.ChartBar = Ext.extend(xds.types.BoxComponent, {
+	cid : 'chartbar',
+	iconCls : 'icon-chart-bar',
+	category : "Chart",
+	defaultName : "&lt;BarChart&gt;",
+	text : "BarChart",
+	dtype : "xdchartbar",
+	xtype : 'chartbar',
+	xcls : "org.delta.chart.Bar",
+	naming : "ChartBar",
+	isContainer : false,
+	bindable: true,
+	transformGroup: "chart",
+	layoutable : false,
+	enableFlyout : false,
+	defaultConfig : {
+		
+	},
+	initConfig:function(d,b){
+		d.width=500;
+		d.height=350;
+	},
+	xdConfigs: [{
+        name: "xField",
+        group: "ChartBar",
+        ctype: "string"
+    },{
+        name: "itemValues",
+        group: "ChartBar",
+        ctype: "string"
+    },{
+        name: "itemNames",
+        group: "ChartBar",
+        ctype: "string"
+    }]
+});
+
+
+xds.chart.DefaultStore = new Ext.data.JsonStore({
+    storeId: "(barchart sample)",
+    fields: [{
+        name: "area",
+        type: "string"
+    },{
+        name: "count1",
+        type: "number"
+    },{
+    	name: "count2",
+    	type: "number"
+    }],
+    data: [{
+        area: "项目1",
+        count1: 973,
+        count2: 133
+    },{
+        area: "项目2",
+        count1: 914,
+        count2: 156
+    },{
+        area: "项目3",
+        count1: 4054,
+        count2: 947
+    },{
+        area: "项目4",
+        count1: 732,
+        count2: 408
+    },{
+        area: "项目5",
+        count1: 34,
+        count2: 6
+    }]
+});
+
+
+xds.chart.Bar = Ext.extend(Ext.ux.HighChart, {
+	store:"(barchart sample)",
+	defaultSerieType:"bar",
+	initComponent:function(){
+		xds.chart.Bar.superclass.initComponent.call(this);
+		this.xField = 'area';
+		this.series= [new Ext.ux.HighChart.BarSerie({
+			xField:'area',yField:'count1',name:'指标1'
+		}),new Ext.ux.HighChart.BarSerie({
+			xField:'area',yField:'count2',name:'指标2'
+		})];
+	}
+});
+
+od.chart.Bar = Ext.extend(Ext.ux.HighChart, {
+
+});
+
+Ext.reg('xdchartbar',xds.chart.Bar);
+Ext.reg('chartbar', od.chart.Bar);
+
+xds.types.ChartLine = Ext.extend(xds.types.BoxComponent, {
+	cid : 'chartline',
+	iconCls : 'icon-chart-line',
+	category : "Chart",
+	defaultName : "&lt;LineChart&gt;",
+	text : "LineChart",
+	dtype : "xdchartline",
+	xtype : 'chartline',
+	xcls : "org.delta.chart.Line",
+	naming : "ChartLine",
+	isContainer : false,
+	transformGroup: "chart",
+	layoutable : false,
+	enableFlyout : false,
+	defaultConfig : {
+		chartURL: '/tplt/fusioncharts/FCF_Line.swf'
+	},
+	initConfig:function(d,b){
+		d.width=500;
+		d.height=350;
+	},
+	xdConfigs: [{
+        name: "animation",
+        group: "ChartLine",
+        ctype: "boolean"
+    }]
+});
+
+
+xds.chart.Line = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+	dataXML:"<graph animation='0' caption='月销售' xAxisName='Month' yAxisName='Units' decimalPrecision='0' formatNumberScale='0'><set name='Jan' value='462' /><set name='Feb' value='857'/><set name='Mar' value='671'/><set name='Apr' value='494'/><set name='May' value='761'/><set name='Jun' value='960'/><set name='Jul' value='629'/><set name='Aug' value='622'/><set name='Sep' value='376'/><set name='Oct' value='494'/><set name='Nov' value='761'/><set name='Dec' value='960'/></graph>"
+});
+
+od.chart.Line = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+
+});
+
+Ext.reg('xdchartline',xds.chart.Line);
+Ext.reg('chartline', od.chart.Line);
+
+
+
+xds.types.ChartPie3D = Ext.extend(xds.types.BoxComponent, {
+	cid : 'chartpie3d',
+	iconCls : 'icon-chart-pie',
+	category : "Chart",
+	defaultName : "&lt;Pie3DChart&gt;",
+	text : "PieChart-3D",
+	dtype : "xdchartpie3d",
+	xtype : 'chartpie3d',
+	xcls : "org.delta.chart.Pie3D",
+	naming : "ChartPie3D",
+	isContainer : false,
+	transformGroup: "chart",
+	layoutable : false,
+	enableFlyout : false,
+	defaultConfig : {
+		chartURL: '/tplt/fusioncharts/FCF_Pie3D.swf'
+	},
+	initConfig:function(d,b){
+		d.width=500;
+		d.height=350;
+	},
+	xdConfigs: [{
+        name: "animation",
+        group: "ChartPie3D",
+        ctype: "boolean"
+    }]
+});
+
+
+xds.chart.Pie3D = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+	dataXML:"<graph animation='0' caption='月销售' xAxisName='Month' yAxisName='Units' decimalPrecision='0' formatNumberScale='0'><set name='Jan' value='462' /><set name='Feb' value='857'/><set name='Mar' value='671'/><set name='Apr' value='494'/><set name='May' value='761'/><set name='Jun' value='960'/><set name='Jul' value='629'/><set name='Aug' value='622'/><set name='Sep' value='376'/><set name='Oct' value='494'/><set name='Nov' value='761'/><set name='Dec' value='960'/></graph>"	
+});
+
+od.chart.Pie3D = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+
+});
+
+Ext.reg('xdchartpie3d',xds.chart.Pie3D);
+Ext.reg('chartpie3d', od.chart.Pie3D);
+
+
+
+xds.types.ChartPie = Ext.extend(xds.types.BoxComponent, {
+	cid : 'chartpie',
+	iconCls : 'icon-chart-pie',
+	category : "Chart",
+	defaultName : "&lt;PieChart&gt;",
+	text : "PieChart",
+	dtype : "xdchartpie",
+	xtype : 'chartpie',
+	xcls : "org.delta.chart.Pie",
+	naming : "ChartPie",
+	isContainer : false,
+	transformGroup: "chart",
+	layoutable : false,
+	enableFlyout : false,
+	defaultConfig : {
+		chartURL: '/tplt/fusioncharts/FCF_Pie2D.swf'
+	},
+	initConfig:function(d,b){
+		d.width=500;
+		d.height=350;
+	},
+	xdConfigs: [{
+        name: "animation",
+        group: "ChartPie",
+        ctype: "boolean"
+    }]
+});
+
+
+xds.chart.Pie = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+	dataXML:"<graph animation='0' caption='月销售' xAxisName='Month' yAxisName='Units' decimalPrecision='0' formatNumberScale='0'><set name='Jan' value='462' /><set name='Feb' value='857'/><set name='Mar' value='671'/><set name='Apr' value='494'/><set name='May' value='761'/><set name='Jun' value='960'/><set name='Jul' value='629'/><set name='Aug' value='622'/><set name='Sep' value='376'/><set name='Oct' value='494'/><set name='Nov' value='761'/><set name='Dec' value='960'/></graph>"
+});
+
+od.chart.Pie = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+
+});
+
+Ext.reg('xdchartpie',xds.chart.Pie);
+Ext.reg('chartpie', od.chart.Pie);
+
+
+
+xds.types.ChartArea = Ext.extend(xds.types.BoxComponent, {
+	cid : 'chartarea',
+	iconCls : 'icon-chart-area',
+	category : "Chart",
+	defaultName : "&lt;AreaChart&gt;",
+	text : "AreaChart",
+	dtype : "xdchartarea",
+	xtype : 'chartarea',
+	xcls : "org.delta.chart.Area",
+	naming : "ChartArea",
+	isContainer : false,
+	transformGroup: "chart",
+	layoutable : false,
+	enableFlyout : false,
+	defaultConfig : {
+		chartURL: '/tplt/fusioncharts/FCF_Area2D.swf'
+	},
+	initConfig:function(d,b){
+		d.width=500;
+		d.height=350;
+	},
+	xdConfigs: [{
+        name: "animation",
+        group: "ChartArea",
+        ctype: "boolean"
+    }]
+});
+
+
+xds.chart.Area = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+	dataXML:"<graph animation='0' caption='月销售' xAxisName='Month' yAxisName='Units' decimalPrecision='0' formatNumberScale='0'><set name='Jan' value='462' /><set name='Feb' value='857'/><set name='Mar' value='671'/><set name='Apr' value='494'/><set name='May' value='761'/><set name='Jun' value='960'/><set name='Jul' value='629'/><set name='Aug' value='622'/><set name='Sep' value='376'/><set name='Oct' value='494'/><set name='Nov' value='761'/><set name='Dec' value='960'/></graph>"
+});
+
+od.chart.Area = Ext.extend(Ext.ux.Chart.Fusion.Component, {
+
+});
+
+Ext.reg('xdchartarea',xds.chart.Area);
+Ext.reg('chartarea', od.chart.Area);

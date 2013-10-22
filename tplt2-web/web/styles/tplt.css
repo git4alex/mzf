@@ -1,0 +1,125 @@
+.tplt-top-border{
+	border-top:1px solid #99bbe8;
+}
+
+.tplt-bottom-border{
+	border-bottom:1px solid #99bbe8;
+}
+
+.xds-data-view .thumb{
+	background: #dddddd;
+	padding: 3px;
+}
+.xds-data-view .thumb img{
+	height: 120px;
+	width: 120px;
+}
+.xds-data-view .thumb-wrap{
+	float: left;
+	margin: 4px;
+	margin-right: 0;
+	padding: 5px;
+}
+.xds-data-view .thumb-wrap span{
+	white-space:nowrap;
+	width:120px;
+	display: block;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	text-align: center;
+	font: 11px Arial, Helvetica, sans-serif;
+}
+
+.xds-data-view .x-view-over{
+    border:1px solid #dddddd;
+    background: #efefef url(../scripts/ext-3.0+/resources/images/default/grid/row-over.gif) repeat-x left top;
+	padding: 4px;
+}
+
+.xds-data-view .x-view-selected{
+	background: #eff5fb url(../images/selected.gif) no-repeat right bottom;
+	border:1px solid #99bbe8;
+	padding:4px;
+}
+
+.x-form-barcode-trigger{
+	background-image: url(../images/barcode-icon.png);
+}
+
+
+.mini{
+	background:#dfe8f6;
+	border:1px solid #88a1c0;
+	border-right:0 none;
+}
+.mini .x-panel-header, #props .x-panel-header, #toolbox .x-panel-header {
+	background:#b8cfe9 url(../images/panel-hd.gif) repeat-x 0 0;
+	border-style:solid;
+	border-color: #dfe8f6;
+	border-bottom-color: #a8bfd9;
+	border-width: 1px 0 1px 1px;
+	padding:2px;
+}
+.mini .x-panel-header-text, #props .x-panel-header-text, #toolbox .x-panel-header-text {
+	font-weight:normal;
+	font-size:12px;
+	font-family:'segoe ui', arial, helvetica,tahoma,sans-serif;
+/*	text-shadow: 2px 2px 2px #fff; */
+}
+.mini .x-tree-node-el, #toolbox .x-tree-node-el {
+	padding:1px;
+}
+
+
+.mini .x-tree-selected, #toolbox .x-tree-selected {
+
+}
+
+.no-icon{
+	display:none  !important;
+}
+
+.icon-org {
+	background-image: url(../images/icons/building.gif) !important;
+}
+
+.icon-storage {
+	background-image: url(../images/icons/package.gif) !important;
+}
+
+.x-grid3-summary-row {
+    border-left:1px solid #fff;
+    border-right:1px solid #fff;
+    border-top:1px dotted #ddbba4;
+    color:#333;
+    background: #f1f2f4;
+}
+
+.x-grid3-summary-row.total {
+    padding:2px 0px 2px 0px;
+    border-top:2px solid #ddbba4;
+}
+
+.total .x-grid3-cell-first .x-grid3-cell-inner{
+    padding-left:4px;
+}
+
+.x-grid3-summary-row .x-grid3-cell-inner {
+    padding-bottom:4px;
+}
+
+.x-grid3-summary-row.total .x-grid3-cell-inner {
+    font-weight: bold;
+}
+
+.x-grid-group-body .x-grid3-cell-first .x-grid3-cell-inner {
+    padding-left:16px;
+}
+
+.x-grid-hide-summary .x-grid3-summary-row {
+    display:none;
+}
+.x-grid3-summary-msg {
+    padding:4px 16px;
+    font-weight:bold;
+}

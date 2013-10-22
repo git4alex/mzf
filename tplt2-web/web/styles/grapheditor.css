@@ -1,0 +1,148 @@
+.cut-icon {
+    background-image:url(../images/workflow/cut.gif) !important;
+}
+.copy-icon {
+    background-image:url(../images/workflow/copy.gif) !important;
+}
+.paste-icon {
+    background-image:url(../images/workflow/paste.gif) !important;
+}
+.undo-icon {
+    background-image:url(../images/workflow/undo.gif) !important;
+}
+.redo-icon {
+    background-image:url(../images/workflow/redo.gif) !important;
+}
+.group-icon {
+    background-image:url(../images/workflow/group.gif) !important;
+}
+.ungroup-icon {
+    background-image:url(../images/workflow/ungroup.gif) !important;
+}
+.grid-icon {
+    background-image:url(../images/workflow/grid.gif) !important;
+}
+.connect-icon {
+    background-image:url(../images/workflow/connect.gif) !important;
+}
+.bold-icon {
+    background-image:url(../images/workflow/bold.gif) !important;
+}
+.italic-icon {
+    background-image:url(../images/workflow/italic.gif) !important;
+}
+.underline-icon {
+    background-image:url(../images/workflow/underline.gif) !important;
+}
+.preferences-icon {
+    background-image:url(../images/workflow/preferences.gif) !important;
+}
+.fit-icon {
+    background-image:url(../images/workflow/fit.gif) !important;
+}
+.preview-icon {
+    background-image:url(../images/workflow/preview.gif) !important;
+}
+.print-icon {
+    background-image:url(../images/workflow/print.gif) !important;
+}
+.press-icon {
+    background-image:url(../images/workflow/press.gif) !important;
+}
+.zoom-icon {
+    background-image:url(../images/workflow/zoom.gif) !important;
+}
+.zoomin-icon {
+    background-image:url(../images/workflow/zoomin.gif) !important;
+}
+.zoomout-icon {
+    background-image:url(../images/workflow/zoomout.gif) !important;
+}
+.zoomactual-icon {
+    background-image:url(../images/workflow/zoomactual.gif) !important;
+}
+.collapse-icon {
+    background-image:url(../images/workflow/collapse.gif) !important;
+}
+.expand-icon {
+    background-image:url(../images/workflow/expand.gif) !important;
+}
+.new-icon {
+    background-image:url(../images/workflow/new.gif) !important;
+}
+.open-icon {
+    background-image:url(../images/workflow/open.gif) !important;
+}
+.save-icon {
+    background-image:url(../images/workflow/save.gif) !important;
+}
+.saveas-icon {
+    background-image:url(../images/workflow/saveas.gif) !important;
+}
+.gear-icon {
+    background-image:url(../images/workflow/gear.gif) !important;
+}
+.tree-icon {
+    background-image:url(../images/workflow/tree.gif) !important;
+}
+.diagram-icon {
+    background-image:url(../images/workflow/diagram.gif) !important;
+}
+.left-icon {
+    background-image:url(../images/workflow/left.gif) !important;
+}
+.right-icon {
+    background-image:url(../images/workflow/right.gif) !important;
+}
+.center-icon {
+    background-image:url(../images/workflow/center.gif) !important;
+}
+.top-icon {
+    background-image:url(../images/workflow/top.gif) !important;
+}
+.bottom-icon {
+    background-image:url(../images/workflow/bottom.gif) !important;
+}
+.middle-icon {
+    background-image:url(../images/workflow/middle.gif) !important;
+}
+.fillcolor-icon {
+    background-image:url(../images/workflow/fillcolor.gif) !important;
+}
+.linecolor-icon {
+    background-image:url(../images/workflow/linecolor.gif) !important;
+}
+.fontcolor-icon {
+    background-image:url(../images/workflow/fontcolor.gif) !important;
+}
+.collapse-icon {
+    background-image:url(../images/workflow/collapse.gif) !important;
+}
+.expand-icon {
+    background-image:url(../images/workflow/expand.gif) !important;
+}
+.up-icon {
+    background-image:url(../images/workflow/up.gif) !important;
+}
+.home-icon {
+    background-image:url(../images/workflow/house.gif) !important;
+}
+.down-icon {
+    background-image:url(../images/workflow/down.gif) !important;
+}
+.delete-icon {
+    background-image:url(../images/workflow/delete.gif) !important;
+}
+
+.icon-step{
+    background-image:url(../images/workflow/step.png) !important;
+}
+.icon-action{
+    background-image:url(../images/workflow/action.png) !important;
+}
+.icon-split{
+    background-image:url(../images/workflow/split.png) !important;
+}
+.icon-join{
+    background-image:url(../images/workflow/join.png) !important;
+}

@@ -1,0 +1,4003 @@
+{
+	icons: [ {
+		name : "accept",
+		url : "images/icons/accept.gif",
+		cls : "icon-accept"
+	}, {
+		name : "add",
+		url : "images/icons/add.gif",
+		cls : "icon-add"
+	}, {
+		name : "anchor",
+		url : "images/icons/anchor.gif",
+		cls : "icon-anchor"
+	}, {
+		name : "application",
+		url : "images/icons/application.gif",
+		cls : "icon-application"
+	}, {
+		name : "application_add",
+		url : "images/icons/application_add.gif",
+		cls : "icon-application-add"
+	}, {
+		name : "application_cascade",
+		url : "images/icons/application_cascade.gif",
+		cls : "icon-application-cascade"
+	}, {
+		name : "application_delete",
+		url : "images/icons/application_delete.gif",
+		cls : "icon-application-delete"
+	}, {
+		name : "application_double",
+		url : "images/icons/application_double.gif",
+		cls : "icon-application-double"
+	}, {
+		name : "application_edit",
+		url : "images/icons/application_edit.gif",
+		cls : "icon-application-edit"
+	}, {
+		name : "application_error",
+		url : "images/icons/application_error.gif",
+		cls : "icon-application-error"
+	}, {
+		name : "application_form",
+		url : "images/icons/application_form.gif",
+		cls : "icon-application-form"
+	}, {
+		name : "application_form_add",
+		url : "images/icons/application_form_add.gif",
+		cls : "icon-application-form-add"
+	}, {
+		name : "application_form_delete",
+		url : "images/icons/application_form_delete.gif",
+		cls : "icon-application-form-delete"
+	}, {
+		name : "application_form_edit",
+		url : "images/icons/application_form_edit.gif",
+		cls : "icon-application-form-edit"
+	}, {
+		name : "application_form_magnify",
+		url : "images/icons/application_form_magnify.gif",
+		cls : "icon-application-form-magnify"
+	}, {
+		name : "application_get",
+		url : "images/icons/application_get.gif",
+		cls : "icon-application-get"
+	}, {
+		name : "application_go",
+		url : "images/icons/application_go.gif",
+		cls : "icon-application-go"
+	}, {
+		name : "application_home",
+		url : "images/icons/application_home.gif",
+		cls : "icon-application-home"
+	}, {
+		name : "application_key",
+		url : "images/icons/application_key.gif",
+		cls : "icon-application-key"
+	}, {
+		name : "application_lightning",
+		url : "images/icons/application_lightning.gif",
+		cls : "icon-application-lightning"
+	}, {
+		name : "application_link",
+		url : "images/icons/application_link.gif",
+		cls : "icon-application-link"
+	}, {
+		name : "application_osx",
+		url : "images/icons/application_osx.gif",
+		cls : "icon-application-osx"
+	}, {
+		name : "application_osx_terminal",
+		url : "images/icons/application_osx_terminal.gif",
+		cls : "icon-application-osx-terminal"
+	}, {
+		name : "application_put",
+		url : "images/icons/application_put.gif",
+		cls : "icon-application-put"
+	}, {
+		name : "application_side_boxes",
+		url : "images/icons/application_side_boxes.gif",
+		cls : "icon-application-side-boxes"
+	}, {
+		name : "application_side_contract",
+		url : "images/icons/application_side_contract.gif",
+		cls : "icon-application-side-contract"
+	}, {
+		name : "application_side_expand",
+		url : "images/icons/application_side_expand.gif",
+		cls : "icon-application-side-expand"
+	}, {
+		name : "application_side_list",
+		url : "images/icons/application_side_list.gif",
+		cls : "icon-application-side-list"
+	}, {
+		name : "application_side_tree",
+		url : "images/icons/application_side_tree.gif",
+		cls : "icon-application-side-tree"
+	}, {
+		name : "application_split",
+		url : "images/icons/application_split.gif",
+		cls : "icon-application-split"
+	}, {
+		name : "application_tile_horizontal",
+		url : "images/icons/application_tile_horizontal.gif",
+		cls : "icon-application-tile-horizontal"
+	}, {
+		name : "application_tile_vertical",
+		url : "images/icons/application_tile_vertical.gif",
+		cls : "icon-application-tile-vertical"
+	}, {
+		name : "application_view_columns",
+		url : "images/icons/application_view_columns.gif",
+		cls : "icon-application-view-columns"
+	}, {
+		name : "application_view_detail",
+		url : "images/icons/application_view_detail.gif",
+		cls : "icon-application-view-detail"
+	}, {
+		name : "application_view_gallery",
+		url : "images/icons/application_view_gallery.gif",
+		cls : "icon-application-view-gallery"
+	}, {
+		name : "application_view_icons",
+		url : "images/icons/application_view_icons.gif",
+		cls : "icon-application-view-icons"
+	}, {
+		name : "application_view_list",
+		url : "images/icons/application_view_list.gif",
+		cls : "icon-application-view-list"
+	}, {
+		name : "application_view_tile",
+		url : "images/icons/application_view_tile.gif",
+		cls : "icon-application-view-tile"
+	}, {
+		name : "application_xp",
+		url : "images/icons/application_xp.gif",
+		cls : "icon-application-xp"
+	}, {
+		name : "application_xp_terminal",
+		url : "images/icons/application_xp_terminal.gif",
+		cls : "icon-application-xp-terminal"
+	}, {
+		name : "arrow_branch",
+		url : "images/icons/arrow_branch.gif",
+		cls : "icon-arrow-branch"
+	}, {
+		name : "arrow_divide",
+		url : "images/icons/arrow_divide.gif",
+		cls : "icon-arrow-divide"
+	}, {
+		name : "arrow_down",
+		url : "images/icons/arrow_down.gif",
+		cls : "icon-arrow-down"
+	}, {
+		name : "arrow_in",
+		url : "images/icons/arrow_in.gif",
+		cls : "icon-arrow-in"
+	}, {
+		name : "arrow_inout",
+		url : "images/icons/arrow_inout.gif",
+		cls : "icon-arrow-inout"
+	}, {
+		name : "arrow_join",
+		url : "images/icons/arrow_join.gif",
+		cls : "icon-arrow-join"
+	}, {
+		name : "arrow_left",
+		url : "images/icons/arrow_left.gif",
+		cls : "icon-arrow-left"
+	}, {
+		name : "arrow_merge",
+		url : "images/icons/arrow_merge.gif",
+		cls : "icon-arrow-merge"
+	}, {
+		name : "arrow_out",
+		url : "images/icons/arrow_out.gif",
+		cls : "icon-arrow-out"
+	}, {
+		name : "arrow_redo",
+		url : "images/icons/arrow_redo.gif",
+		cls : "icon-arrow-redo"
+	}, {
+		name : "arrow_refresh",
+		url : "images/icons/arrow_refresh.gif",
+		cls : "icon-arrow-refresh"
+	}, {
+		name : "arrow_refresh_small",
+		url : "images/icons/arrow_refresh_small.gif",
+		cls : "icon-arrow-refresh-small"
+	}, {
+		name : "arrow_right",
+		url : "images/icons/arrow_right.gif",
+		cls : "icon-arrow-right"
+	}, {
+		name : "arrow_rotate_anticlockwise",
+		url : "images/icons/arrow_rotate_anticlockwise.gif",
+		cls : "icon-arrow-rotate-anticlockwise"
+	}, {
+		name : "arrow_rotate_clockwise",
+		url : "images/icons/arrow_rotate_clockwise.gif",
+		cls : "icon-arrow-rotate-clockwise"
+	}, {
+		name : "arrow_switch",
+		url : "images/icons/arrow_switch.gif",
+		cls : "icon-arrow-switch"
+	}, {
+		name : "arrow_turn_left",
+		url : "images/icons/arrow_turn_left.gif",
+		cls : "icon-arrow-turn-left"
+	}, {
+		name : "arrow_turn_right",
+		url : "images/icons/arrow_turn_right.gif",
+		cls : "icon-arrow-turn-right"
+	}, {
+		name : "arrow_undo",
+		url : "images/icons/arrow_undo.gif",
+		cls : "icon-arrow-undo"
+	}, {
+		name : "arrow_up",
+		url : "images/icons/arrow_up.gif",
+		cls : "icon-arrow-up"
+	}, {
+		name : "asterisk_orange",
+		url : "images/icons/asterisk_orange.gif",
+		cls : "icon-asterisk-orange"
+	}, {
+		name : "asterisk_yellow",
+		url : "images/icons/asterisk_yellow.gif",
+		cls : "icon-asterisk-yellow"
+	}, {
+		name : "attach",
+		url : "images/icons/attach.gif",
+		cls : "icon-attach"
+	}, {
+		name : "award_star_add",
+		url : "images/icons/award_star_add.gif",
+		cls : "icon-award-star-add"
+	}, {
+		name : "award_star_bronze_1",
+		url : "images/icons/award_star_bronze_1.gif",
+		cls : "icon-award-star-bronze-1"
+	}, {
+		name : "award_star_bronze_2",
+		url : "images/icons/award_star_bronze_2.gif",
+		cls : "icon-award-star-bronze-2"
+	}, {
+		name : "award_star_bronze_3",
+		url : "images/icons/award_star_bronze_3.gif",
+		cls : "icon-award-star-bronze-3"
+	}, {
+		name : "award_star_delete",
+		url : "images/icons/award_star_delete.gif",
+		cls : "icon-award-star-delete"
+	}, {
+		name : "award_star_gold_1",
+		url : "images/icons/award_star_gold_1.gif",
+		cls : "icon-award-star-gold-1"
+	}, {
+		name : "award_star_gold_2",
+		url : "images/icons/award_star_gold_2.gif",
+		cls : "icon-award-star-gold-2"
+	}, {
+		name : "award_star_gold_3",
+		url : "images/icons/award_star_gold_3.gif",
+		cls : "icon-award-star-gold-3"
+	}, {
+		name : "award_star_silver_1",
+		url : "images/icons/award_star_silver_1.gif",
+		cls : "icon-award-star-silver-1"
+	}, {
+		name : "award_star_silver_2",
+		url : "images/icons/award_star_silver_2.gif",
+		cls : "icon-award-star-silver-2"
+	}, {
+		name : "award_star_silver_3",
+		url : "images/icons/award_star_silver_3.gif",
+		cls : "icon-award-star-silver-3"
+	}, {
+		name : "basket",
+		url : "images/icons/basket.gif",
+		cls : "icon-basket"
+	}, {
+		name : "basket_add",
+		url : "images/icons/basket_add.gif",
+		cls : "icon-basket-add"
+	}, {
+		name : "basket_delete",
+		url : "images/icons/basket_delete.gif",
+		cls : "icon-basket-delete"
+	}, {
+		name : "basket_edit",
+		url : "images/icons/basket_edit.gif",
+		cls : "icon-basket-edit"
+	}, {
+		name : "basket_error",
+		url : "images/icons/basket_error.gif",
+		cls : "icon-basket-error"
+	}, {
+		name : "basket_go",
+		url : "images/icons/basket_go.gif",
+		cls : "icon-basket-go"
+	}, {
+		name : "basket_put",
+		url : "images/icons/basket_put.gif",
+		cls : "icon-basket-put"
+	}, {
+		name : "basket_remove",
+		url : "images/icons/basket_remove.gif",
+		cls : "icon-basket-remove"
+	}, {
+		name : "bell",
+		url : "images/icons/bell.gif",
+		cls : "icon-bell"
+	}, {
+		name : "bell_add",
+		url : "images/icons/bell_add.gif",
+		cls : "icon-bell-add"
+	}, {
+		name : "bell_delete",
+		url : "images/icons/bell_delete.gif",
+		cls : "icon-bell-delete"
+	}, {
+		name : "bell_error",
+		url : "images/icons/bell_error.gif",
+		cls : "icon-bell-error"
+	}, {
+		name : "bell_go",
+		url : "images/icons/bell_go.gif",
+		cls : "icon-bell-go"
+	}, {
+		name : "bell_link",
+		url : "images/icons/bell_link.gif",
+		cls : "icon-bell-link"
+	}, {
+		name : "bin",
+		url : "images/icons/bin.gif",
+		cls : "icon-bin"
+	}, {
+		name : "bin_closed",
+		url : "images/icons/bin_closed.gif",
+		cls : "icon-bin-closed"
+	}, {
+		name : "bin_empty",
+		url : "images/icons/bin_empty.gif",
+		cls : "icon-bin-empty"
+	}, {
+		name : "bomb",
+		url : "images/icons/bomb.gif",
+		cls : "icon-bomb"
+	}, {
+		name : "book",
+		url : "images/icons/book.gif",
+		cls : "icon-book"
+	}, {
+		name : "book_add",
+		url : "images/icons/book_add.gif",
+		cls : "icon-book-add"
+	}, {
+		name : "book_addresses",
+		url : "images/icons/book_addresses.gif",
+		cls : "icon-book-addresses"
+	}, {
+		name : "book_delete",
+		url : "images/icons/book_delete.gif",
+		cls : "icon-book-delete"
+	}, {
+		name : "book_edit",
+		url : "images/icons/book_edit.gif",
+		cls : "icon-book-edit"
+	}, {
+		name : "book_error",
+		url : "images/icons/book_error.gif",
+		cls : "icon-book-error"
+	}, {
+		name : "book_go",
+		url : "images/icons/book_go.gif",
+		cls : "icon-book-go"
+	}, {
+		name : "book_key",
+		url : "images/icons/book_key.gif",
+		cls : "icon-book-key"
+	}, {
+		name : "book_link",
+		url : "images/icons/book_link.gif",
+		cls : "icon-book-link"
+	}, {
+		name : "book_next",
+		url : "images/icons/book_next.gif",
+		cls : "icon-book-next"
+	}, {
+		name : "book_open",
+		url : "images/icons/book_open.gif",
+		cls : "icon-book-open"
+	}, {
+		name : "book_previous",
+		url : "images/icons/book_previous.gif",
+		cls : "icon-book-previous"
+	}, {
+		name : "box",
+		url : "images/icons/box.gif",
+		cls : "icon-box"
+	}, {
+		name : "brick",
+		url : "images/icons/brick.gif",
+		cls : "icon-brick"
+	}, {
+		name : "bricks",
+		url : "images/icons/bricks.gif",
+		cls : "icon-bricks"
+	}, {
+		name : "brick_add",
+		url : "images/icons/brick_add.gif",
+		cls : "icon-brick-add"
+	}, {
+		name : "brick_delete",
+		url : "images/icons/brick_delete.gif",
+		cls : "icon-brick-delete"
+	}, {
+		name : "brick_edit",
+		url : "images/icons/brick_edit.gif",
+		cls : "icon-brick-edit"
+	}, {
+		name : "brick_error",
+		url : "images/icons/brick_error.gif",
+		cls : "icon-brick-error"
+	}, {
+		name : "brick_go",
+		url : "images/icons/brick_go.gif",
+		cls : "icon-brick-go"
+	}, {
+		name : "brick_link",
+		url : "images/icons/brick_link.gif",
+		cls : "icon-brick-link"
+	}, {
+		name : "briefcase",
+		url : "images/icons/briefcase.gif",
+		cls : "icon-briefcase"
+	}, {
+		name : "bug",
+		url : "images/icons/bug.gif",
+		cls : "icon-bug"
+	}, {
+		name : "bug_add",
+		url : "images/icons/bug_add.gif",
+		cls : "icon-bug-add"
+	}, {
+		name : "bug_delete",
+		url : "images/icons/bug_delete.gif",
+		cls : "icon-bug-delete"
+	}, {
+		name : "bug_edit",
+		url : "images/icons/bug_edit.gif",
+		cls : "icon-bug-edit"
+	}, {
+		name : "bug_error",
+		url : "images/icons/bug_error.gif",
+		cls : "icon-bug-error"
+	}, {
+		name : "bug_go",
+		url : "images/icons/bug_go.gif",
+		cls : "icon-bug-go"
+	}, {
+		name : "bug_link",
+		url : "images/icons/bug_link.gif",
+		cls : "icon-bug-link"
+	}, {
+		name : "building",
+		url : "images/icons/building.gif",
+		cls : "icon-building"
+	}, {
+		name : "building_add",
+		url : "images/icons/building_add.gif",
+		cls : "icon-building-add"
+	}, {
+		name : "building_delete",
+		url : "images/icons/building_delete.gif",
+		cls : "icon-building-delete"
+	}, {
+		name : "building_edit",
+		url : "images/icons/building_edit.gif",
+		cls : "icon-building-edit"
+	}, {
+		name : "building_error",
+		url : "images/icons/building_error.gif",
+		cls : "icon-building-error"
+	}, {
+		name : "building_go",
+		url : "images/icons/building_go.gif",
+		cls : "icon-building-go"
+	}, {
+		name : "building_key",
+		url : "images/icons/building_key.gif",
+		cls : "icon-building-key"
+	}, {
+		name : "building_link",
+		url : "images/icons/building_link.gif",
+		cls : "icon-building-link"
+	}, {
+		name : "bullet_add",
+		url : "images/icons/bullet_add.gif",
+		cls : "icon-bullet-add"
+	}, {
+		name : "bullet_arrow_bottom",
+		url : "images/icons/bullet_arrow_bottom.gif",
+		cls : "icon-bullet-arrow-bottom"
+	}, {
+		name : "bullet_arrow_down",
+		url : "images/icons/bullet_arrow_down.gif",
+		cls : "icon-bullet-arrow-down"
+	}, {
+		name : "bullet_arrow_top",
+		url : "images/icons/bullet_arrow_top.gif",
+		cls : "icon-bullet-arrow-top"
+	}, {
+		name : "bullet_arrow_up",
+		url : "images/icons/bullet_arrow_up.gif",
+		cls : "icon-bullet-arrow-up"
+	}, {
+		name : "bullet_black",
+		url : "images/icons/bullet_black.gif",
+		cls : "icon-bullet-black"
+	}, {
+		name : "bullet_blue",
+		url : "images/icons/bullet_blue.gif",
+		cls : "icon-bullet-blue"
+	}, {
+		name : "bullet_delete",
+		url : "images/icons/bullet_delete.gif",
+		cls : "icon-bullet-delete"
+	}, {
+		name : "bullet_disk",
+		url : "images/icons/bullet_disk.gif",
+		cls : "icon-bullet-disk"
+	}, {
+		name : "bullet_error",
+		url : "images/icons/bullet_error.gif",
+		cls : "icon-bullet-error"
+	}, {
+		name : "bullet_feed",
+		url : "images/icons/bullet_feed.gif",
+		cls : "icon-bullet-feed"
+	}, {
+		name : "bullet_go",
+		url : "images/icons/bullet_go.gif",
+		cls : "icon-bullet-go"
+	}, {
+		name : "bullet_green",
+		url : "images/icons/bullet_green.gif",
+		cls : "icon-bullet-green"
+	}, {
+		name : "bullet_key",
+		url : "images/icons/bullet_key.gif",
+		cls : "icon-bullet-key"
+	}, {
+		name : "bullet_orange",
+		url : "images/icons/bullet_orange.gif",
+		cls : "icon-bullet-orange"
+	}, {
+		name : "bullet_picture",
+		url : "images/icons/bullet_picture.gif",
+		cls : "icon-bullet-picture"
+	}, {
+		name : "bullet_pink",
+		url : "images/icons/bullet_pink.gif",
+		cls : "icon-bullet-pink"
+	}, {
+		name : "bullet_purple",
+		url : "images/icons/bullet_purple.gif",
+		cls : "icon-bullet-purple"
+	}, {
+		name : "bullet_red",
+		url : "images/icons/bullet_red.gif",
+		cls : "icon-bullet-red"
+	}, {
+		name : "bullet_star",
+		url : "images/icons/bullet_star.gif",
+		cls : "icon-bullet-star"
+	}, {
+		name : "bullet_toggle_minus",
+		url : "images/icons/bullet_toggle_minus.gif",
+		cls : "icon-bullet-toggle-minus"
+	}, {
+		name : "bullet_toggle_plus",
+		url : "images/icons/bullet_toggle_plus.gif",
+		cls : "icon-bullet-toggle-plus"
+	}, {
+		name : "bullet_white",
+		url : "images/icons/bullet_white.gif",
+		cls : "icon-bullet-white"
+	}, {
+		name : "bullet_wrench",
+		url : "images/icons/bullet_wrench.gif",
+		cls : "icon-bullet-wrench"
+	}, {
+		name : "bullet_yellow",
+		url : "images/icons/bullet_yellow.gif",
+		cls : "icon-bullet-yellow"
+	}, {
+		name : "cake",
+		url : "images/icons/cake.gif",
+		cls : "icon-cake"
+	}, {
+		name : "calculator",
+		url : "images/icons/calculator.gif",
+		cls : "icon-calculator"
+	}, {
+		name : "calculator_add",
+		url : "images/icons/calculator_add.gif",
+		cls : "icon-calculator-add"
+	}, {
+		name : "calculator_delete",
+		url : "images/icons/calculator_delete.gif",
+		cls : "icon-calculator-delete"
+	}, {
+		name : "calculator_edit",
+		url : "images/icons/calculator_edit.gif",
+		cls : "icon-calculator-edit"
+	}, {
+		name : "calculator_error",
+		url : "images/icons/calculator_error.gif",
+		cls : "icon-calculator-error"
+	}, {
+		name : "calculator_link",
+		url : "images/icons/calculator_link.gif",
+		cls : "icon-calculator-link"
+	}, {
+		name : "calendar",
+		url : "images/icons/calendar.gif",
+		cls : "icon-calendar"
+	}, {
+		name : "calendar_add",
+		url : "images/icons/calendar_add.gif",
+		cls : "icon-calendar-add"
+	}, {
+		name : "calendar_delete",
+		url : "images/icons/calendar_delete.gif",
+		cls : "icon-calendar-delete"
+	}, {
+		name : "calendar_edit",
+		url : "images/icons/calendar_edit.gif",
+		cls : "icon-calendar-edit"
+	}, {
+		name : "calendar_link",
+		url : "images/icons/calendar_link.gif",
+		cls : "icon-calendar-link"
+	}, {
+		name : "calendar_view_day",
+		url : "images/icons/calendar_view_day.gif",
+		cls : "icon-calendar-view-day"
+	}, {
+		name : "calendar_view_month",
+		url : "images/icons/calendar_view_month.gif",
+		cls : "icon-calendar-view-month"
+	}, {
+		name : "calendar_view_week",
+		url : "images/icons/calendar_view_week.gif",
+		cls : "icon-calendar-view-week"
+	}, {
+		name : "camera",
+		url : "images/icons/camera.gif",
+		cls : "icon-camera"
+	}, {
+		name : "camera_add",
+		url : "images/icons/camera_add.gif",
+		cls : "icon-camera-add"
+	}, {
+		name : "camera_delete",
+		url : "images/icons/camera_delete.gif",
+		cls : "icon-camera-delete"
+	}, {
+		name : "camera_edit",
+		url : "images/icons/camera_edit.gif",
+		cls : "icon-camera-edit"
+	}, {
+		name : "camera_error",
+		url : "images/icons/camera_error.gif",
+		cls : "icon-camera-error"
+	}, {
+		name : "camera_go",
+		url : "images/icons/camera_go.gif",
+		cls : "icon-camera-go"
+	}, {
+		name : "camera_link",
+		url : "images/icons/camera_link.gif",
+		cls : "icon-camera-link"
+	}, {
+		name : "camera_small",
+		url : "images/icons/camera_small.gif",
+		cls : "icon-camera-small"
+	}, {
+		name : "cancel",
+		url : "images/icons/cancel.gif",
+		cls : "icon-cancel"
+	}, {
+		name : "car",
+		url : "images/icons/car.gif",
+		cls : "icon-car"
+	}, {
+		name : "cart",
+		url : "images/icons/cart.gif",
+		cls : "icon-cart"
+	}, {
+		name : "cart_add",
+		url : "images/icons/cart_add.gif",
+		cls : "icon-cart-add"
+	}, {
+		name : "cart_delete",
+		url : "images/icons/cart_delete.gif",
+		cls : "icon-cart-delete"
+	}, {
+		name : "cart_edit",
+		url : "images/icons/cart_edit.gif",
+		cls : "icon-cart-edit"
+	}, {
+		name : "cart_error",
+		url : "images/icons/cart_error.gif",
+		cls : "icon-cart-error"
+	}, {
+		name : "cart_go",
+		url : "images/icons/cart_go.gif",
+		cls : "icon-cart-go"
+	}, {
+		name : "cart_put",
+		url : "images/icons/cart_put.gif",
+		cls : "icon-cart-put"
+	}, {
+		name : "cart_remove",
+		url : "images/icons/cart_remove.gif",
+		cls : "icon-cart-remove"
+	}, {
+		name : "car_add",
+		url : "images/icons/car_add.gif",
+		cls : "icon-car-add"
+	}, {
+		name : "car_delete",
+		url : "images/icons/car_delete.gif",
+		cls : "icon-car-delete"
+	}, {
+		name : "cd",
+		url : "images/icons/cd.gif",
+		cls : "icon-cd"
+	}, {
+		name : "cd_add",
+		url : "images/icons/cd_add.gif",
+		cls : "icon-cd-add"
+	}, {
+		name : "cd_burn",
+		url : "images/icons/cd_burn.gif",
+		cls : "icon-cd-burn"
+	}, {
+		name : "cd_delete",
+		url : "images/icons/cd_delete.gif",
+		cls : "icon-cd-delete"
+	}, {
+		name : "cd_edit",
+		url : "images/icons/cd_edit.gif",
+		cls : "icon-cd-edit"
+	}, {
+		name : "cd_eject",
+		url : "images/icons/cd_eject.gif",
+		cls : "icon-cd-eject"
+	}, {
+		name : "cd_go",
+		url : "images/icons/cd_go.gif",
+		cls : "icon-cd-go"
+	}, {
+		name : "chart_bar",
+		url : "images/icons/chart_bar.gif",
+		cls : "icon-chart-bar"
+	}, {
+		name : "chart_bar_add",
+		url : "images/icons/chart_bar_add.gif",
+		cls : "icon-chart-bar-add"
+	}, {
+		name : "chart_bar_delete",
+		url : "images/icons/chart_bar_delete.gif",
+		cls : "icon-chart-bar-delete"
+	}, {
+		name : "chart_bar_edit",
+		url : "images/icons/chart_bar_edit.gif",
+		cls : "icon-chart-bar-edit"
+	}, {
+		name : "chart_bar_error",
+		url : "images/icons/chart_bar_error.gif",
+		cls : "icon-chart-bar-error"
+	}, {
+		name : "chart_bar_link",
+		url : "images/icons/chart_bar_link.gif",
+		cls : "icon-chart-bar-link"
+	}, {
+		name : "chart_curve",
+		url : "images/icons/chart_curve.gif",
+		cls : "icon-chart-curve"
+	}, {
+		name : "chart_curve_add",
+		url : "images/icons/chart_curve_add.gif",
+		cls : "icon-chart-curve-add"
+	}, {
+		name : "chart_curve_delete",
+		url : "images/icons/chart_curve_delete.gif",
+		cls : "icon-chart-curve-delete"
+	}, {
+		name : "chart_curve_edit",
+		url : "images/icons/chart_curve_edit.gif",
+		cls : "icon-chart-curve-edit"
+	}, {
+		name : "chart_curve_error",
+		url : "images/icons/chart_curve_error.gif",
+		cls : "icon-chart-curve-error"
+	}, {
+		name : "chart_curve_go",
+		url : "images/icons/chart_curve_go.gif",
+		cls : "icon-chart-curve-go"
+	}, {
+		name : "chart_curve_link",
+		url : "images/icons/chart_curve_link.gif",
+		cls : "icon-chart-curve-link"
+	}, {
+		name : "chart_line",
+		url : "images/icons/chart_line.gif",
+		cls : "icon-chart-line"
+	}, {
+		name : "chart_line_add",
+		url : "images/icons/chart_line_add.gif",
+		cls : "icon-chart-line-add"
+	}, {
+		name : "chart_line_delete",
+		url : "images/icons/chart_line_delete.gif",
+		cls : "icon-chart-line-delete"
+	}, {
+		name : "chart_line_edit",
+		url : "images/icons/chart_line_edit.gif",
+		cls : "icon-chart-line-edit"
+	}, {
+		name : "chart_line_error",
+		url : "images/icons/chart_line_error.gif",
+		cls : "icon-chart-line-error"
+	}, {
+		name : "chart_line_link",
+		url : "images/icons/chart_line_link.gif",
+		cls : "icon-chart-line-link"
+	}, {
+		name : "chart_organisation",
+		url : "images/icons/chart_organisation.gif",
+		cls : "icon-chart-organisation"
+	}, {
+		name : "chart_organisation_add",
+		url : "images/icons/chart_organisation_add.gif",
+		cls : "icon-chart-organisation-add"
+	}, {
+		name : "chart_organisation_delete",
+		url : "images/icons/chart_organisation_delete.gif",
+		cls : "icon-chart-organisation-delete"
+	}, {
+		name : "chart_pie",
+		url : "images/icons/chart_pie.gif",
+		cls : "icon-chart-pie"
+	}, {
+		name : "chart_pie_add",
+		url : "images/icons/chart_pie_add.gif",
+		cls : "icon-chart-pie-add"
+	}, {
+		name : "chart_pie_delete",
+		url : "images/icons/chart_pie_delete.gif",
+		cls : "icon-chart-pie-delete"
+	}, {
+		name : "chart_pie_edit",
+		url : "images/icons/chart_pie_edit.gif",
+		cls : "icon-chart-pie-edit"
+	}, {
+		name : "chart_pie_error",
+		url : "images/icons/chart_pie_error.gif",
+		cls : "icon-chart-pie-error"
+	}, {
+		name : "chart_pie_link",
+		url : "images/icons/chart_pie_link.gif",
+		cls : "icon-chart-pie-link"
+	}, {
+		name : "clock",
+		url : "images/icons/clock.gif",
+		cls : "icon-clock"
+	}, {
+		name : "clock_add",
+		url : "images/icons/clock_add.gif",
+		cls : "icon-clock-add"
+	}, {
+		name : "clock_delete",
+		url : "images/icons/clock_delete.gif",
+		cls : "icon-clock-delete"
+	}, {
+		name : "clock_edit",
+		url : "images/icons/clock_edit.gif",
+		cls : "icon-clock-edit"
+	}, {
+		name : "clock_error",
+		url : "images/icons/clock_error.gif",
+		cls : "icon-clock-error"
+	}, {
+		name : "clock_go",
+		url : "images/icons/clock_go.gif",
+		cls : "icon-clock-go"
+	}, {
+		name : "clock_link",
+		url : "images/icons/clock_link.gif",
+		cls : "icon-clock-link"
+	}, {
+		name : "clock_pause",
+		url : "images/icons/clock_pause.gif",
+		cls : "icon-clock-pause"
+	}, {
+		name : "clock_play",
+		url : "images/icons/clock_play.gif",
+		cls : "icon-clock-play"
+	}, {
+		name : "clock_red",
+		url : "images/icons/clock_red.gif",
+		cls : "icon-clock-red"
+	}, {
+		name : "clock_stop",
+		url : "images/icons/clock_stop.gif",
+		cls : "icon-clock-stop"
+	}, {
+		name : "cog",
+		url : "images/icons/cog.gif",
+		cls : "icon-cog"
+	}, {
+		name : "cog_add",
+		url : "images/icons/cog_add.gif",
+		cls : "icon-cog-add"
+	}, {
+		name : "cog_delete",
+		url : "images/icons/cog_delete.gif",
+		cls : "icon-cog-delete"
+	}, {
+		name : "cog_edit",
+		url : "images/icons/cog_edit.gif",
+		cls : "icon-cog-edit"
+	}, {
+		name : "cog_error",
+		url : "images/icons/cog_error.gif",
+		cls : "icon-cog-error"
+	}, {
+		name : "cog_go",
+		url : "images/icons/cog_go.gif",
+		cls : "icon-cog-go"
+	}, {
+		name : "coins",
+		url : "images/icons/coins.gif",
+		cls : "icon-coins"
+	}, {
+		name : "coins_add",
+		url : "images/icons/coins_add.gif",
+		cls : "icon-coins-add"
+	}, {
+		name : "coins_delete",
+		url : "images/icons/coins_delete.gif",
+		cls : "icon-coins-delete"
+	}, {
+		name : "color_swatch",
+		url : "images/icons/color_swatch.gif",
+		cls : "icon-color-swatch"
+	}, {
+		name : "color_wheel",
+		url : "images/icons/color_wheel.gif",
+		cls : "icon-color-wheel"
+	}, {
+		name : "comment",
+		url : "images/icons/comment.gif",
+		cls : "icon-comment"
+	}, {
+		name : "comments",
+		url : "images/icons/comments.gif",
+		cls : "icon-comments"
+	}, {
+		name : "comments_add",
+		url : "images/icons/comments_add.gif",
+		cls : "icon-comments-add"
+	}, {
+		name : "comments_delete",
+		url : "images/icons/comments_delete.gif",
+		cls : "icon-comments-delete"
+	}, {
+		name : "comment_add",
+		url : "images/icons/comment_add.gif",
+		cls : "icon-comment-add"
+	}, {
+		name : "comment_delete",
+		url : "images/icons/comment_delete.gif",
+		cls : "icon-comment-delete"
+	}, {
+		name : "comment_edit",
+		url : "images/icons/comment_edit.gif",
+		cls : "icon-comment-edit"
+	}, {
+		name : "compress",
+		url : "images/icons/compress.gif",
+		cls : "icon-compress"
+	}, {
+		name : "computer",
+		url : "images/icons/computer.gif",
+		cls : "icon-computer"
+	}, {
+		name : "computer_add",
+		url : "images/icons/computer_add.gif",
+		cls : "icon-computer-add"
+	}, {
+		name : "computer_delete",
+		url : "images/icons/computer_delete.gif",
+		cls : "icon-computer-delete"
+	}, {
+		name : "computer_edit",
+		url : "images/icons/computer_edit.gif",
+		cls : "icon-computer-edit"
+	}, {
+		name : "computer_error",
+		url : "images/icons/computer_error.gif",
+		cls : "icon-computer-error"
+	}, {
+		name : "computer_go",
+		url : "images/icons/computer_go.gif",
+		cls : "icon-computer-go"
+	}, {
+		name : "computer_key",
+		url : "images/icons/computer_key.gif",
+		cls : "icon-computer-key"
+	}, {
+		name : "computer_link",
+		url : "images/icons/computer_link.gif",
+		cls : "icon-computer-link"
+	}, {
+		name : "connect",
+		url : "images/icons/connect.gif",
+		cls : "icon-connect"
+	}, {
+		name : "contrast",
+		url : "images/icons/contrast.gif",
+		cls : "icon-contrast"
+	}, {
+		name : "contrast_decrease",
+		url : "images/icons/contrast_decrease.gif",
+		cls : "icon-contrast-decrease"
+	}, {
+		name : "contrast_high",
+		url : "images/icons/contrast_high.gif",
+		cls : "icon-contrast-high"
+	}, {
+		name : "contrast_increase",
+		url : "images/icons/contrast_increase.gif",
+		cls : "icon-contrast-increase"
+	}, {
+		name : "contrast_low",
+		url : "images/icons/contrast_low.gif",
+		cls : "icon-contrast-low"
+	}, {
+		name : "controller",
+		url : "images/icons/controller.gif",
+		cls : "icon-controller"
+	}, {
+		name : "controller_add",
+		url : "images/icons/controller_add.gif",
+		cls : "icon-controller-add"
+	}, {
+		name : "controller_delete",
+		url : "images/icons/controller_delete.gif",
+		cls : "icon-controller-delete"
+	}, {
+		name : "controller_error",
+		url : "images/icons/controller_error.gif",
+		cls : "icon-controller-error"
+	}, {
+		name : "control_eject",
+		url : "images/icons/control_eject.gif",
+		cls : "icon-control-eject"
+	}, {
+		name : "control_eject_blue",
+		url : "images/icons/control_eject_blue.gif",
+		cls : "icon-control-eject-blue"
+	}, {
+		name : "control_end",
+		url : "images/icons/control_end.gif",
+		cls : "icon-control-end"
+	}, {
+		name : "control_end_blue",
+		url : "images/icons/control_end_blue.gif",
+		cls : "icon-control-end-blue"
+	}, {
+		name : "control_equalizer",
+		url : "images/icons/control_equalizer.gif",
+		cls : "icon-control-equalizer"
+	}, {
+		name : "control_equalizer_blue",
+		url : "images/icons/control_equalizer_blue.gif",
+		cls : "icon-control-equalizer-blue"
+	}, {
+		name : "control_fastforward",
+		url : "images/icons/control_fastforward.gif",
+		cls : "icon-control-fastforward"
+	}, {
+		name : "control_fastforward_blue",
+		url : "images/icons/control_fastforward_blue.gif",
+		cls : "icon-control-fastforward-blue"
+	}, {
+		name : "control_pause",
+		url : "images/icons/control_pause.gif",
+		cls : "icon-control-pause"
+	}, {
+		name : "control_pause_blue",
+		url : "images/icons/control_pause_blue.gif",
+		cls : "icon-control-pause-blue"
+	}, {
+		name : "control_play",
+		url : "images/icons/control_play.gif",
+		cls : "icon-control-play"
+	}, {
+		name : "control_play_blue",
+		url : "images/icons/control_play_blue.gif",
+		cls : "icon-control-play-blue"
+	}, {
+		name : "control_repeat",
+		url : "images/icons/control_repeat.gif",
+		cls : "icon-control-repeat"
+	}, {
+		name : "control_repeat_blue",
+		url : "images/icons/control_repeat_blue.gif",
+		cls : "icon-control-repeat-blue"
+	}, {
+		name : "control_rewind",
+		url : "images/icons/control_rewind.gif",
+		cls : "icon-control-rewind"
+	}, {
+		name : "control_rewind_blue",
+		url : "images/icons/control_rewind_blue.gif",
+		cls : "icon-control-rewind-blue"
+	}, {
+		name : "control_start",
+		url : "images/icons/control_start.gif",
+		cls : "icon-control-start"
+	}, {
+		name : "control_start_blue",
+		url : "images/icons/control_start_blue.gif",
+		cls : "icon-control-start-blue"
+	}, {
+		name : "control_stop",
+		url : "images/icons/control_stop.gif",
+		cls : "icon-control-stop"
+	}, {
+		name : "control_stop_blue",
+		url : "images/icons/control_stop_blue.gif",
+		cls : "icon-control-stop-blue"
+	}, {
+		name : "creditcards",
+		url : "images/icons/creditcards.gif",
+		cls : "icon-creditcards"
+	}, {
+		name : "cross",
+		url : "images/icons/cross.gif",
+		cls : "icon-cross"
+	}, {
+		name : "css",
+		url : "images/icons/css.gif",
+		cls : "icon-css"
+	}, {
+		name : "css_add",
+		url : "images/icons/css_add.gif",
+		cls : "icon-css-add"
+	}, {
+		name : "css_delete",
+		url : "images/icons/css_delete.gif",
+		cls : "icon-css-delete"
+	}, {
+		name : "css_go",
+		url : "images/icons/css_go.gif",
+		cls : "icon-css-go"
+	}, {
+		name : "css_valid",
+		url : "images/icons/css_valid.gif",
+		cls : "icon-css-valid"
+	}, {
+		name : "cup",
+		url : "images/icons/cup.gif",
+		cls : "icon-cup"
+	}, {
+		name : "cup_add",
+		url : "images/icons/cup_add.gif",
+		cls : "icon-cup-add"
+	}, {
+		name : "cup_delete",
+		url : "images/icons/cup_delete.gif",
+		cls : "icon-cup-delete"
+	}, {
+		name : "cup_edit",
+		url : "images/icons/cup_edit.gif",
+		cls : "icon-cup-edit"
+	}, {
+		name : "cup_error",
+		url : "images/icons/cup_error.gif",
+		cls : "icon-cup-error"
+	}, {
+		name : "cup_go",
+		url : "images/icons/cup_go.gif",
+		cls : "icon-cup-go"
+	}, {
+		name : "cup_key",
+		url : "images/icons/cup_key.gif",
+		cls : "icon-cup-key"
+	}, {
+		name : "cup_link",
+		url : "images/icons/cup_link.gif",
+		cls : "icon-cup-link"
+	}, {
+		name : "cursor",
+		url : "images/icons/cursor.gif",
+		cls : "icon-cursor"
+	}, {
+		name : "cut",
+		url : "images/icons/cut.gif",
+		cls : "icon-cut"
+	}, {
+		name : "cut_red",
+		url : "images/icons/cut_red.gif",
+		cls : "icon-cut-red"
+	}, {
+		name : "database",
+		url : "images/icons/database.gif",
+		cls : "icon-database"
+	}, {
+		name : "database_add",
+		url : "images/icons/database_add.gif",
+		cls : "icon-database-add"
+	}, {
+		name : "database_connect",
+		url : "images/icons/database_connect.gif",
+		cls : "icon-database-connect"
+	}, {
+		name : "database_delete",
+		url : "images/icons/database_delete.gif",
+		cls : "icon-database-delete"
+	}, {
+		name : "database_edit",
+		url : "images/icons/database_edit.gif",
+		cls : "icon-database-edit"
+	}, {
+		name : "database_error",
+		url : "images/icons/database_error.gif",
+		cls : "icon-database-error"
+	}, {
+		name : "database_gear",
+		url : "images/icons/database_gear.gif",
+		cls : "icon-database-gear"
+	}, {
+		name : "database_go",
+		url : "images/icons/database_go.gif",
+		cls : "icon-database-go"
+	}, {
+		name : "database_key",
+		url : "images/icons/database_key.gif",
+		cls : "icon-database-key"
+	}, {
+		name : "database_lightning",
+		url : "images/icons/database_lightning.gif",
+		cls : "icon-database-lightning"
+	}, {
+		name : "database_link",
+		url : "images/icons/database_link.gif",
+		cls : "icon-database-link"
+	}, {
+		name : "database_refresh",
+		url : "images/icons/database_refresh.gif",
+		cls : "icon-database-refresh"
+	}, {
+		name : "database_save",
+		url : "images/icons/database_save.gif",
+		cls : "icon-database-save"
+	}, {
+		name : "database_table",
+		url : "images/icons/database_table.gif",
+		cls : "icon-database-table"
+	}, {
+		name : "date",
+		url : "images/icons/date.gif",
+		cls : "icon-date"
+	}, {
+		name : "date_add",
+		url : "images/icons/date_add.gif",
+		cls : "icon-date-add"
+	}, {
+		name : "date_delete",
+		url : "images/icons/date_delete.gif",
+		cls : "icon-date-delete"
+	}, {
+		name : "date_edit",
+		url : "images/icons/date_edit.gif",
+		cls : "icon-date-edit"
+	}, {
+		name : "date_error",
+		url : "images/icons/date_error.gif",
+		cls : "icon-date-error"
+	}, {
+		name : "date_go",
+		url : "images/icons/date_go.gif",
+		cls : "icon-date-go"
+	}, {
+		name : "date_link",
+		url : "images/icons/date_link.gif",
+		cls : "icon-date-link"
+	}, {
+		name : "date_magnify",
+		url : "images/icons/date_magnify.gif",
+		cls : "icon-date-magnify"
+	}, {
+		name : "date_next",
+		url : "images/icons/date_next.gif",
+		cls : "icon-date-next"
+	}, {
+		name : "date_previous",
+		url : "images/icons/date_previous.gif",
+		cls : "icon-date-previous"
+	}, {
+		name : "delete",
+		url : "images/icons/delete.gif",
+		cls : "icon-delete"
+	}, {
+		name : "disconnect",
+		url : "images/icons/disconnect.gif",
+		cls : "icon-disconnect"
+	}, {
+		name : "disk",
+		url : "images/icons/disk.gif",
+		cls : "icon-disk"
+	}, {
+		name : "disk_multiple",
+		url : "images/icons/disk_multiple.gif",
+		cls : "icon-disk-multiple"
+	}, {
+		name : "door",
+		url : "images/icons/door.gif",
+		cls : "icon-door"
+	}, {
+		name : "door_in",
+		url : "images/icons/door_in.gif",
+		cls : "icon-door-in"
+	}, {
+		name : "door_open",
+		url : "images/icons/door_open.gif",
+		cls : "icon-door-open"
+	}, {
+		name : "door_out",
+		url : "images/icons/door_out.gif",
+		cls : "icon-door-out"
+	}, {
+		name : "drink",
+		url : "images/icons/drink.gif",
+		cls : "icon-drink"
+	}, {
+		name : "drink_empty",
+		url : "images/icons/drink_empty.gif",
+		cls : "icon-drink-empty"
+	}, {
+		name : "drive",
+		url : "images/icons/drive.gif",
+		cls : "icon-drive"
+	}, {
+		name : "drive_add",
+		url : "images/icons/drive_add.gif",
+		cls : "icon-drive-add"
+	}, {
+		name : "drive_burn",
+		url : "images/icons/drive_burn.gif",
+		cls : "icon-drive-burn"
+	}, {
+		name : "drive_cd",
+		url : "images/icons/drive_cd.gif",
+		cls : "icon-drive-cd"
+	}, {
+		name : "drive_cd_empty",
+		url : "images/icons/drive_cd_empty.gif",
+		cls : "icon-drive-cd-empty"
+	}, {
+		name : "drive_delete",
+		url : "images/icons/drive_delete.gif",
+		cls : "icon-drive-delete"
+	}, {
+		name : "drive_disk",
+		url : "images/icons/drive_disk.gif",
+		cls : "icon-drive-disk"
+	}, {
+		name : "drive_edit",
+		url : "images/icons/drive_edit.gif",
+		cls : "icon-drive-edit"
+	}, {
+		name : "drive_error",
+		url : "images/icons/drive_error.gif",
+		cls : "icon-drive-error"
+	}, {
+		name : "drive_go",
+		url : "images/icons/drive_go.gif",
+		cls : "icon-drive-go"
+	}, {
+		name : "drive_key",
+		url : "images/icons/drive_key.gif",
+		cls : "icon-drive-key"
+	}, {
+		name : "drive_link",
+		url : "images/icons/drive_link.gif",
+		cls : "icon-drive-link"
+	}, {
+		name : "drive_magnify",
+		url : "images/icons/drive_magnify.gif",
+		cls : "icon-drive-magnify"
+	}, {
+		name : "drive_network",
+		url : "images/icons/drive_network.gif",
+		cls : "icon-drive-network"
+	}, {
+		name : "drive_rename",
+		url : "images/icons/drive_rename.gif",
+		cls : "icon-drive-rename"
+	}, {
+		name : "drive_user",
+		url : "images/icons/drive_user.gif",
+		cls : "icon-drive-user"
+	}, {
+		name : "drive_web",
+		url : "images/icons/drive_web.gif",
+		cls : "icon-drive-web"
+	}, {
+		name : "dvd",
+		url : "images/icons/dvd.gif",
+		cls : "icon-dvd"
+	}, {
+		name : "dvd_add",
+		url : "images/icons/dvd_add.gif",
+		cls : "icon-dvd-add"
+	}, {
+		name : "dvd_delete",
+		url : "images/icons/dvd_delete.gif",
+		cls : "icon-dvd-delete"
+	}, {
+		name : "dvd_edit",
+		url : "images/icons/dvd_edit.gif",
+		cls : "icon-dvd-edit"
+	}, {
+		name : "dvd_error",
+		url : "images/icons/dvd_error.gif",
+		cls : "icon-dvd-error"
+	}, {
+		name : "dvd_go",
+		url : "images/icons/dvd_go.gif",
+		cls : "icon-dvd-go"
+	}, {
+		name : "dvd_key",
+		url : "images/icons/dvd_key.gif",
+		cls : "icon-dvd-key"
+	}, {
+		name : "dvd_link",
+		url : "images/icons/dvd_link.gif",
+		cls : "icon-dvd-link"
+	}, {
+		name : "email",
+		url : "images/icons/email.gif",
+		cls : "icon-email"
+	}, {
+		name : "email_add",
+		url : "images/icons/email_add.gif",
+		cls : "icon-email-add"
+	}, {
+		name : "email_attach",
+		url : "images/icons/email_attach.gif",
+		cls : "icon-email-attach"
+	}, {
+		name : "email_delete",
+		url : "images/icons/email_delete.gif",
+		cls : "icon-email-delete"
+	}, {
+		name : "email_edit",
+		url : "images/icons/email_edit.gif",
+		cls : "icon-email-edit"
+	}, {
+		name : "email_error",
+		url : "images/icons/email_error.gif",
+		cls : "icon-email-error"
+	}, {
+		name : "email_go",
+		url : "images/icons/email_go.gif",
+		cls : "icon-email-go"
+	}, {
+		name : "email_link",
+		url : "images/icons/email_link.gif",
+		cls : "icon-email-link"
+	}, {
+		name : "email_open",
+		url : "images/icons/email_open.gif",
+		cls : "icon-email-open"
+	}, {
+		name : "email_open_image",
+		url : "images/icons/email_open_image.gif",
+		cls : "icon-email-open-image"
+	}, {
+		name : "emoticon_evilgrin",
+		url : "images/icons/emoticon_evilgrin.gif",
+		cls : "icon-emoticon-evilgrin"
+	}, {
+		name : "emoticon_grin",
+		url : "images/icons/emoticon_grin.gif",
+		cls : "icon-emoticon-grin"
+	}, {
+		name : "emoticon_happy",
+		url : "images/icons/emoticon_happy.gif",
+		cls : "icon-emoticon-happy"
+	}, {
+		name : "emoticon_smile",
+		url : "images/icons/emoticon_smile.gif",
+		cls : "icon-emoticon-smile"
+	}, {
+		name : "emoticon_surprised",
+		url : "images/icons/emoticon_surprised.gif",
+		cls : "icon-emoticon-surprised"
+	}, {
+		name : "emoticon_tongue",
+		url : "images/icons/emoticon_tongue.gif",
+		cls : "icon-emoticon-tongue"
+	}, {
+		name : "emoticon_unhappy",
+		url : "images/icons/emoticon_unhappy.gif",
+		cls : "icon-emoticon-unhappy"
+	}, {
+		name : "emoticon_waii",
+		url : "images/icons/emoticon_waii.gif",
+		cls : "icon-emoticon-waii"
+	}, {
+		name : "emoticon_wink",
+		url : "images/icons/emoticon_wink.gif",
+		cls : "icon-emoticon-wink"
+	}, {
+		name : "error",
+		url : "images/icons/error.gif",
+		cls : "icon-error"
+	}, {
+		name : "error_add",
+		url : "images/icons/error_add.gif",
+		cls : "icon-error-add"
+	}, {
+		name : "error_delete",
+		url : "images/icons/error_delete.gif",
+		cls : "icon-error-delete"
+	}, {
+		name : "error_go",
+		url : "images/icons/error_go.gif",
+		cls : "icon-error-go"
+	}, {
+		name : "exclamation",
+		url : "images/icons/exclamation.gif",
+		cls : "icon-exclamation"
+	}, {
+		name : "eye",
+		url : "images/icons/eye.gif",
+		cls : "icon-eye"
+	}, {
+		name : "feed",
+		url : "images/icons/feed.gif",
+		cls : "icon-feed"
+	}, {
+		name : "feed_add",
+		url : "images/icons/feed_add.gif",
+		cls : "icon-feed-add"
+	}, {
+		name : "feed_delete",
+		url : "images/icons/feed_delete.gif",
+		cls : "icon-feed-delete"
+	}, {
+		name : "feed_disk",
+		url : "images/icons/feed_disk.gif",
+		cls : "icon-feed-disk"
+	}, {
+		name : "feed_edit",
+		url : "images/icons/feed_edit.gif",
+		cls : "icon-feed-edit"
+	}, {
+		name : "feed_error",
+		url : "images/icons/feed_error.gif",
+		cls : "icon-feed-error"
+	}, {
+		name : "feed_go",
+		url : "images/icons/feed_go.gif",
+		cls : "icon-feed-go"
+	}, {
+		name : "feed_key",
+		url : "images/icons/feed_key.gif",
+		cls : "icon-feed-key"
+	}, {
+		name : "feed_link",
+		url : "images/icons/feed_link.gif",
+		cls : "icon-feed-link"
+	}, {
+		name : "feed_magnify",
+		url : "images/icons/feed_magnify.gif",
+		cls : "icon-feed-magnify"
+	}, {
+		name : "female",
+		url : "images/icons/female.gif",
+		cls : "icon-female"
+	}, {
+		name : "film",
+		url : "images/icons/film.gif",
+		cls : "icon-film"
+	}, {
+		name : "film_add",
+		url : "images/icons/film_add.gif",
+		cls : "icon-film-add"
+	}, {
+		name : "film_delete",
+		url : "images/icons/film_delete.gif",
+		cls : "icon-film-delete"
+	}, {
+		name : "film_edit",
+		url : "images/icons/film_edit.gif",
+		cls : "icon-film-edit"
+	}, {
+		name : "film_error",
+		url : "images/icons/film_error.gif",
+		cls : "icon-film-error"
+	}, {
+		name : "film_go",
+		url : "images/icons/film_go.gif",
+		cls : "icon-film-go"
+	}, {
+		name : "film_key",
+		url : "images/icons/film_key.gif",
+		cls : "icon-film-key"
+	}, {
+		name : "film_link",
+		url : "images/icons/film_link.gif",
+		cls : "icon-film-link"
+	}, {
+		name : "film_save",
+		url : "images/icons/film_save.gif",
+		cls : "icon-film-save"
+	}, {
+		name : "find",
+		url : "images/icons/find.gif",
+		cls : "icon-find"
+	}, {
+		name : "flag_blue",
+		url : "images/icons/flag_blue.gif",
+		cls : "icon-flag-blue"
+	}, {
+		name : "flag_green",
+		url : "images/icons/flag_green.gif",
+		cls : "icon-flag-green"
+	}, {
+		name : "flag_orange",
+		url : "images/icons/flag_orange.gif",
+		cls : "icon-flag-orange"
+	}, {
+		name : "flag_pink",
+		url : "images/icons/flag_pink.gif",
+		cls : "icon-flag-pink"
+	}, {
+		name : "flag_purple",
+		url : "images/icons/flag_purple.gif",
+		cls : "icon-flag-purple"
+	}, {
+		name : "flag_red",
+		url : "images/icons/flag_red.gif",
+		cls : "icon-flag-red"
+	}, {
+		name : "flag_yellow",
+		url : "images/icons/flag_yellow.gif",
+		cls : "icon-flag-yellow"
+	}, {
+		name : "folder",
+		url : "images/icons/folder.gif",
+		cls : "icon-folder"
+	}, {
+		name : "folder_add",
+		url : "images/icons/folder_add.gif",
+		cls : "icon-folder-add"
+	}, {
+		name : "folder_bell",
+		url : "images/icons/folder_bell.gif",
+		cls : "icon-folder-bell"
+	}, {
+		name : "folder_brick",
+		url : "images/icons/folder_brick.gif",
+		cls : "icon-folder-brick"
+	}, {
+		name : "folder_bug",
+		url : "images/icons/folder_bug.gif",
+		cls : "icon-folder-bug"
+	}, {
+		name : "folder_camera",
+		url : "images/icons/folder_camera.gif",
+		cls : "icon-folder-camera"
+	}, {
+		name : "folder_database",
+		url : "images/icons/folder_database.gif",
+		cls : "icon-folder-database"
+	}, {
+		name : "folder_delete",
+		url : "images/icons/folder_delete.gif",
+		cls : "icon-folder-delete"
+	}, {
+		name : "folder_edit",
+		url : "images/icons/folder_edit.gif",
+		cls : "icon-folder-edit"
+	}, {
+		name : "folder_error",
+		url : "images/icons/folder_error.gif",
+		cls : "icon-folder-error"
+	}, {
+		name : "folder_explore",
+		url : "images/icons/folder_explore.gif",
+		cls : "icon-folder-explore"
+	}, {
+		name : "folder_feed",
+		url : "images/icons/folder_feed.gif",
+		cls : "icon-folder-feed"
+	}, {
+		name : "folder_find",
+		url : "images/icons/folder_find.gif",
+		cls : "icon-folder-find"
+	}, {
+		name : "folder_go",
+		url : "images/icons/folder_go.gif",
+		cls : "icon-folder-go"
+	}, {
+		name : "folder_heart",
+		url : "images/icons/folder_heart.gif",
+		cls : "icon-folder-heart"
+	}, {
+		name : "folder_image",
+		url : "images/icons/folder_image.gif",
+		cls : "icon-folder-image"
+	}, {
+		name : "folder_key",
+		url : "images/icons/folder_key.gif",
+		cls : "icon-folder-key"
+	}, {
+		name : "folder_lightbulb",
+		url : "images/icons/folder_lightbulb.gif",
+		cls : "icon-folder-lightbulb"
+	}, {
+		name : "folder_link",
+		url : "images/icons/folder_link.gif",
+		cls : "icon-folder-link"
+	}, {
+		name : "folder_magnify",
+		url : "images/icons/folder_magnify.gif",
+		cls : "icon-folder-magnify"
+	}, {
+		name : "folder_page",
+		url : "images/icons/folder_page.gif",
+		cls : "icon-folder-page"
+	}, {
+		name : "folder_page_white",
+		url : "images/icons/folder_page_white.gif",
+		cls : "icon-folder-page-white"
+	}, {
+		name : "folder_palette",
+		url : "images/icons/folder_palette.gif",
+		cls : "icon-folder-palette"
+	}, {
+		name : "folder_picture",
+		url : "images/icons/folder_picture.gif",
+		cls : "icon-folder-picture"
+	}, {
+		name : "folder_star",
+		url : "images/icons/folder_star.gif",
+		cls : "icon-folder-star"
+	}, {
+		name : "folder_table",
+		url : "images/icons/folder_table.gif",
+		cls : "icon-folder-table"
+	}, {
+		name : "folder_user",
+		url : "images/icons/folder_user.gif",
+		cls : "icon-folder-user"
+	}, {
+		name : "folder_wrench",
+		url : "images/icons/folder_wrench.gif",
+		cls : "icon-folder-wrench"
+	}, {
+		name : "font",
+		url : "images/icons/font.gif",
+		cls : "icon-font"
+	}, {
+		name : "font_add",
+		url : "images/icons/font_add.gif",
+		cls : "icon-font-add"
+	}, {
+		name : "font_delete",
+		url : "images/icons/font_delete.gif",
+		cls : "icon-font-delete"
+	}, {
+		name : "font_go",
+		url : "images/icons/font_go.gif",
+		cls : "icon-font-go"
+	}, {
+		name : "group",
+		url : "images/icons/group.gif",
+		cls : "icon-group"
+	}, {
+		name : "group_add",
+		url : "images/icons/group_add.gif",
+		cls : "icon-group-add"
+	}, {
+		name : "group_delete",
+		url : "images/icons/group_delete.gif",
+		cls : "icon-group-delete"
+	}, {
+		name : "group_edit",
+		url : "images/icons/group_edit.gif",
+		cls : "icon-group-edit"
+	}, {
+		name : "group_error",
+		url : "images/icons/group_error.gif",
+		cls : "icon-group-error"
+	}, {
+		name : "group_gear",
+		url : "images/icons/group_gear.gif",
+		cls : "icon-group-gear"
+	}, {
+		name : "group_go",
+		url : "images/icons/group_go.gif",
+		cls : "icon-group-go"
+	}, {
+		name : "group_key",
+		url : "images/icons/group_key.gif",
+		cls : "icon-group-key"
+	}, {
+		name : "group_link",
+		url : "images/icons/group_link.gif",
+		cls : "icon-group-link"
+	}, {
+		name : "heart",
+		url : "images/icons/heart.gif",
+		cls : "icon-heart"
+	}, {
+		name : "heart_add",
+		url : "images/icons/heart_add.gif",
+		cls : "icon-heart-add"
+	}, {
+		name : "heart_delete",
+		url : "images/icons/heart_delete.gif",
+		cls : "icon-heart-delete"
+	}, {
+		name : "help",
+		url : "images/icons/help.gif",
+		cls : "icon-help"
+	}, {
+		name : "hourglass",
+		url : "images/icons/hourglass.gif",
+		cls : "icon-hourglass"
+	}, {
+		name : "hourglass_add",
+		url : "images/icons/hourglass_add.gif",
+		cls : "icon-hourglass-add"
+	}, {
+		name : "hourglass_delete",
+		url : "images/icons/hourglass_delete.gif",
+		cls : "icon-hourglass-delete"
+	}, {
+		name : "hourglass_go",
+		url : "images/icons/hourglass_go.gif",
+		cls : "icon-hourglass-go"
+	}, {
+		name : "hourglass_link",
+		url : "images/icons/hourglass_link.gif",
+		cls : "icon-hourglass-link"
+	}, {
+		name : "house",
+		url : "images/icons/house.gif",
+		cls : "icon-house"
+	}, {
+		name : "house_go",
+		url : "images/icons/house_go.gif",
+		cls : "icon-house-go"
+	}, {
+		name : "house_link",
+		url : "images/icons/house_link.gif",
+		cls : "icon-house-link"
+	}, {
+		name : "html",
+		url : "images/icons/html.gif",
+		cls : "icon-html"
+	}, {
+		name : "html_add",
+		url : "images/icons/html_add.gif",
+		cls : "icon-html-add"
+	}, {
+		name : "html_delete",
+		url : "images/icons/html_delete.gif",
+		cls : "icon-html-delete"
+	}, {
+		name : "html_go",
+		url : "images/icons/html_go.gif",
+		cls : "icon-html-go"
+	}, {
+		name : "html_valid",
+		url : "images/icons/html_valid.gif",
+		cls : "icon-html-valid"
+	}, {
+		name : "image",
+		url : "images/icons/image.gif",
+		cls : "icon-image"
+	}, {
+		name : "images",
+		url : "images/icons/images.gif",
+		cls : "icon-images"
+	}, {
+		name : "image_add",
+		url : "images/icons/image_add.gif",
+		cls : "icon-image-add"
+	}, {
+		name : "image_delete",
+		url : "images/icons/image_delete.gif",
+		cls : "icon-image-delete"
+	}, {
+		name : "image_edit",
+		url : "images/icons/image_edit.gif",
+		cls : "icon-image-edit"
+	}, {
+		name : "image_link",
+		url : "images/icons/image_link.gif",
+		cls : "icon-image-link"
+	}, {
+		name : "information",
+		url : "images/icons/information.gif",
+		cls : "icon-information"
+	}, {
+		name : "ipod",
+		url : "images/icons/ipod.gif",
+		cls : "icon-ipod"
+	}, {
+		name : "ipod_cast",
+		url : "images/icons/ipod_cast.gif",
+		cls : "icon-ipod-cast"
+	}, {
+		name : "ipod_cast_add",
+		url : "images/icons/ipod_cast_add.gif",
+		cls : "icon-ipod-cast-add"
+	}, {
+		name : "ipod_cast_delete",
+		url : "images/icons/ipod_cast_delete.gif",
+		cls : "icon-ipod-cast-delete"
+	}, {
+		name : "ipod_sound",
+		url : "images/icons/ipod_sound.gif",
+		cls : "icon-ipod-sound"
+	}, {
+		name : "joystick",
+		url : "images/icons/joystick.gif",
+		cls : "icon-joystick"
+	}, {
+		name : "joystick_add",
+		url : "images/icons/joystick_add.gif",
+		cls : "icon-joystick-add"
+	}, {
+		name : "joystick_delete",
+		url : "images/icons/joystick_delete.gif",
+		cls : "icon-joystick-delete"
+	}, {
+		name : "joystick_error",
+		url : "images/icons/joystick_error.gif",
+		cls : "icon-joystick-error"
+	}, {
+		name : "key",
+		url : "images/icons/key.gif",
+		cls : "icon-key"
+	}, {
+		name : "keyboard",
+		url : "images/icons/keyboard.gif",
+		cls : "icon-keyboard"
+	}, {
+		name : "keyboard_add",
+		url : "images/icons/keyboard_add.gif",
+		cls : "icon-keyboard-add"
+	}, {
+		name : "keyboard_delete",
+		url : "images/icons/keyboard_delete.gif",
+		cls : "icon-keyboard-delete"
+	}, {
+		name : "keyboard_magnify",
+		url : "images/icons/keyboard_magnify.gif",
+		cls : "icon-keyboard-magnify"
+	}, {
+		name : "key_add",
+		url : "images/icons/key_add.gif",
+		cls : "icon-key-add"
+	}, {
+		name : "key_delete",
+		url : "images/icons/key_delete.gif",
+		cls : "icon-key-delete"
+	}, {
+		name : "key_go",
+		url : "images/icons/key_go.gif",
+		cls : "icon-key-go"
+	}, {
+		name : "layers",
+		url : "images/icons/layers.gif",
+		cls : "icon-layers"
+	}, {
+		name : "layout",
+		url : "images/icons/layout.gif",
+		cls : "icon-layout"
+	}, {
+		name : "layout_add",
+		url : "images/icons/layout_add.gif",
+		cls : "icon-layout-add"
+	}, {
+		name : "layout_content",
+		url : "images/icons/layout_content.gif",
+		cls : "icon-layout-content"
+	}, {
+		name : "layout_delete",
+		url : "images/icons/layout_delete.gif",
+		cls : "icon-layout-delete"
+	}, {
+		name : "layout_edit",
+		url : "images/icons/layout_edit.gif",
+		cls : "icon-layout-edit"
+	}, {
+		name : "layout_error",
+		url : "images/icons/layout_error.gif",
+		cls : "icon-layout-error"
+	}, {
+		name : "layout_header",
+		url : "images/icons/layout_header.gif",
+		cls : "icon-layout-header"
+	}, {
+		name : "layout_link",
+		url : "images/icons/layout_link.gif",
+		cls : "icon-layout-link"
+	}, {
+		name : "layout_sidebar",
+		url : "images/icons/layout_sidebar.gif",
+		cls : "icon-layout-sidebar"
+	}, {
+		name : "lightbulb",
+		url : "images/icons/lightbulb.gif",
+		cls : "icon-lightbulb"
+	}, {
+		name : "lightbulb_add",
+		url : "images/icons/lightbulb_add.gif",
+		cls : "icon-lightbulb-add"
+	}, {
+		name : "lightbulb_delete",
+		url : "images/icons/lightbulb_delete.gif",
+		cls : "icon-lightbulb-delete"
+	}, {
+		name : "lightbulb_off",
+		url : "images/icons/lightbulb_off.gif",
+		cls : "icon-lightbulb-off"
+	}, {
+		name : "lightning",
+		url : "images/icons/lightning.gif",
+		cls : "icon-lightning"
+	}, {
+		name : "lightning_add",
+		url : "images/icons/lightning_add.gif",
+		cls : "icon-lightning-add"
+	}, {
+		name : "lightning_delete",
+		url : "images/icons/lightning_delete.gif",
+		cls : "icon-lightning-delete"
+	}, {
+		name : "lightning_go",
+		url : "images/icons/lightning_go.gif",
+		cls : "icon-lightning-go"
+	}, {
+		name : "link",
+		url : "images/icons/link.gif",
+		cls : "icon-link"
+	}, {
+		name : "link_add",
+		url : "images/icons/link_add.gif",
+		cls : "icon-link-add"
+	}, {
+		name : "link_break",
+		url : "images/icons/link_break.gif",
+		cls : "icon-link-break"
+	}, {
+		name : "link_delete",
+		url : "images/icons/link_delete.gif",
+		cls : "icon-link-delete"
+	}, {
+		name : "link_edit",
+		url : "images/icons/link_edit.gif",
+		cls : "icon-link-edit"
+	}, {
+		name : "link_error",
+		url : "images/icons/link_error.gif",
+		cls : "icon-link-error"
+	}, {
+		name : "link_go",
+		url : "images/icons/link_go.gif",
+		cls : "icon-link-go"
+	}, {
+		name : "lock",
+		url : "images/icons/lock.gif",
+		cls : "icon-lock"
+	}, {
+		name : "lock_add",
+		url : "images/icons/lock_add.gif",
+		cls : "icon-lock-add"
+	}, {
+		name : "lock_break",
+		url : "images/icons/lock_break.gif",
+		cls : "icon-lock-break"
+	}, {
+		name : "lock_delete",
+		url : "images/icons/lock_delete.gif",
+		cls : "icon-lock-delete"
+	}, {
+		name : "lock_edit",
+		url : "images/icons/lock_edit.gif",
+		cls : "icon-lock-edit"
+	}, {
+		name : "lock_go",
+		url : "images/icons/lock_go.gif",
+		cls : "icon-lock-go"
+	}, {
+		name : "lock_open",
+		url : "images/icons/lock_open.gif",
+		cls : "icon-lock-open"
+	}, {
+		name : "lorry",
+		url : "images/icons/lorry.gif",
+		cls : "icon-lorry"
+	}, {
+		name : "lorry_add",
+		url : "images/icons/lorry_add.gif",
+		cls : "icon-lorry-add"
+	}, {
+		name : "lorry_delete",
+		url : "images/icons/lorry_delete.gif",
+		cls : "icon-lorry-delete"
+	}, {
+		name : "lorry_error",
+		url : "images/icons/lorry_error.gif",
+		cls : "icon-lorry-error"
+	}, {
+		name : "lorry_flatbed",
+		url : "images/icons/lorry_flatbed.gif",
+		cls : "icon-lorry-flatbed"
+	}, {
+		name : "lorry_go",
+		url : "images/icons/lorry_go.gif",
+		cls : "icon-lorry-go"
+	}, {
+		name : "lorry_link",
+		url : "images/icons/lorry_link.gif",
+		cls : "icon-lorry-link"
+	}, {
+		name : "magifier_zoom_out",
+		url : "images/icons/magifier_zoom_out.gif",
+		cls : "icon-magifier-zoom-out"
+	}, {
+		name : "magnifier",
+		url : "images/icons/magnifier.gif",
+		cls : "icon-magnifier"
+	}, {
+		name : "magnifier_zoom_in",
+		url : "images/icons/magnifier_zoom_in.gif",
+		cls : "icon-magnifier-zoom-in"
+	}, {
+		name : "male",
+		url : "images/icons/male.gif",
+		cls : "icon-male"
+	}, {
+		name : "map",
+		url : "images/icons/map.gif",
+		cls : "icon-map"
+	}, {
+		name : "map_add",
+		url : "images/icons/map_add.gif",
+		cls : "icon-map-add"
+	}, {
+		name : "map_delete",
+		url : "images/icons/map_delete.gif",
+		cls : "icon-map-delete"
+	}, {
+		name : "map_edit",
+		url : "images/icons/map_edit.gif",
+		cls : "icon-map-edit"
+	}, {
+		name : "map_go",
+		url : "images/icons/map_go.gif",
+		cls : "icon-map-go"
+	}, {
+		name : "map_magnify",
+		url : "images/icons/map_magnify.gif",
+		cls : "icon-map-magnify"
+	}, {
+		name : "medal_bronze_1",
+		url : "images/icons/medal_bronze_1.gif",
+		cls : "icon-medal-bronze-1"
+	}, {
+		name : "medal_bronze_2",
+		url : "images/icons/medal_bronze_2.gif",
+		cls : "icon-medal-bronze-2"
+	}, {
+		name : "medal_bronze_3",
+		url : "images/icons/medal_bronze_3.gif",
+		cls : "icon-medal-bronze-3"
+	}, {
+		name : "medal_bronze_add",
+		url : "images/icons/medal_bronze_add.gif",
+		cls : "icon-medal-bronze-add"
+	}, {
+		name : "medal_bronze_delete",
+		url : "images/icons/medal_bronze_delete.gif",
+		cls : "icon-medal-bronze-delete"
+	}, {
+		name : "medal_gold_1",
+		url : "images/icons/medal_gold_1.gif",
+		cls : "icon-medal-gold-1"
+	}, {
+		name : "medal_gold_2",
+		url : "images/icons/medal_gold_2.gif",
+		cls : "icon-medal-gold-2"
+	}, {
+		name : "medal_gold_3",
+		url : "images/icons/medal_gold_3.gif",
+		cls : "icon-medal-gold-3"
+	}, {
+		name : "medal_gold_add",
+		url : "images/icons/medal_gold_add.gif",
+		cls : "icon-medal-gold-add"
+	}, {
+		name : "medal_gold_delete",
+		url : "images/icons/medal_gold_delete.gif",
+		cls : "icon-medal-gold-delete"
+	}, {
+		name : "medal_silver_1",
+		url : "images/icons/medal_silver_1.gif",
+		cls : "icon-medal-silver-1"
+	}, {
+		name : "medal_silver_2",
+		url : "images/icons/medal_silver_2.gif",
+		cls : "icon-medal-silver-2"
+	}, {
+		name : "medal_silver_3",
+		url : "images/icons/medal_silver_3.gif",
+		cls : "icon-medal-silver-3"
+	}, {
+		name : "medal_silver_add",
+		url : "images/icons/medal_silver_add.gif",
+		cls : "icon-medal-silver-add"
+	}, {
+		name : "medal_silver_delete",
+		url : "images/icons/medal_silver_delete.gif",
+		cls : "icon-medal-silver-delete"
+	}, {
+		name : "money",
+		url : "images/icons/money.gif",
+		cls : "icon-money"
+	}, {
+		name : "money_add",
+		url : "images/icons/money_add.gif",
+		cls : "icon-money-add"
+	}, {
+		name : "money_delete",
+		url : "images/icons/money_delete.gif",
+		cls : "icon-money-delete"
+	}, {
+		name : "money_dollar",
+		url : "images/icons/money_dollar.gif",
+		cls : "icon-money-dollar"
+	}, {
+		name : "money_euro",
+		url : "images/icons/money_euro.gif",
+		cls : "icon-money-euro"
+	}, {
+		name : "money_pound",
+		url : "images/icons/money_pound.gif",
+		cls : "icon-money-pound"
+	}, {
+		name : "money_yen",
+		url : "images/icons/money_yen.gif",
+		cls : "icon-money-yen"
+	}, {
+		name : "monitor",
+		url : "images/icons/monitor.gif",
+		cls : "icon-monitor"
+	}, {
+		name : "monitor_add",
+		url : "images/icons/monitor_add.gif",
+		cls : "icon-monitor-add"
+	}, {
+		name : "monitor_delete",
+		url : "images/icons/monitor_delete.gif",
+		cls : "icon-monitor-delete"
+	}, {
+		name : "monitor_edit",
+		url : "images/icons/monitor_edit.gif",
+		cls : "icon-monitor-edit"
+	}, {
+		name : "monitor_error",
+		url : "images/icons/monitor_error.gif",
+		cls : "icon-monitor-error"
+	}, {
+		name : "monitor_go",
+		url : "images/icons/monitor_go.gif",
+		cls : "icon-monitor-go"
+	}, {
+		name : "monitor_lightning",
+		url : "images/icons/monitor_lightning.gif",
+		cls : "icon-monitor-lightning"
+	}, {
+		name : "monitor_link",
+		url : "images/icons/monitor_link.gif",
+		cls : "icon-monitor-link"
+	}, {
+		name : "mouse",
+		url : "images/icons/mouse.gif",
+		cls : "icon-mouse"
+	}, {
+		name : "mouse_add",
+		url : "images/icons/mouse_add.gif",
+		cls : "icon-mouse-add"
+	}, {
+		name : "mouse_delete",
+		url : "images/icons/mouse_delete.gif",
+		cls : "icon-mouse-delete"
+	}, {
+		name : "mouse_error",
+		url : "images/icons/mouse_error.gif",
+		cls : "icon-mouse-error"
+	}, {
+		name : "music",
+		url : "images/icons/music.gif",
+		cls : "icon-music"
+	}, {
+		name : "new",
+		url : "images/icons/new.gif",
+		cls : "icon-new"
+	}, {
+		name : "newspaper",
+		url : "images/icons/newspaper.gif",
+		cls : "icon-newspaper"
+	}, {
+		name : "newspaper_add",
+		url : "images/icons/newspaper_add.gif",
+		cls : "icon-newspaper-add"
+	}, {
+		name : "newspaper_delete",
+		url : "images/icons/newspaper_delete.gif",
+		cls : "icon-newspaper-delete"
+	}, {
+		name : "newspaper_go",
+		url : "images/icons/newspaper_go.gif",
+		cls : "icon-newspaper-go"
+	}, {
+		name : "newspaper_link",
+		url : "images/icons/newspaper_link.gif",
+		cls : "icon-newspaper-link"
+	}, {
+		name : "note",
+		url : "images/icons/note.gif",
+		cls : "icon-note"
+	}, {
+		name : "note_add",
+		url : "images/icons/note_add.gif",
+		cls : "icon-note-add"
+	}, {
+		name : "note_delete",
+		url : "images/icons/note_delete.gif",
+		cls : "icon-note-delete"
+	}, {
+		name : "note_edit",
+		url : "images/icons/note_edit.gif",
+		cls : "icon-note-edit"
+	}, {
+		name : "note_error",
+		url : "images/icons/note_error.gif",
+		cls : "icon-note-error"
+	}, {
+		name : "note_go",
+		url : "images/icons/note_go.gif",
+		cls : "icon-note-go"
+	}, {
+		name : "overlays",
+		url : "images/icons/overlays.gif",
+		cls : "icon-overlays"
+	}, {
+		name : "package",
+		url : "images/icons/package.gif",
+		cls : "icon-package"
+	}, {
+		name : "package_add",
+		url : "images/icons/package_add.gif",
+		cls : "icon-package-add"
+	}, {
+		name : "package_delete",
+		url : "images/icons/package_delete.gif",
+		cls : "icon-package-delete"
+	}, {
+		name : "package_go",
+		url : "images/icons/package_go.gif",
+		cls : "icon-package-go"
+	}, {
+		name : "package_green",
+		url : "images/icons/package_green.gif",
+		cls : "icon-package-green"
+	}, {
+		name : "package_link",
+		url : "images/icons/package_link.gif",
+		cls : "icon-package-link"
+	}, {
+		name : "page",
+		url : "images/icons/page.gif",
+		cls : "icon-page"
+	}, {
+		name : "page_add",
+		url : "images/icons/page_add.gif",
+		cls : "icon-page-add"
+	}, {
+		name : "page_attach",
+		url : "images/icons/page_attach.gif",
+		cls : "icon-page-attach"
+	}, {
+		name : "page_code",
+		url : "images/icons/page_code.gif",
+		cls : "icon-page-code"
+	}, {
+		name : "page_copy",
+		url : "images/icons/page_copy.gif",
+		cls : "icon-page-copy"
+	}, {
+		name : "page_delete",
+		url : "images/icons/page_delete.gif",
+		cls : "icon-page-delete"
+	}, {
+		name : "page_edit",
+		url : "images/icons/page_edit.gif",
+		cls : "icon-page-edit"
+	}, {
+		name : "page_error",
+		url : "images/icons/page_error.gif",
+		cls : "icon-page-error"
+	}, {
+		name : "page_excel",
+		url : "images/icons/page_excel.gif",
+		cls : "icon-page-excel"
+	}, {
+		name : "page_find",
+		url : "images/icons/page_find.gif",
+		cls : "icon-page-find"
+	}, {
+		name : "page_gear",
+		url : "images/icons/page_gear.gif",
+		cls : "icon-page-gear"
+	}, {
+		name : "page_go",
+		url : "images/icons/page_go.gif",
+		cls : "icon-page-go"
+	}, {
+		name : "page_green",
+		url : "images/icons/page_green.gif",
+		cls : "icon-page-green"
+	}, {
+		name : "page_key",
+		url : "images/icons/page_key.gif",
+		cls : "icon-page-key"
+	}, {
+		name : "page_lightning",
+		url : "images/icons/page_lightning.gif",
+		cls : "icon-page-lightning"
+	}, {
+		name : "page_link",
+		url : "images/icons/page_link.gif",
+		cls : "icon-page-link"
+	}, {
+		name : "page_paintbrush",
+		url : "images/icons/page_paintbrush.gif",
+		cls : "icon-page-paintbrush"
+	}, {
+		name : "page_paste",
+		url : "images/icons/page_paste.gif",
+		cls : "icon-page-paste"
+	}, {
+		name : "page_red",
+		url : "images/icons/page_red.gif",
+		cls : "icon-page-red"
+	}, {
+		name : "page_refresh",
+		url : "images/icons/page_refresh.gif",
+		cls : "icon-page-refresh"
+	}, {
+		name : "page_save",
+		url : "images/icons/page_save.gif",
+		cls : "icon-page-save"
+	}, {
+		name : "page_white",
+		url : "images/icons/page_white.gif",
+		cls : "icon-page-white"
+	}, {
+		name : "page_white_acrobat",
+		url : "images/icons/page_white_acrobat.gif",
+		cls : "icon-page-white-acrobat"
+	}, {
+		name : "page_white_actionscript",
+		url : "images/icons/page_white_actionscript.gif",
+		cls : "icon-page-white-actionscript"
+	}, {
+		name : "page_white_add",
+		url : "images/icons/page_white_add.gif",
+		cls : "icon-page-white-add"
+	}, {
+		name : "page_white_c",
+		url : "images/icons/page_white_c.gif",
+		cls : "icon-page-white-c"
+	}, {
+		name : "page_white_camera",
+		url : "images/icons/page_white_camera.gif",
+		cls : "icon-page-white-camera"
+	}, {
+		name : "page_white_cd",
+		url : "images/icons/page_white_cd.gif",
+		cls : "icon-page-white-cd"
+	}, {
+		name : "page_white_code",
+		url : "images/icons/page_white_code.gif",
+		cls : "icon-page-white-code"
+	}, {
+		name : "page_white_code_red",
+		url : "images/icons/page_white_code_red.gif",
+		cls : "icon-page-white-code-red"
+	}, {
+		name : "page_white_coldfusion",
+		url : "images/icons/page_white_coldfusion.gif",
+		cls : "icon-page-white-coldfusion"
+	}, {
+		name : "page_white_compressed",
+		url : "images/icons/page_white_compressed.gif",
+		cls : "icon-page-white-compressed"
+	}, {
+		name : "page_white_copy",
+		url : "images/icons/page_white_copy.gif",
+		cls : "icon-page-white-copy"
+	}, {
+		name : "page_white_cplusplus",
+		url : "images/icons/page_white_cplusplus.gif",
+		cls : "icon-page-white-cplusplus"
+	}, {
+		name : "page_white_csharp",
+		url : "images/icons/page_white_csharp.gif",
+		cls : "icon-page-white-csharp"
+	}, {
+		name : "page_white_cup",
+		url : "images/icons/page_white_cup.gif",
+		cls : "icon-page-white-cup"
+	}, {
+		name : "page_white_database",
+		url : "images/icons/page_white_database.gif",
+		cls : "icon-page-white-database"
+	}, {
+		name : "page_white_delete",
+		url : "images/icons/page_white_delete.gif",
+		cls : "icon-page-white-delete"
+	}, {
+		name : "page_white_dvd",
+		url : "images/icons/page_white_dvd.gif",
+		cls : "icon-page-white-dvd"
+	}, {
+		name : "page_white_edit",
+		url : "images/icons/page_white_edit.gif",
+		cls : "icon-page-white-edit"
+	}, {
+		name : "page_white_error",
+		url : "images/icons/page_white_error.gif",
+		cls : "icon-page-white-error"
+	}, {
+		name : "page_white_excel",
+		url : "images/icons/page_white_excel.gif",
+		cls : "icon-page-white-excel"
+	}, {
+		name : "page_white_find",
+		url : "images/icons/page_white_find.gif",
+		cls : "icon-page-white-find"
+	}, {
+		name : "page_white_flash",
+		url : "images/icons/page_white_flash.gif",
+		cls : "icon-page-white-flash"
+	}, {
+		name : "page_white_freehand",
+		url : "images/icons/page_white_freehand.gif",
+		cls : "icon-page-white-freehand"
+	}, {
+		name : "page_white_gear",
+		url : "images/icons/page_white_gear.gif",
+		cls : "icon-page-white-gear"
+	}, {
+		name : "page_white_get",
+		url : "images/icons/page_white_get.gif",
+		cls : "icon-page-white-get"
+	}, {
+		name : "page_white_go",
+		url : "images/icons/page_white_go.gif",
+		cls : "icon-page-white-go"
+	}, {
+		name : "page_white_h",
+		url : "images/icons/page_white_h.gif",
+		cls : "icon-page-white-h"
+	}, {
+		name : "page_white_horizontal",
+		url : "images/icons/page_white_horizontal.gif",
+		cls : "icon-page-white-horizontal"
+	}, {
+		name : "page_white_key",
+		url : "images/icons/page_white_key.gif",
+		cls : "icon-page-white-key"
+	}, {
+		name : "page_white_lightning",
+		url : "images/icons/page_white_lightning.gif",
+		cls : "icon-page-white-lightning"
+	}, {
+		name : "page_white_link",
+		url : "images/icons/page_white_link.gif",
+		cls : "icon-page-white-link"
+	}, {
+		name : "page_white_magnify",
+		url : "images/icons/page_white_magnify.gif",
+		cls : "icon-page-white-magnify"
+	}, {
+		name : "page_white_medal",
+		url : "images/icons/page_white_medal.gif",
+		cls : "icon-page-white-medal"
+	}, {
+		name : "page_white_office",
+		url : "images/icons/page_white_office.gif",
+		cls : "icon-page-white-office"
+	}, {
+		name : "page_white_paint",
+		url : "images/icons/page_white_paint.gif",
+		cls : "icon-page-white-paint"
+	}, {
+		name : "page_white_paintbrush",
+		url : "images/icons/page_white_paintbrush.gif",
+		cls : "icon-page-white-paintbrush"
+	}, {
+		name : "page_white_paste",
+		url : "images/icons/page_white_paste.gif",
+		cls : "icon-page-white-paste"
+	}, {
+		name : "page_white_php",
+		url : "images/icons/page_white_php.gif",
+		cls : "icon-page-white-php"
+	}, {
+		name : "page_white_picture",
+		url : "images/icons/page_white_picture.gif",
+		cls : "icon-page-white-picture"
+	}, {
+		name : "page_white_powerpoint",
+		url : "images/icons/page_white_powerpoint.gif",
+		cls : "icon-page-white-powerpoint"
+	}, {
+		name : "page_white_put",
+		url : "images/icons/page_white_put.gif",
+		cls : "icon-page-white-put"
+	}, {
+		name : "page_white_ruby",
+		url : "images/icons/page_white_ruby.gif",
+		cls : "icon-page-white-ruby"
+	}, {
+		name : "page_white_stack",
+		url : "images/icons/page_white_stack.gif",
+		cls : "icon-page-white-stack"
+	}, {
+		name : "page_white_star",
+		url : "images/icons/page_white_star.gif",
+		cls : "icon-page-white-star"
+	}, {
+		name : "page_white_swoosh",
+		url : "images/icons/page_white_swoosh.gif",
+		cls : "icon-page-white-swoosh"
+	}, {
+		name : "page_white_text",
+		url : "images/icons/page_white_text.gif",
+		cls : "icon-page-white-text"
+	}, {
+		name : "page_white_text_width",
+		url : "images/icons/page_white_text_width.gif",
+		cls : "icon-page-white-text-width"
+	}, {
+		name : "page_white_tux",
+		url : "images/icons/page_white_tux.gif",
+		cls : "icon-page-white-tux"
+	}, {
+		name : "page_white_vector",
+		url : "images/icons/page_white_vector.gif",
+		cls : "icon-page-white-vector"
+	}, {
+		name : "page_white_visualstudio",
+		url : "images/icons/page_white_visualstudio.gif",
+		cls : "icon-page-white-visualstudio"
+	}, {
+		name : "page_white_width",
+		url : "images/icons/page_white_width.gif",
+		cls : "icon-page-white-width"
+	}, {
+		name : "page_white_word",
+		url : "images/icons/page_white_word.gif",
+		cls : "icon-page-white-word"
+	}, {
+		name : "page_white_world",
+		url : "images/icons/page_white_world.gif",
+		cls : "icon-page-white-world"
+	}, {
+		name : "page_white_wrench",
+		url : "images/icons/page_white_wrench.gif",
+		cls : "icon-page-white-wrench"
+	}, {
+		name : "page_white_zip",
+		url : "images/icons/page_white_zip.gif",
+		cls : "icon-page-white-zip"
+	}, {
+		name : "page_word",
+		url : "images/icons/page_word.gif",
+		cls : "icon-page-word"
+	}, {
+		name : "page_world",
+		url : "images/icons/page_world.gif",
+		cls : "icon-page-world"
+	}, {
+		name : "paintbrush",
+		url : "images/icons/paintbrush.gif",
+		cls : "icon-paintbrush"
+	}, {
+		name : "paintcan",
+		url : "images/icons/paintcan.gif",
+		cls : "icon-paintcan"
+	}, {
+		name : "palette",
+		url : "images/icons/palette.gif",
+		cls : "icon-palette"
+	}, {
+		name : "paste_plain",
+		url : "images/icons/paste_plain.gif",
+		cls : "icon-paste-plain"
+	}, {
+		name : "paste_word",
+		url : "images/icons/paste_word.gif",
+		cls : "icon-paste-word"
+	}, {
+		name : "pencil",
+		url : "images/icons/pencil.gif",
+		cls : "icon-pencil"
+	}, {
+		name : "pencil_add",
+		url : "images/icons/pencil_add.gif",
+		cls : "icon-pencil-add"
+	}, {
+		name : "pencil_delete",
+		url : "images/icons/pencil_delete.gif",
+		cls : "icon-pencil-delete"
+	}, {
+		name : "pencil_go",
+		url : "images/icons/pencil_go.gif",
+		cls : "icon-pencil-go"
+	}, {
+		name : "phone",
+		url : "images/icons/phone.gif",
+		cls : "icon-phone"
+	}, {
+		name : "phone_add",
+		url : "images/icons/phone_add.gif",
+		cls : "icon-phone-add"
+	}, {
+		name : "phone_delete",
+		url : "images/icons/phone_delete.gif",
+		cls : "icon-phone-delete"
+	}, {
+		name : "phone_sound",
+		url : "images/icons/phone_sound.gif",
+		cls : "icon-phone-sound"
+	}, {
+		name : "photo",
+		url : "images/icons/photo.gif",
+		cls : "icon-photo"
+	}, {
+		name : "photos",
+		url : "images/icons/photos.gif",
+		cls : "icon-photos"
+	}, {
+		name : "photo_add",
+		url : "images/icons/photo_add.gif",
+		cls : "icon-photo-add"
+	}, {
+		name : "photo_delete",
+		url : "images/icons/photo_delete.gif",
+		cls : "icon-photo-delete"
+	}, {
+		name : "photo_link",
+		url : "images/icons/photo_link.gif",
+		cls : "icon-photo-link"
+	}, {
+		name : "picture",
+		url : "images/icons/picture.gif",
+		cls : "icon-picture"
+	}, {
+		name : "pictures",
+		url : "images/icons/pictures.gif",
+		cls : "icon-pictures"
+	}, {
+		name : "picture_add",
+		url : "images/icons/picture_add.gif",
+		cls : "icon-picture-add"
+	}, {
+		name : "picture_delete",
+		url : "images/icons/picture_delete.gif",
+		cls : "icon-picture-delete"
+	}, {
+		name : "picture_edit",
+		url : "images/icons/picture_edit.gif",
+		cls : "icon-picture-edit"
+	}, {
+		name : "picture_empty",
+		url : "images/icons/picture_empty.gif",
+		cls : "icon-picture-empty"
+	}, {
+		name : "picture_error",
+		url : "images/icons/picture_error.gif",
+		cls : "icon-picture-error"
+	}, {
+		name : "picture_go",
+		url : "images/icons/picture_go.gif",
+		cls : "icon-picture-go"
+	}, {
+		name : "picture_key",
+		url : "images/icons/picture_key.gif",
+		cls : "icon-picture-key"
+	}, {
+		name : "picture_link",
+		url : "images/icons/picture_link.gif",
+		cls : "icon-picture-link"
+	}, {
+		name : "picture_save",
+		url : "images/icons/picture_save.gif",
+		cls : "icon-picture-save"
+	}, {
+		name : "pilcrow",
+		url : "images/icons/pilcrow.gif",
+		cls : "icon-pilcrow"
+	}, {
+		name : "pill",
+		url : "images/icons/pill.gif",
+		cls : "icon-pill"
+	}, {
+		name : "pill_add",
+		url : "images/icons/pill_add.gif",
+		cls : "icon-pill-add"
+	}, {
+		name : "pill_delete",
+		url : "images/icons/pill_delete.gif",
+		cls : "icon-pill-delete"
+	}, {
+		name : "pill_go",
+		url : "images/icons/pill_go.gif",
+		cls : "icon-pill-go"
+	}, {
+		name : "plugin",
+		url : "images/icons/plugin.gif",
+		cls : "icon-plugin"
+	}, {
+		name : "plugin_add",
+		url : "images/icons/plugin_add.gif",
+		cls : "icon-plugin-add"
+	}, {
+		name : "plugin_delete",
+		url : "images/icons/plugin_delete.gif",
+		cls : "icon-plugin-delete"
+	}, {
+		name : "plugin_disabled",
+		url : "images/icons/plugin_disabled.gif",
+		cls : "icon-plugin-disabled"
+	}, {
+		name : "plugin_edit",
+		url : "images/icons/plugin_edit.gif",
+		cls : "icon-plugin-edit"
+	}, {
+		name : "plugin_error",
+		url : "images/icons/plugin_error.gif",
+		cls : "icon-plugin-error"
+	}, {
+		name : "plugin_go",
+		url : "images/icons/plugin_go.gif",
+		cls : "icon-plugin-go"
+	}, {
+		name : "plugin_link",
+		url : "images/icons/plugin_link.gif",
+		cls : "icon-plugin-link"
+	}, {
+		name : "printer",
+		url : "images/icons/printer.gif",
+		cls : "icon-printer"
+	}, {
+		name : "printer_add",
+		url : "images/icons/printer_add.gif",
+		cls : "icon-printer-add"
+	}, {
+		name : "printer_delete",
+		url : "images/icons/printer_delete.gif",
+		cls : "icon-printer-delete"
+	}, {
+		name : "printer_empty",
+		url : "images/icons/printer_empty.gif",
+		cls : "icon-printer-empty"
+	}, {
+		name : "printer_error",
+		url : "images/icons/printer_error.gif",
+		cls : "icon-printer-error"
+	}, {
+		name : "rainbow",
+		url : "images/icons/rainbow.gif",
+		cls : "icon-rainbow"
+	}, {
+		name : "report",
+		url : "images/icons/report.gif",
+		cls : "icon-report"
+	}, {
+		name : "report_add",
+		url : "images/icons/report_add.gif",
+		cls : "icon-report-add"
+	}, {
+		name : "report_delete",
+		url : "images/icons/report_delete.gif",
+		cls : "icon-report-delete"
+	}, {
+		name : "report_disk",
+		url : "images/icons/report_disk.gif",
+		cls : "icon-report-disk"
+	}, {
+		name : "report_edit",
+		url : "images/icons/report_edit.gif",
+		cls : "icon-report-edit"
+	}, {
+		name : "report_go",
+		url : "images/icons/report_go.gif",
+		cls : "icon-report-go"
+	}, {
+		name : "report_key",
+		url : "images/icons/report_key.gif",
+		cls : "icon-report-key"
+	}, {
+		name : "report_link",
+		url : "images/icons/report_link.gif",
+		cls : "icon-report-link"
+	}, {
+		name : "report_magnify",
+		url : "images/icons/report_magnify.gif",
+		cls : "icon-report-magnify"
+	}, {
+		name : "report_picture",
+		url : "images/icons/report_picture.gif",
+		cls : "icon-report-picture"
+	}, {
+		name : "report_user",
+		url : "images/icons/report_user.gif",
+		cls : "icon-report-user"
+	}, {
+		name : "report_word",
+		url : "images/icons/report_word.gif",
+		cls : "icon-report-word"
+	}, {
+		name : "resultset_first",
+		url : "images/icons/resultset_first.gif",
+		cls : "icon-resultset-first"
+	}, {
+		name : "resultset_last",
+		url : "images/icons/resultset_last.gif",
+		cls : "icon-resultset-last"
+	}, {
+		name : "resultset_next",
+		url : "images/icons/resultset_next.gif",
+		cls : "icon-resultset-next"
+	}, {
+		name : "resultset_previous",
+		url : "images/icons/resultset_previous.gif",
+		cls : "icon-resultset-previous"
+	}, {
+		name : "rosette",
+		url : "images/icons/rosette.gif",
+		cls : "icon-rosette"
+	}, {
+		name : "rss",
+		url : "images/icons/rss.gif",
+		cls : "icon-rss"
+	}, {
+		name : "rss_add",
+		url : "images/icons/rss_add.gif",
+		cls : "icon-rss-add"
+	}, {
+		name : "rss_delete",
+		url : "images/icons/rss_delete.gif",
+		cls : "icon-rss-delete"
+	}, {
+		name : "rss_go",
+		url : "images/icons/rss_go.gif",
+		cls : "icon-rss-go"
+	}, {
+		name : "rss_valid",
+		url : "images/icons/rss_valid.gif",
+		cls : "icon-rss-valid"
+	}, {
+		name : "ruby",
+		url : "images/icons/ruby.gif",
+		cls : "icon-ruby"
+	}, {
+		name : "ruby_add",
+		url : "images/icons/ruby_add.gif",
+		cls : "icon-ruby-add"
+	}, {
+		name : "ruby_delete",
+		url : "images/icons/ruby_delete.gif",
+		cls : "icon-ruby-delete"
+	}, {
+		name : "ruby_gear",
+		url : "images/icons/ruby_gear.gif",
+		cls : "icon-ruby-gear"
+	}, {
+		name : "ruby_get",
+		url : "images/icons/ruby_get.gif",
+		cls : "icon-ruby-get"
+	}, {
+		name : "ruby_go",
+		url : "images/icons/ruby_go.gif",
+		cls : "icon-ruby-go"
+	}, {
+		name : "ruby_key",
+		url : "images/icons/ruby_key.gif",
+		cls : "icon-ruby-key"
+	}, {
+		name : "ruby_link",
+		url : "images/icons/ruby_link.gif",
+		cls : "icon-ruby-link"
+	}, {
+		name : "ruby_put",
+		url : "images/icons/ruby_put.gif",
+		cls : "icon-ruby-put"
+	}, {
+		name : "script",
+		url : "images/icons/script.gif",
+		cls : "icon-script"
+	}, {
+		name : "script_add",
+		url : "images/icons/script_add.gif",
+		cls : "icon-script-add"
+	}, {
+		name : "script_code",
+		url : "images/icons/script_code.gif",
+		cls : "icon-script-code"
+	}, {
+		name : "script_code_red",
+		url : "images/icons/script_code_red.gif",
+		cls : "icon-script-code-red"
+	}, {
+		name : "script_delete",
+		url : "images/icons/script_delete.gif",
+		cls : "icon-script-delete"
+	}, {
+		name : "script_edit",
+		url : "images/icons/script_edit.gif",
+		cls : "icon-script-edit"
+	}, {
+		name : "script_error",
+		url : "images/icons/script_error.gif",
+		cls : "icon-script-error"
+	}, {
+		name : "script_gear",
+		url : "images/icons/script_gear.gif",
+		cls : "icon-script-gear"
+	}, {
+		name : "script_go",
+		url : "images/icons/script_go.gif",
+		cls : "icon-script-go"
+	}, {
+		name : "script_key",
+		url : "images/icons/script_key.gif",
+		cls : "icon-script-key"
+	}, {
+		name : "script_lightning",
+		url : "images/icons/script_lightning.gif",
+		cls : "icon-script-lightning"
+	}, {
+		name : "script_link",
+		url : "images/icons/script_link.gif",
+		cls : "icon-script-link"
+	}, {
+		name : "script_palette",
+		url : "images/icons/script_palette.gif",
+		cls : "icon-script-palette"
+	}, {
+		name : "script_save",
+		url : "images/icons/script_save.gif",
+		cls : "icon-script-save"
+	}, {
+		name : "server",
+		url : "images/icons/server.gif",
+		cls : "icon-server"
+	}, {
+		name : "server_add",
+		url : "images/icons/server_add.gif",
+		cls : "icon-server-add"
+	}, {
+		name : "server_chart",
+		url : "images/icons/server_chart.gif",
+		cls : "icon-server-chart"
+	}, {
+		name : "server_compressed",
+		url : "images/icons/server_compressed.gif",
+		cls : "icon-server-compressed"
+	}, {
+		name : "server_connect",
+		url : "images/icons/server_connect.gif",
+		cls : "icon-server-connect"
+	}, {
+		name : "server_database",
+		url : "images/icons/server_database.gif",
+		cls : "icon-server-database"
+	}, {
+		name : "server_delete",
+		url : "images/icons/server_delete.gif",
+		cls : "icon-server-delete"
+	}, {
+		name : "server_edit",
+		url : "images/icons/server_edit.gif",
+		cls : "icon-server-edit"
+	}, {
+		name : "server_error",
+		url : "images/icons/server_error.gif",
+		cls : "icon-server-error"
+	}, {
+		name : "server_go",
+		url : "images/icons/server_go.gif",
+		cls : "icon-server-go"
+	}, {
+		name : "server_key",
+		url : "images/icons/server_key.gif",
+		cls : "icon-server-key"
+	}, {
+		name : "server_lightning",
+		url : "images/icons/server_lightning.gif",
+		cls : "icon-server-lightning"
+	}, {
+		name : "server_link",
+		url : "images/icons/server_link.gif",
+		cls : "icon-server-link"
+	}, {
+		name : "server_uncompressed",
+		url : "images/icons/server_uncompressed.gif",
+		cls : "icon-server-uncompressed"
+	}, {
+		name : "shading",
+		url : "images/icons/shading.gif",
+		cls : "icon-shading"
+	}, {
+		name : "shape_align_bottom",
+		url : "images/icons/shape_align_bottom.gif",
+		cls : "icon-shape-align-bottom"
+	}, {
+		name : "shape_align_center",
+		url : "images/icons/shape_align_center.gif",
+		cls : "icon-shape-align-center"
+	}, {
+		name : "shape_align_left",
+		url : "images/icons/shape_align_left.gif",
+		cls : "icon-shape-align-left"
+	}, {
+		name : "shape_align_middle",
+		url : "images/icons/shape_align_middle.gif",
+		cls : "icon-shape-align-middle"
+	}, {
+		name : "shape_align_right",
+		url : "images/icons/shape_align_right.gif",
+		cls : "icon-shape-align-right"
+	}, {
+		name : "shape_align_top",
+		url : "images/icons/shape_align_top.gif",
+		cls : "icon-shape-align-top"
+	}, {
+		name : "shape_flip_horizontal",
+		url : "images/icons/shape_flip_horizontal.gif",
+		cls : "icon-shape-flip-horizontal"
+	}, {
+		name : "shape_flip_vertical",
+		url : "images/icons/shape_flip_vertical.gif",
+		cls : "icon-shape-flip-vertical"
+	}, {
+		name : "shape_group",
+		url : "images/icons/shape_group.gif",
+		cls : "icon-shape-group"
+	}, {
+		name : "shape_handles",
+		url : "images/icons/shape_handles.gif",
+		cls : "icon-shape-handles"
+	}, {
+		name : "shape_move_back",
+		url : "images/icons/shape_move_back.gif",
+		cls : "icon-shape-move-back"
+	}, {
+		name : "shape_move_backwards",
+		url : "images/icons/shape_move_backwards.gif",
+		cls : "icon-shape-move-backwards"
+	}, {
+		name : "shape_move_forwards",
+		url : "images/icons/shape_move_forwards.gif",
+		cls : "icon-shape-move-forwards"
+	}, {
+		name : "shape_move_front",
+		url : "images/icons/shape_move_front.gif",
+		cls : "icon-shape-move-front"
+	}, {
+		name : "shape_rotate_anticlockwise",
+		url : "images/icons/shape_rotate_anticlockwise.gif",
+		cls : "icon-shape-rotate-anticlockwise"
+	}, {
+		name : "shape_rotate_clockwise",
+		url : "images/icons/shape_rotate_clockwise.gif",
+		cls : "icon-shape-rotate-clockwise"
+	}, {
+		name : "shape_square",
+		url : "images/icons/shape_square.gif",
+		cls : "icon-shape-square"
+	}, {
+		name : "shape_square_add",
+		url : "images/icons/shape_square_add.gif",
+		cls : "icon-shape-square-add"
+	}, {
+		name : "shape_square_delete",
+		url : "images/icons/shape_square_delete.gif",
+		cls : "icon-shape-square-delete"
+	}, {
+		name : "shape_square_edit",
+		url : "images/icons/shape_square_edit.gif",
+		cls : "icon-shape-square-edit"
+	}, {
+		name : "shape_square_error",
+		url : "images/icons/shape_square_error.gif",
+		cls : "icon-shape-square-error"
+	}, {
+		name : "shape_square_go",
+		url : "images/icons/shape_square_go.gif",
+		cls : "icon-shape-square-go"
+	}, {
+		name : "shape_square_key",
+		url : "images/icons/shape_square_key.gif",
+		cls : "icon-shape-square-key"
+	}, {
+		name : "shape_square_link",
+		url : "images/icons/shape_square_link.gif",
+		cls : "icon-shape-square-link"
+	}, {
+		name : "shape_ungroup",
+		url : "images/icons/shape_ungroup.gif",
+		cls : "icon-shape-ungroup"
+	}, {
+		name : "shield",
+		url : "images/icons/shield.gif",
+		cls : "icon-shield"
+	}, {
+		name : "shield_add",
+		url : "images/icons/shield_add.gif",
+		cls : "icon-shield-add"
+	}, {
+		name : "shield_delete",
+		url : "images/icons/shield_delete.gif",
+		cls : "icon-shield-delete"
+	}, {
+		name : "shield_go",
+		url : "images/icons/shield_go.gif",
+		cls : "icon-shield-go"
+	}, {
+		name : "sitemap",
+		url : "images/icons/sitemap.gif",
+		cls : "icon-sitemap"
+	}, {
+		name : "sitemap_color",
+		url : "images/icons/sitemap_color.gif",
+		cls : "icon-sitemap-color"
+	}, {
+		name : "sound",
+		url : "images/icons/sound.gif",
+		cls : "icon-sound"
+	}, {
+		name : "sound_add",
+		url : "images/icons/sound_add.gif",
+		cls : "icon-sound-add"
+	}, {
+		name : "sound_delete",
+		url : "images/icons/sound_delete.gif",
+		cls : "icon-sound-delete"
+	}, {
+		name : "sound_low",
+		url : "images/icons/sound_low.gif",
+		cls : "icon-sound-low"
+	}, {
+		name : "sound_mute",
+		url : "images/icons/sound_mute.gif",
+		cls : "icon-sound-mute"
+	}, {
+		name : "sound_none",
+		url : "images/icons/sound_none.gif",
+		cls : "icon-sound-none"
+	}, {
+		name : "spellcheck",
+		url : "images/icons/spellcheck.gif",
+		cls : "icon-spellcheck"
+	}, {
+		name : "sport_8ball",
+		url : "images/icons/sport_8ball.gif",
+		cls : "icon-sport-8ball"
+	}, {
+		name : "sport_basketball",
+		url : "images/icons/sport_basketball.gif",
+		cls : "icon-sport-basketball"
+	}, {
+		name : "sport_football",
+		url : "images/icons/sport_football.gif",
+		cls : "icon-sport-football"
+	}, {
+		name : "sport_golf",
+		url : "images/icons/sport_golf.gif",
+		cls : "icon-sport-golf"
+	}, {
+		name : "sport_raquet",
+		url : "images/icons/sport_raquet.gif",
+		cls : "icon-sport-raquet"
+	}, {
+		name : "sport_shuttlecock",
+		url : "images/icons/sport_shuttlecock.gif",
+		cls : "icon-sport-shuttlecock"
+	}, {
+		name : "sport_soccer",
+		url : "images/icons/sport_soccer.gif",
+		cls : "icon-sport-soccer"
+	}, {
+		name : "sport_tennis",
+		url : "images/icons/sport_tennis.gif",
+		cls : "icon-sport-tennis"
+	}, {
+		name : "star",
+		url : "images/icons/star.gif",
+		cls : "icon-star"
+	}, {
+		name : "status_away",
+		url : "images/icons/status_away.gif",
+		cls : "icon-status-away"
+	}, {
+		name : "status_busy",
+		url : "images/icons/status_busy.gif",
+		cls : "icon-status-busy"
+	}, {
+		name : "status_offline",
+		url : "images/icons/status_offline.gif",
+		cls : "icon-status-offline"
+	}, {
+		name : "status_online",
+		url : "images/icons/status_online.gif",
+		cls : "icon-status-online"
+	}, {
+		name : "stop",
+		url : "images/icons/stop.gif",
+		cls : "icon-stop"
+	}, {
+		name : "style",
+		url : "images/icons/style.gif",
+		cls : "icon-style"
+	}, {
+		name : "style_add",
+		url : "images/icons/style_add.gif",
+		cls : "icon-style-add"
+	}, {
+		name : "style_delete",
+		url : "images/icons/style_delete.gif",
+		cls : "icon-style-delete"
+	}, {
+		name : "style_edit",
+		url : "images/icons/style_edit.gif",
+		cls : "icon-style-edit"
+	}, {
+		name : "style_go",
+		url : "images/icons/style_go.gif",
+		cls : "icon-style-go"
+	}, {
+		name : "sum",
+		url : "images/icons/sum.gif",
+		cls : "icon-sum"
+	}, {
+		name : "tab",
+		url : "images/icons/tab.gif",
+		cls : "icon-tab"
+	}, {
+		name : "table",
+		url : "images/icons/table.gif",
+		cls : "icon-table"
+	}, {
+		name : "table_add",
+		url : "images/icons/table_add.gif",
+		cls : "icon-table-add"
+	}, {
+		name : "table_delete",
+		url : "images/icons/table_delete.gif",
+		cls : "icon-table-delete"
+	}, {
+		name : "table_edit",
+		url : "images/icons/table_edit.gif",
+		cls : "icon-table-edit"
+	}, {
+		name : "table_error",
+		url : "images/icons/table_error.gif",
+		cls : "icon-table-error"
+	}, {
+		name : "table_gear",
+		url : "images/icons/table_gear.gif",
+		cls : "icon-table-gear"
+	}, {
+		name : "table_go",
+		url : "images/icons/table_go.gif",
+		cls : "icon-table-go"
+	}, {
+		name : "table_key",
+		url : "images/icons/table_key.gif",
+		cls : "icon-table-key"
+	}, {
+		name : "table_lightning",
+		url : "images/icons/table_lightning.gif",
+		cls : "icon-table-lightning"
+	}, {
+		name : "table_link",
+		url : "images/icons/table_link.gif",
+		cls : "icon-table-link"
+	}, {
+		name : "table_multiple",
+		url : "images/icons/table_multiple.gif",
+		cls : "icon-table-multiple"
+	}, {
+		name : "table_refresh",
+		url : "images/icons/table_refresh.gif",
+		cls : "icon-table-refresh"
+	}, {
+		name : "table_relationship",
+		url : "images/icons/table_relationship.gif",
+		cls : "icon-table-relationship"
+	}, {
+		name : "table_row_delete",
+		url : "images/icons/table_row_delete.gif",
+		cls : "icon-table-row-delete"
+	}, {
+		name : "table_row_insert",
+		url : "images/icons/table_row_insert.gif",
+		cls : "icon-table-row-insert"
+	}, {
+		name : "table_save",
+		url : "images/icons/table_save.gif",
+		cls : "icon-table-save"
+	}, {
+		name : "table_sort",
+		url : "images/icons/table_sort.gif",
+		cls : "icon-table-sort"
+	}, {
+		name : "tab_add",
+		url : "images/icons/tab_add.gif",
+		cls : "icon-tab-add"
+	}, {
+		name : "tab_delete",
+		url : "images/icons/tab_delete.gif",
+		cls : "icon-tab-delete"
+	}, {
+		name : "tab_edit",
+		url : "images/icons/tab_edit.gif",
+		cls : "icon-tab-edit"
+	}, {
+		name : "tab_go",
+		url : "images/icons/tab_go.gif",
+		cls : "icon-tab-go"
+	}, {
+		name : "tag",
+		url : "images/icons/tag.gif",
+		cls : "icon-tag"
+	}, {
+		name : "tag_blue",
+		url : "images/icons/tag_blue.gif",
+		cls : "icon-tag-blue"
+	}, {
+		name : "tag_blue_add",
+		url : "images/icons/tag_blue_add.gif",
+		cls : "icon-tag-blue-add"
+	}, {
+		name : "tag_blue_delete",
+		url : "images/icons/tag_blue_delete.gif",
+		cls : "icon-tag-blue-delete"
+	}, {
+		name : "tag_blue_edit",
+		url : "images/icons/tag_blue_edit.gif",
+		cls : "icon-tag-blue-edit"
+	}, {
+		name : "tag_green",
+		url : "images/icons/tag_green.gif",
+		cls : "icon-tag-green"
+	}, {
+		name : "tag_orange",
+		url : "images/icons/tag_orange.gif",
+		cls : "icon-tag-orange"
+	}, {
+		name : "tag_pink",
+		url : "images/icons/tag_pink.gif",
+		cls : "icon-tag-pink"
+	}, {
+		name : "tag_purple",
+		url : "images/icons/tag_purple.gif",
+		cls : "icon-tag-purple"
+	}, {
+		name : "tag_red",
+		url : "images/icons/tag_red.gif",
+		cls : "icon-tag-red"
+	}, {
+		name : "tag_yellow",
+		url : "images/icons/tag_yellow.gif",
+		cls : "icon-tag-yellow"
+	}, {
+		name : "telephone",
+		url : "images/icons/telephone.gif",
+		cls : "icon-telephone"
+	}, {
+		name : "telephone_add",
+		url : "images/icons/telephone_add.gif",
+		cls : "icon-telephone-add"
+	}, {
+		name : "telephone_delete",
+		url : "images/icons/telephone_delete.gif",
+		cls : "icon-telephone-delete"
+	}, {
+		name : "telephone_edit",
+		url : "images/icons/telephone_edit.gif",
+		cls : "icon-telephone-edit"
+	}, {
+		name : "telephone_error",
+		url : "images/icons/telephone_error.gif",
+		cls : "icon-telephone-error"
+	}, {
+		name : "telephone_go",
+		url : "images/icons/telephone_go.gif",
+		cls : "icon-telephone-go"
+	}, {
+		name : "telephone_key",
+		url : "images/icons/telephone_key.gif",
+		cls : "icon-telephone-key"
+	}, {
+		name : "telephone_link",
+		url : "images/icons/telephone_link.gif",
+		cls : "icon-telephone-link"
+	}, {
+		name : "television",
+		url : "images/icons/television.gif",
+		cls : "icon-television"
+	}, {
+		name : "television_add",
+		url : "images/icons/television_add.gif",
+		cls : "icon-television-add"
+	}, {
+		name : "television_delete",
+		url : "images/icons/television_delete.gif",
+		cls : "icon-television-delete"
+	}, {
+		name : "textfield",
+		url : "images/icons/textfield.gif",
+		cls : "icon-textfield"
+	}, {
+		name : "textfield_add",
+		url : "images/icons/textfield_add.gif",
+		cls : "icon-textfield-add"
+	}, {
+		name : "textfield_delete",
+		url : "images/icons/textfield_delete.gif",
+		cls : "icon-textfield-delete"
+	}, {
+		name : "textfield_key",
+		url : "images/icons/textfield_key.gif",
+		cls : "icon-textfield-key"
+	}, {
+		name : "textfield_rename",
+		url : "images/icons/textfield_rename.gif",
+		cls : "icon-textfield-rename"
+	}, {
+		name : "text_align_center",
+		url : "images/icons/text_align_center.gif",
+		cls : "icon-text-align-center"
+	}, {
+		name : "text_align_justify",
+		url : "images/icons/text_align_justify.gif",
+		cls : "icon-text-align-justify"
+	}, {
+		name : "text_align_left",
+		url : "images/icons/text_align_left.gif",
+		cls : "icon-text-align-left"
+	}, {
+		name : "text_align_right",
+		url : "images/icons/text_align_right.gif",
+		cls : "icon-text-align-right"
+	}, {
+		name : "text_allcaps",
+		url : "images/icons/text_allcaps.gif",
+		cls : "icon-text-allcaps"
+	}, {
+		name : "text_bold",
+		url : "images/icons/text_bold.gif",
+		cls : "icon-text-bold"
+	}, {
+		name : "text_columns",
+		url : "images/icons/text_columns.gif",
+		cls : "icon-text-columns"
+	}, {
+		name : "text_dropcaps",
+		url : "images/icons/text_dropcaps.gif",
+		cls : "icon-text-dropcaps"
+	}, {
+		name : "text_heading_1",
+		url : "images/icons/text_heading_1.gif",
+		cls : "icon-text-heading-1"
+	}, {
+		name : "text_heading_2",
+		url : "images/icons/text_heading_2.gif",
+		cls : "icon-text-heading-2"
+	}, {
+		name : "text_heading_3",
+		url : "images/icons/text_heading_3.gif",
+		cls : "icon-text-heading-3"
+	}, {
+		name : "text_heading_4",
+		url : "images/icons/text_heading_4.gif",
+		cls : "icon-text-heading-4"
+	}, {
+		name : "text_heading_5",
+		url : "images/icons/text_heading_5.gif",
+		cls : "icon-text-heading-5"
+	}, {
+		name : "text_heading_6",
+		url : "images/icons/text_heading_6.gif",
+		cls : "icon-text-heading-6"
+	}, {
+		name : "text_horizontalrule",
+		url : "images/icons/text_horizontalrule.gif",
+		cls : "icon-text-horizontalrule"
+	}, {
+		name : "text_indent",
+		url : "images/icons/text_indent.gif",
+		cls : "icon-text-indent"
+	}, {
+		name : "text_indent_remove",
+		url : "images/icons/text_indent_remove.gif",
+		cls : "icon-text-indent-remove"
+	}, {
+		name : "text_italic",
+		url : "images/icons/text_italic.gif",
+		cls : "icon-text-italic"
+	}, {
+		name : "text_kerning",
+		url : "images/icons/text_kerning.gif",
+		cls : "icon-text-kerning"
+	}, {
+		name : "text_letterspacing",
+		url : "images/icons/text_letterspacing.gif",
+		cls : "icon-text-letterspacing"
+	}, {
+		name : "text_letter_omega",
+		url : "images/icons/text_letter_omega.gif",
+		cls : "icon-text-letter-omega"
+	}, {
+		name : "text_linespacing",
+		url : "images/icons/text_linespacing.gif",
+		cls : "icon-text-linespacing"
+	}, {
+		name : "text_list_bullets",
+		url : "images/icons/text_list_bullets.gif",
+		cls : "icon-text-list-bullets"
+	}, {
+		name : "text_list_numbers",
+		url : "images/icons/text_list_numbers.gif",
+		cls : "icon-text-list-numbers"
+	}, {
+		name : "text_lowercase",
+		url : "images/icons/text_lowercase.gif",
+		cls : "icon-text-lowercase"
+	}, {
+		name : "text_padding_bottom",
+		url : "images/icons/text_padding_bottom.gif",
+		cls : "icon-text-padding-bottom"
+	}, {
+		name : "text_padding_left",
+		url : "images/icons/text_padding_left.gif",
+		cls : "icon-text-padding-left"
+	}, {
+		name : "text_padding_right",
+		url : "images/icons/text_padding_right.gif",
+		cls : "icon-text-padding-right"
+	}, {
+		name : "text_padding_top",
+		url : "images/icons/text_padding_top.gif",
+		cls : "icon-text-padding-top"
+	}, {
+		name : "text_replace",
+		url : "images/icons/text_replace.gif",
+		cls : "icon-text-replace"
+	}, {
+		name : "text_signature",
+		url : "images/icons/text_signature.gif",
+		cls : "icon-text-signature"
+	}, {
+		name : "text_smallcaps",
+		url : "images/icons/text_smallcaps.gif",
+		cls : "icon-text-smallcaps"
+	}, {
+		name : "text_strikethrough",
+		url : "images/icons/text_strikethrough.gif",
+		cls : "icon-text-strikethrough"
+	}, {
+		name : "text_subscript",
+		url : "images/icons/text_subscript.gif",
+		cls : "icon-text-subscript"
+	}, {
+		name : "text_superscript",
+		url : "images/icons/text_superscript.gif",
+		cls : "icon-text-superscript"
+	}, {
+		name : "text_underline",
+		url : "images/icons/text_underline.gif",
+		cls : "icon-text-underline"
+	}, {
+		name : "text_uppercase",
+		url : "images/icons/text_uppercase.gif",
+		cls : "icon-text-uppercase"
+	}, {
+		name : "thumb_down",
+		url : "images/icons/thumb_down.gif",
+		cls : "icon-thumb-down"
+	}, {
+		name : "thumb_up",
+		url : "images/icons/thumb_up.gif",
+		cls : "icon-thumb-up"
+	}, {
+		name : "tick",
+		url : "images/icons/tick.gif",
+		cls : "icon-tick"
+	}, {
+		name : "time",
+		url : "images/icons/time.gif",
+		cls : "icon-time"
+	}, {
+		name : "timeline_marker",
+		url : "images/icons/timeline_marker.gif",
+		cls : "icon-timeline-marker"
+	}, {
+		name : "time_add",
+		url : "images/icons/time_add.gif",
+		cls : "icon-time-add"
+	}, {
+		name : "time_delete",
+		url : "images/icons/time_delete.gif",
+		cls : "icon-time-delete"
+	}, {
+		name : "time_go",
+		url : "images/icons/time_go.gif",
+		cls : "icon-time-go"
+	}, {
+		name : "transmit",
+		url : "images/icons/transmit.gif",
+		cls : "icon-transmit"
+	}, {
+		name : "transmit_add",
+		url : "images/icons/transmit_add.gif",
+		cls : "icon-transmit-add"
+	}, {
+		name : "transmit_blue",
+		url : "images/icons/transmit_blue.gif",
+		cls : "icon-transmit-blue"
+	}, {
+		name : "transmit_delete",
+		url : "images/icons/transmit_delete.gif",
+		cls : "icon-transmit-delete"
+	}, {
+		name : "transmit_edit",
+		url : "images/icons/transmit_edit.gif",
+		cls : "icon-transmit-edit"
+	}, {
+		name : "transmit_error",
+		url : "images/icons/transmit_error.gif",
+		cls : "icon-transmit-error"
+	}, {
+		name : "transmit_go",
+		url : "images/icons/transmit_go.gif",
+		cls : "icon-transmit-go"
+	}, {
+		name : "tux",
+		url : "images/icons/tux.gif",
+		cls : "icon-tux"
+	}, {
+		name : "user",
+		url : "images/icons/user.gif",
+		cls : "icon-user"
+	}, {
+		name : "user_add",
+		url : "images/icons/user_add.gif",
+		cls : "icon-user-add"
+	}, {
+		name : "user_comment",
+		url : "images/icons/user_comment.gif",
+		cls : "icon-user-comment"
+	}, {
+		name : "user_delete",
+		url : "images/icons/user_delete.gif",
+		cls : "icon-user-delete"
+	}, {
+		name : "user_edit",
+		url : "images/icons/user_edit.gif",
+		cls : "icon-user-edit"
+	}, {
+		name : "user_female",
+		url : "images/icons/user_female.gif",
+		cls : "icon-user-female"
+	}, {
+		name : "user_go",
+		url : "images/icons/user_go.gif",
+		cls : "icon-user-go"
+	}, {
+		name : "user_gray",
+		url : "images/icons/user_gray.gif",
+		cls : "icon-user-gray"
+	}, {
+		name : "user_green",
+		url : "images/icons/user_green.gif",
+		cls : "icon-user-green"
+	}, {
+		name : "user_orange",
+		url : "images/icons/user_orange.gif",
+		cls : "icon-user-orange"
+	}, {
+		name : "user_red",
+		url : "images/icons/user_red.gif",
+		cls : "icon-user-red"
+	}, {
+		name : "user_suit",
+		url : "images/icons/user_suit.gif",
+		cls : "icon-user-suit"
+	}, {
+		name : "vcard",
+		url : "images/icons/vcard.gif",
+		cls : "icon-vcard"
+	}, {
+		name : "vcard_add",
+		url : "images/icons/vcard_add.gif",
+		cls : "icon-vcard-add"
+	}, {
+		name : "vcard_delete",
+		url : "images/icons/vcard_delete.gif",
+		cls : "icon-vcard-delete"
+	}, {
+		name : "vcard_edit",
+		url : "images/icons/vcard_edit.gif",
+		cls : "icon-vcard-edit"
+	}, {
+		name : "vector",
+		url : "images/icons/vector.gif",
+		cls : "icon-vector"
+	}, {
+		name : "vector_add",
+		url : "images/icons/vector_add.gif",
+		cls : "icon-vector-add"
+	}, {
+		name : "vector_delete",
+		url : "images/icons/vector_delete.gif",
+		cls : "icon-vector-delete"
+	}, {
+		name : "wand",
+		url : "images/icons/wand.gif",
+		cls : "icon-wand"
+	}, {
+		name : "weather_clouds",
+		url : "images/icons/weather_clouds.gif",
+		cls : "icon-weather-clouds"
+	}, {
+		name : "weather_cloudy",
+		url : "images/icons/weather_cloudy.gif",
+		cls : "icon-weather-cloudy"
+	}, {
+		name : "weather_lightning",
+		url : "images/icons/weather_lightning.gif",
+		cls : "icon-weather-lightning"
+	}, {
+		name : "weather_rain",
+		url : "images/icons/weather_rain.gif",
+		cls : "icon-weather-rain"
+	}, {
+		name : "weather_snow",
+		url : "images/icons/weather_snow.gif",
+		cls : "icon-weather-snow"
+	}, {
+		name : "weather_sun",
+		url : "images/icons/weather_sun.gif",
+		cls : "icon-weather-sun"
+	}, {
+		name : "webcam",
+		url : "images/icons/webcam.gif",
+		cls : "icon-webcam"
+	}, {
+		name : "webcam_add",
+		url : "images/icons/webcam_add.gif",
+		cls : "icon-webcam-add"
+	}, {
+		name : "webcam_delete",
+		url : "images/icons/webcam_delete.gif",
+		cls : "icon-webcam-delete"
+	}, {
+		name : "webcam_error",
+		url : "images/icons/webcam_error.gif",
+		cls : "icon-webcam-error"
+	}, {
+		name : "world",
+		url : "images/icons/world.gif",
+		cls : "icon-world"
+	}, {
+		name : "world_add",
+		url : "images/icons/world_add.gif",
+		cls : "icon-world-add"
+	}, {
+		name : "world_delete",
+		url : "images/icons/world_delete.gif",
+		cls : "icon-world-delete"
+	}, {
+		name : "world_edit",
+		url : "images/icons/world_edit.gif",
+		cls : "icon-world-edit"
+	}, {
+		name : "world_go",
+		url : "images/icons/world_go.gif",
+		cls : "icon-world-go"
+	}, {
+		name : "world_link",
+		url : "images/icons/world_link.gif",
+		cls : "icon-world-link"
+	}, {
+		name : "wrench",
+		url : "images/icons/wrench.gif",
+		cls : "icon-wrench"
+	}, {
+		name : "wrench_orange",
+		url : "images/icons/wrench_orange.gif",
+		cls : "icon-wrench-orange"
+	}, {
+		name : "xhtml",
+		url : "images/icons/xhtml.gif",
+		cls : "icon-xhtml"
+	}, {
+		name : "xhtml_add",
+		url : "images/icons/xhtml_add.gif",
+		cls : "icon-xhtml-add"
+	}, {
+		name : "xhtml_delete",
+		url : "images/icons/xhtml_delete.gif",
+		cls : "icon-xhtml-delete"
+	}, {
+		name : "xhtml_go",
+		url : "images/icons/xhtml_go.gif",
+		cls : "icon-xhtml-go"
+	}, {
+		name : "xhtml_valid",
+		url : "images/icons/xhtml_valid.gif",
+		cls : "icon-xhtml-valid"
+	}, {
+		name : "zoom",
+		url : "images/icons/zoom.gif",
+		cls : "icon-zoom"
+	}, {
+		name : "zoom_in",
+		url : "images/icons/zoom_in.gif",
+		cls : "icon-zoom-in"
+	}, {
+		name : "zoom_out",
+		url : "images/icons/zoom_out.gif",
+		cls : "icon-zoom-out"
+	} ]
+}
