@@ -360,7 +360,7 @@ public class TransferProductService extends TransferService {
 			throw new BusinessException("请填写批发价");
 		}
 		BigDecimal wholesalePrice = new BigDecimal(wholesalePriceStr);
-		if (ptype != ProductType.pt) {
+		if (ptype != ProductType.pt && ptype != ProductType.gold) {
 			dbRetailBasePrice = new BigDecimal(MapUtils.getString(product, "retailBasePrice"));	//一口价
 			dbWholesalePrice = new BigDecimal(MapUtils.getString(product, "wholesalePrice"));		//批发价
 
