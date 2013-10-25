@@ -396,7 +396,7 @@ public class TransferProductService extends TransferService {
 		if (resStatus == TransferStatus.waitSend) {
 			//修改商品资料
 			product.clear();
-			if (ptype != ProductType.pt) {
+			if (ptype != ProductType.pt  && ptype != ProductType.gold) {
 				product.put("retailBasePrice", retailBasePrice);
 				String promotionPrice = MapUtils.getString(approve, "promotionPrice");
 				if (StringUtils.isBlank(promotionPrice)) {
