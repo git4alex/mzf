@@ -8,8 +8,6 @@ import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum.*;
-import com.zonrong.common.utils.MzfUtils;
-import com.zonrong.common.utils.MzfUtils.BillPrefix;
 import com.zonrong.core.dao.OrderBy;
 import com.zonrong.core.dao.OrderBy.OrderByDir;
 import com.zonrong.core.exception.BusinessException;
@@ -40,10 +38,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * date: 2011-3-9
@@ -138,49 +133,72 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 	}
 
 	public int createMaintain(Map<String, Object> maintain, IUser user) throws BusinessException {
+        String maintainCode = MapUtils.getString(maintain,"maintainCode");
+        if(StringUtils.isBlank(maintainCode)){
+            throw new BusinessException("维修条码不能为空");
+        }
+
+        //使用维修条码作为维修单号
+        Map<String, Object> where = new HashMap<String, Object>();
+        where.put("num", maintainCode);
+        List<Map<String, Object>> list = entityService.list(MzfEntity.MAINTAIN, where, null, User.getSystemUser());
+        if(list.size() >= 1){
+            throw new BusinessException("维修单号：["+ maintainCode +"]重复" );
+        }
+
 		String productNum = MapUtils.getString(maintain, "productNum");
-		Map<String, Object> product = findByProductNum(productNum, user);
-		Integer productId = MapUtils.getInteger(product, "id");
-		String productSource = MapUtils.getString(product, "productSource");
-		if (ProductStatus.selled.toString().equals(productSource)) {
-			//nothing
-		} else if (InventoryStatus.onStorage.toString().equals(productSource)) {
-			//商品出库
-			productInventoryService.deliveryByProductId(BizType.maintain, productId, "维修出库", InventoryStatus.onStorage, user);
-		} else {
-			throw new BusinessException("未知商品，无法继续");
-		}
+        Integer productId;
+        String productSource;
+        if(StringUtils.isBlank(productNum)){ //商品条码为空
+            maintain.put("num",maintainCode); //维修条码作为新建商品的商品条码
+            productId = productService.supplyProduct(maintain,new ArrayList(),new ArrayList(),ProductStatus.selled,"维修商品",user);
+            productSource = ProductSource.selled.toString();
+        }else{
+            Map<String, Object> product = findByProductNum(productNum, user);
+            productId = MapUtils.getInteger(product, "id");
+            productSource = MapUtils.getString(product, "productSource");
+            if (ProductStatus.selled.toString().equals(productSource)) {
+                //nothing
+            } else if (InventoryStatus.onStorage.toString().equals(productSource)) {
+                //商品出库
+                productInventoryService.deliveryByProductId(BizType.maintain, productId, "维修出库", InventoryStatus.onStorage, user);
+            } else {
+                throw new BusinessException("未知商品，无法继续");
+            }
+        }
 
 		//商品入维修库
 		StorageType storageType = StorageType.product_maintain;
 		int targetOrgId = user.getOrgId();
 		int ownerId = user.getId();
 
-        String num = MzfUtils.getBillNum(BillPrefix.WX, user);
+        //String num = MzfUtils.getBillNum(BillPrefix.WX, user);
 
-		productInventoryService.warehouse(BizType.maintain, productId, targetOrgId, storageType, ownerId, user.getOrgId(), "维修单号：["+num+"]", user);
+		productInventoryService.warehouse(BizType.maintain, productId, targetOrgId, storageType, ownerId, user.getOrgId(), "维修单号：["+ maintainCode +"]", user);
 
 		Map<String, Object> earnestFlow = new HashMap<String, Object>(maintain);
 
 		//新增维修单
-		maintain.put("num", num);
+        maintain.put("productId",productId);
+		maintain.put("num", maintainCode);
 		maintain.put("status", MaintainStatus.New);
 		maintain.put("productSource", productSource);
 		maintain.put("cuserId", user.getId());
 		maintain.put("cuserName", user.getName());
 		maintain.put("cdate", null);
+
 		String id = entityService.create(MzfEntity.MAINTAIN, maintain, user);
 		Integer maintainId = Integer.parseInt(id);
 
 		Object payType = MapUtils.getObject(earnestFlow, "payType");
 		if (payType != null) {
-			earnestFlowService.appendEarnest(com.zonrong.inventory.treasury.service.TreasuryService.BizType.earnest, OrderType.maintain, maintainId, num, earnestFlow, "新建维修单", user);
+			earnestFlowService.appendEarnest(com.zonrong.inventory.treasury.service.TreasuryService.BizType.earnest, OrderType.maintain, maintainId, maintainCode, earnestFlow, "新建维修单", user);
 		}
 
 		int transId = transactionService.createTransId();
-		logService.createLog(transId, MzfEntity.MAINTAIN, id, "新建维修单", TargetType.product, productId, "维修，维修单号为："+num, user);
+		logService.createLog(transId, MzfEntity.MAINTAIN, id, "新建维修单", TargetType.product, productId, "维修，维修单号为："+ maintainCode, user);
 		//记录操作日志
-		businessLogService.log("新开商品维修单", "维修单号为：" + num, user);
+		businessLogService.log("新开商品维修单", "维修单号为：" + maintainCode, user);
 
 		//建立客户与该机构业务关联关系
 		Integer cusId = MapUtils.getInteger(maintain, "cusId");
@@ -225,14 +243,13 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
 		//选择入库
 		Integer sourceOrgId = MapUtils.getInteger(inventory, "orgid");
-		Integer targetOrgId = maintainOrgId;
-		ProductSource productSource = ProductSource.valueOf(MapUtils.getString(maintain, "productSource"));
+        ProductSource productSource = ProductSource.valueOf(MapUtils.getString(maintain, "productSource"));
 
 		  //如调到总部维修则门店不能结算
-		if(user.getOrgId() == targetOrgId && sourceOrgId.intValue() != targetOrgId){
+		if(user.getOrgId() == maintainOrgId && sourceOrgId.intValue() != maintainOrgId){
 			throw new BusinessException("总部维修商品门店不能结算");
 		}
-		if (sourceOrgId.intValue() == targetOrgId) {
+		if (sourceOrgId.intValue() == maintainOrgId) {
 			MaintainStatus targetStatus = null;
 			//如果是在库商品，直接入商品库
 			if (productSource == ProductSource.onStorage) {
@@ -241,7 +258,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
 				//入商品库
 				StorageType storageType = productInventoryService.getDefaultStorageType(productId);
-				productInventoryService.warehouse(BizType.maintainOver, productId, targetOrgId, storageType, user.getId(), sourceOrgId, "修复入库", user);
+				productInventoryService.warehouse(BizType.maintainOver, productId, maintainOrgId, storageType, user.getId(), sourceOrgId, "修复入库", user);
 
 				//如果是在库商品，目标状态为完成
 				targetStatus = MaintainStatus.over;
@@ -264,13 +281,12 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 			//自动发起调拨流程
 			Map<String, Object> transfer = new HashMap<String, Object>();
 			transfer.put("maintainId", maintainId);
-			transfer.put("targetOrgId", targetOrgId);
+			transfer.put("targetOrgId", maintainOrgId);
 			transferMaintainProductService.transfer(new Integer[]{productId}, transfer, user);
 		}
 
 		//生成结算单
-		Integer receptOrgId = MapUtils.getInteger(maintain, "orgId");
-		Integer payOrgId = mzfOrgService.getHQOrgId();
+		Integer receptOrgId,payOrgId;
 		if (mzfOrgService.getHQOrgId() == user.getOrgId()) {
 			receptOrgId = mzfOrgService.getHQOrgId();
 			payOrgId = maintainOrgId;
@@ -452,32 +468,29 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 			}
 		}
 
-		Iterator maintainKeys =	maintain.keySet().iterator();
-		while(maintainKeys.hasNext()){
-			String key = maintainKeys.next().toString();
-			if(key.toUpperCase().equals("PAYTYPE")){
-				String paymentWay = BizCodeService.getBizName("paymentWay", maintain.get(key)+"");
-				maintainData.put(key+"Text", paymentWay);
-				maintainData.put(key, maintain.get(key));
-			}else if(key.toUpperCase().equals("CUSGRADE")){
-				String customerCardType = BizCodeService.getBizName("customerCardType", maintain.get(key)+"");
-				maintainData.put(key+"Text", customerCardType);
-				maintainData.put(key, maintain.get(key));
-			}else {
-				maintainData.put(key, maintain.get(key));
-			}
+        for (String key : maintain.keySet()) {
+            if (key.toUpperCase().equals("PAYTYPE")) {
+                String paymentWay = BizCodeService.getBizName("paymentWay", maintain.get(key) + "");
+                maintainData.put(key + "Text", paymentWay);
+                maintainData.put(key, maintain.get(key));
+            } else if (key.toUpperCase().equals("CUSGRADE")) {
+                String customerCardType = BizCodeService.getBizName("customerCardType", maintain.get(key) + "");
+                maintainData.put(key + "Text", customerCardType);
+                maintainData.put(key, maintain.get(key));
+            } else {
+                maintainData.put(key, maintain.get(key));
+            }
 
-		}
+        }
 
 		return maintainData;
 	}
 	//维修销售单打印
 	public Map<String,Object> getPrintMaintainSaleData(int maintainId,IUser user)throws BusinessException{
 		Map<String,Object> maintain = entityService.getById(MzfEntity.MAINTAIN_VIEW, maintainId, user);
-		String payTypeName = "";
 		if(maintain.get("payType") != null){
 			String payTypeText = maintain.get("payType").toString();
-			payTypeName = BizCodeService.getBizName("paymentWay", payTypeText);
+			String payTypeName = BizCodeService.getBizName("paymentWay", payTypeText);
 			maintain.put("payTypeText",payTypeName);
 		}
 		String saleAmountText = "";
