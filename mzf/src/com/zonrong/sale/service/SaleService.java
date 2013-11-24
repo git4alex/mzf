@@ -269,9 +269,9 @@ public class SaleService {
 			cusOrderService.finishCusOrderOnSell(orderId, user);
 		}
 
-        //处理借货归还
+        //处理借货记录
         Map<String,Object> value = new HashMap<String,Object>();
-        value.put("status",lendStatus.sold);
+        value.put("status",lendStatus.sold);//更新为已售
         value.put("edate",null);
         Map<String,Object> filter = new HashMap<String,Object>();
         filter.put("productId",productId);
