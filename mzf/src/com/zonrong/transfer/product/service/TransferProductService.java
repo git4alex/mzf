@@ -17,6 +17,7 @@ import com.zonrong.core.security.User;
 import com.zonrong.core.util.Interceptor;
 import com.zonrong.cusorder.service.CusOrderService;
 import com.zonrong.demand.product.service.ProductDemandService;
+import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.product.service.ProductInventoryService;
 import com.zonrong.inventory.service.InventoryService;
@@ -547,6 +548,36 @@ public class TransferProductService extends TransferService {
 			//商品状态改为正常
 			productService.free(productId, null, user);
 		}
+
+        //处理借货
+        boolean isLend = MapUtils.getBoolean(transfer,"isLend",false);
+        if(isLend){
+            Map<String,Object> productLend = new HashMap<String,Object>();
+            productLend.put("productId",productId);
+            productLend.put("productNum",MapUtils.getString(transfer,"targetNum"));
+            productLend.put("productName",MapUtils.getString(transfer,"targetName"));
+            productLend.put("cdate",null);
+            productLend.put("cuser",null);
+            productLend.put("cuserName",null);
+            productLend.put("srcOrgId",MapUtils.getIntValue(transfer,"sourceOrgId"));
+            productLend.put("srcOrgName",MapUtils.getString(transfer,"sourceOrgName"));
+            productLend.put("tgtOrgId",MapUtils.getIntValue(transfer,"targetOrgId"));
+            productLend.put("tgtOrgName",MapUtils.getString(transfer,"targetOrgName"));
+            productLend.put("status",lendStatus.lend);
+            //创建借货记录
+            entityService.create(new EntityCode("productLend"),productLend,user);
+        }
+
+        //处理借货归还
+        Map<String,Object> value = new HashMap<String,Object>();
+        value.put("status",lendStatus.returned);
+        value.put("edate",null);
+        Map<String,Object> filter = new HashMap<String,Object>();
+        filter.put("productId",productId);
+        filter.put("srcOrgId",MapUtils.getIntValue(transfer,"targetOrgId"));
+        filter.put("tgtOrgId",MapUtils.getIntValue(transfer,"sourceOrgId"));
+        filter.put("status",lendStatus.lend);
+        entityService.update(new EntityCode("productLend"),value,filter,user);
 
 		//生成结算单
 		Map<String, Object> product = productService.get(productId, user);

@@ -17,6 +17,7 @@ import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.cusorder.service.CusOrderService;
+import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.product.service.ProductInventoryService;
@@ -267,6 +268,15 @@ public class SaleService {
 		if (orderId != null) {
 			cusOrderService.finishCusOrderOnSell(orderId, user);
 		}
+
+        //处理借货归还
+        Map<String,Object> value = new HashMap<String,Object>();
+        value.put("status",lendStatus.sold);
+        value.put("edate",null);
+        Map<String,Object> filter = new HashMap<String,Object>();
+        filter.put("productId",productId);
+        filter.put("status",lendStatus.lend);
+        entityService.update(new EntityCode("productLend"),value,filter,user);
 
 		//记录流程
 		logService.createLog(transId, MzfEntity.SALE, Integer.toString(saleId), "新建销售单", TargetType.product, productId, "销售,销售单号为： "+saleNum, user);

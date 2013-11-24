@@ -426,6 +426,16 @@ public interface MzfEnum {
         oemRawmaterialReturn    //委外原料退库
 	}
 
+    public enum lendStatus implements MzfEnum{
+        lend,       //借出
+        sold,       //已售
+        returned;   //已还
+
+        @Override
+        public String getText() throws BusinessException {
+            return BizCodeService.getBizName("lendStatus", this.toString());
+        }
+    }
 
 	public enum StorageType implements MzfEnum {
 		rawmaterial_nakedDiamond("裸石原料库", "forRawmaterial"),
