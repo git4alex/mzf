@@ -1,21 +1,5 @@
 package com.zonrong.basics.customer.service;
 
-import java.math.BigDecimal;
-import java.sql.Date;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum.CustomerLogType;
@@ -30,6 +14,18 @@ import com.zonrong.inventory.treasury.service.TreasuryService.BizType;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2010-11-27
@@ -92,7 +88,7 @@ public class CustomerService {
 		if (CollectionUtils.isNotEmpty(list)) {
 			String s = "已经存在姓名与手机完全相同的客户";
 			if (list.size() == 1) {
-				if (MapUtils.getInteger(list.get(0), metadata.getPkCode()).intValue() != id) {
+				if (MapUtils.getInteger(list.get(0), metadata.getPkCode()) != id) {
 					throw new BusinessException(s);
 				}
 			} else {
@@ -111,30 +107,27 @@ public class CustomerService {
 
 
 	//修改客户级别
-	private void upCustomerGrade(Map<String, Object> dbCustomer, BigDecimal points, IUser user) throws BusinessException {
-		if (points == null) {
-			return;
-		}
+	private void upCustomerGrade(Map<String, Object> dbCustomer, int points, IUser user) throws BusinessException {
 		String message = "自动升级";
 		CustomerLogType type = CustomerLogType.upgrade;
-		if(points.intValue() < 0){
+		if(points < 0){
 			message = "自动降级";
 			type = CustomerLogType.downgrade;
 		}
 		//EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
 		//Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
 
-		BigDecimal dbPoints = new BigDecimal(MapUtils.getString(dbCustomer, "historyPoints", "0"));
+		int dbPoints = MapUtils.getIntValue(dbCustomer, "historyPoints", 0);
 		String dbGrade = MapUtils.getString(dbCustomer, "grade");
 		String cardNum = MapUtils.getString(dbCustomer, "cardNo");
 		Integer cusId = MapUtils.getInteger(dbCustomer, "id");
 		int cardId = customerCardService.getCardIdByNum(cardNum, user);
 		String cusType = MapUtils.getString(dbCustomer, "type");
-		dbPoints = dbPoints.add(points);
+		dbPoints = dbPoints + points;
 		Map<String, Object> field = new HashMap<String, Object>();
 		//field.put("points", dbPoints);
 			try {
-				String grade = upgradeRuleService.getGradeByCode(dbPoints.intValue());
+				String grade = upgradeRuleService.getGradeByCode(dbPoints);
 				if(grade != null){
 					String  gradeText = BizCodeService.getBizName("cusGrade", grade);
 					 //vip客户自动升级
@@ -147,7 +140,7 @@ public class CustomerService {
 					}else{
 						//其他类型会员生成提醒日志
 						if(!grade.equals(dbGrade)){
-							if(points.intValue() > 0){
+							if(points > 0){
 								createLog(cusId, cardId, CustomerLogType.upgradeWarn, "会员升级为："+ gradeText, user);
 							}else{
 								createLog(cusId, cardId, CustomerLogType.downgradeWarn, "会员降级为："+ gradeText, user);
@@ -156,7 +149,7 @@ public class CustomerService {
 
 					}
 				}else{
-					if(points.intValue() <= 0){
+					if(points <= 0){
 						createLog(cusId, cardId, CustomerLogType.downgradeWarn, "会员降级，当前积分为：" + dbPoints, user);
 					}
 				}
@@ -169,56 +162,77 @@ public class CustomerService {
 
 	}
 	//增加兑换积分
-	public void addExchangePoints(int cusId, BigDecimal exchangePoints,IUser user) throws BusinessException{
-		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
-		Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
-		BigDecimal dbPoints = new BigDecimal(MapUtils.getString(dbCustomer, "exchangePoints", "0"));
-
-		dbPoints = dbPoints.add(exchangePoints);
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put("exchangePoints", dbPoints);
-		int row = entityService.updateById(metadata, Integer.toString(cusId), field, user);
-		createPointLog(cusId, CustomerPointsType.exchangePoints, dbPoints, "积分兑换物料", user);
-		if (row == 0) {
-			throw new BusinessException("未找到客户[" + cusId + "]");
-		}
-
-	}
+//	public void addExchangePoints(int cusId, int exchangePoints,IUser user) throws BusinessException{
+//		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
+//		Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
+//		int dbPoints = MapUtils.getIntValue(dbCustomer, "exchangePoints", 0);
+//
+//		dbPoints = dbPoints+exchangePoints;
+//		Map<String, Object> field = new HashMap<String, Object>();
+//		field.put("exchangePoints", dbPoints);
+//		int row = entityService.updateById(metadata, Integer.toString(cusId), field, user);
+//		createPointLog(cusId, CustomerPointsType.exchangePoints, dbPoints, "积分兑换物料", user);
+//		if (row == 0) {
+//			throw new BusinessException("未找到客户[" + cusId + "]");
+//		}
+//
+//	}
 	 //增加客户积分
-	public void addPoints(int cusId, BigDecimal exchangePoints, BigDecimal curPoints, IUser user,String saleNum) throws BusinessException{
+	public void updatePoints(int cusId, int exchangePoints, int curPoints, int payPoints,IUser user, String saleNum) throws BusinessException{
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
 		Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
-		//修改客户级别
-		upCustomerGrade(dbCustomer, curPoints, user);
+        //剩余积分
+        int oldCusPoints = MapUtils.getIntValue(dbCustomer, "points", 0);
+        //历史积分
+        int oldCusHisPoints = MapUtils.getIntValue(dbCustomer, "historyPoints", 0);
 
-		 //兑换积分
-		BigDecimal oldCusExchangePoints = new BigDecimal(MapUtils.getString(dbCustomer, "exchangePoints", "0"));
-		oldCusExchangePoints = oldCusExchangePoints.add(exchangePoints);
+        Map<String, Object> field = new HashMap<String, Object>();
 
-		//剩余积分
-		BigDecimal oldCusPoints = new BigDecimal(MapUtils.getString(dbCustomer, "points", "0"));
-		//积分流水
-		String remark = "客户剩余积分：" + oldCusPoints + ";销售单号：" + saleNum;
-		createPointLog(cusId, CustomerPointsType.points, curPoints.subtract(exchangePoints), remark, user);
+        if(payPoints>0){
+            oldCusPoints = oldCusPoints - payPoints;
 
-		oldCusPoints = oldCusPoints.add(curPoints);
+            //积分流水
+            String remark = "剩余积分："+oldCusPoints+";销售单号：" + saleNum;
+            createPointLog(cusId, CustomerPointsType.payPoints, payPoints, remark, user);
 
-		//历史积分
-		BigDecimal oldCusHisPoints = new BigDecimal(MapUtils.getString(dbCustomer, "historyPoints", "0"));
-		oldCusHisPoints = oldCusHisPoints.add(curPoints);
+            field.put("points", oldCusPoints); //更新剩余积分
+        }
 
-		//锁定积分
-		BigDecimal lockedPoints = new BigDecimal(MapUtils.getString(dbCustomer, "lockedPoints", "0"));
-		lockedPoints = lockedPoints.subtract(exchangePoints);
+        if(exchangePoints>0){
+            //兑换积分
+            int oldCusExchangePoints = MapUtils.getIntValue(dbCustomer, "exchangePoints", 0);
+            oldCusExchangePoints = oldCusExchangePoints + exchangePoints;
 
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put("points", oldCusPoints); //剩余积分
-		field.put("exchangePoints", oldCusExchangePoints);
-		field.put("historyPoints", oldCusHisPoints);
-		field.put("lockedPoints", lockedPoints);
+            //锁定积分
+            int lockedPoints = MapUtils.getIntValue(dbCustomer, "lockedPoints", 0);
+            lockedPoints = lockedPoints - exchangePoints;
+
+            field.put("exchangePoints", oldCusExchangePoints);
+            field.put("lockedPoints", lockedPoints);
+
+            String remark = "剩余积分："+oldCusPoints+";销售单号：" + saleNum;
+            createPointLog(cusId, CustomerPointsType.exchangePoints, exchangePoints, remark, user);
+        }
+
+        //本次积分 > 0
+        if(curPoints>0){
+            //修改客户级别
+            upCustomerGrade(dbCustomer, curPoints, user);
+
+            oldCusPoints = oldCusPoints + curPoints;
+            oldCusHisPoints = oldCusHisPoints + curPoints;
+
+            //积分流水
+            String remark = "剩余积分："+oldCusPoints+";销售单号：" + saleNum;
+            createPointLog(cusId, CustomerPointsType.points, payPoints, remark, user);
+
+            field.put("points", oldCusPoints); //更新剩余积分
+            field.put("historyPoints", oldCusHisPoints);//更新历史积分
+        }
+
 		int row = entityService.updateById(metadata, Integer.toString(cusId), field, user);
 		if (row == 0) {
-			throw new BusinessException("未找到客户[" + cusId + "]");
+			throw new BusinessException("更新客户积分时未找到客户[" + cusId + "]");
 		}
 	}
 
@@ -228,11 +242,11 @@ public class CustomerService {
 	 * @param lockedPoints
 	 * @throws BusinessException
 	 */
-	public void lockedPoints(int cusId, float lockedPoints, IUser user)throws BusinessException{
+	public void lockedPoints(int cusId, int lockedPoints, IUser user)throws BusinessException{
 		Map<String, Object>  customer = entityService.getById(MzfEntity.CUSTOMER, cusId, user);
 		 //剩余积分
-		float points = MapUtils.getFloatValue(customer, "points");
-		float cur_locked = MapUtils.getFloatValue(customer, "lockedPoints",0);
+		int points = MapUtils.getIntValue(customer, "points");
+		int cur_locked = MapUtils.getIntValue(customer, "lockedPoints", 0);
 		if(lockedPoints > points){
 			throw new BusinessException("剩余积分不足！");
 		}
@@ -241,26 +255,25 @@ public class CustomerService {
 		field.put("points", points);
 		field.put("lockedPoints", lockedPoints+cur_locked);
 		entityService.updateById(MzfEntity.CUSTOMER, cusId + "", field, user);
-		createPointLog(cusId, CustomerPointsType.lockedPoints, new BigDecimal(lockedPoints), "积分锁定", user);
+		createPointLog(cusId, CustomerPointsType.lockedPoints, lockedPoints, "积分锁定", user);
 	}
 	/**
 	 * 解锁积分
 	 * @param cusId
-	 * @param lockedPoints
 	 * @throws BusinessException
 	 */
 	public void unlockedPoints(int cusId, IUser user)throws BusinessException{
 		Map<String, Object>  customer = entityService.getById(MzfEntity.CUSTOMER, cusId, user);
 		 //剩余积分
-		float points = MapUtils.getFloatValue(customer, "points");
-		float lockedPoints = MapUtils.getFloatValue(customer, "lockedPoints");
+		int points = MapUtils.getIntValue(customer, "points");
+		int lockedPoints = MapUtils.getIntValue(customer, "lockedPoints");
 		points = points + lockedPoints;
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("points", points);
 		field.put("lockedPoints", 0);
 		entityService.updateById(MzfEntity.CUSTOMER, cusId + "", field, user);
 		//记录流水
-		createPointLog(cusId, CustomerPointsType.unlockedPoints, new BigDecimal(lockedPoints), "积分解锁", user);
+		createPointLog(cusId, CustomerPointsType.unlockedPoints, lockedPoints, "积分解锁", user);
 	}
 	 //修改客户积分有效期
 	public void updatePointsIndate(int cusId, IUser user)throws BusinessException{
@@ -274,26 +287,26 @@ public class CustomerService {
 
 	}
 	 //退货减分
-	public void subtractPoints(int cusId, BigDecimal subPoints, BigDecimal exchangePoints, IUser user, String returnsNum) throws BusinessException{
+	public void subtractPoints(int cusId, int subPoints, int exchangePoints, IUser user, String returnsNum) throws BusinessException{
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
 		Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
 		//修改客户级别
 		upCustomerGrade(dbCustomer, subPoints, user);
 		//剩余积分
-		BigDecimal oldCusPoints = new BigDecimal(MapUtils.getString(dbCustomer, "points", "0"));
+		int oldCusPoints = MapUtils.getIntValue(dbCustomer, "points", 0);
 		//积分流水
 		String remark = "客户剩余积分：" + oldCusPoints + ";退货单号：" + returnsNum;
-		createPointLog(cusId, CustomerPointsType.points, (subPoints).add(exchangePoints), remark, user);
+		createPointLog(cusId, CustomerPointsType.points, subPoints+exchangePoints, remark, user);
 
-		oldCusPoints = oldCusPoints.add(subPoints).add(exchangePoints);
+		oldCusPoints = oldCusPoints+subPoints+exchangePoints;
 
 		//历史积分
-		BigDecimal oldCusHisPoints = new BigDecimal(MapUtils.getString(dbCustomer, "historyPoints", "0"));
-		oldCusHisPoints = oldCusHisPoints.add(subPoints);
+		int oldCusHisPoints = MapUtils.getIntValue(dbCustomer, "historyPoints", 0);
+		oldCusHisPoints = oldCusHisPoints+subPoints;
 
 		//兑换积分
-		BigDecimal oldCusExchangePoints = new BigDecimal(MapUtils.getString(dbCustomer, "exchangePoints", "0"));
-		oldCusExchangePoints = oldCusExchangePoints.subtract(exchangePoints);
+		int oldCusExchangePoints = MapUtils.getIntValue(dbCustomer, "exchangePoints", 0);
+		oldCusExchangePoints = oldCusExchangePoints-exchangePoints;
 
 
 		Map<String, Object> field = new HashMap<String, Object>();
@@ -309,9 +322,9 @@ public class CustomerService {
 	public void upPoints(int cusId, int points,int historyPoints,int exchangePoints, String remark, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
 		Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
-		String oldHistoryPoints = MapUtils.getString(dbCustomer, "historyPoints", "0");
+		int oldHistoryPoints = MapUtils.getIntValue(dbCustomer, "historyPoints", 0);
 		 //修改客户级别
-		upCustomerGrade(dbCustomer,new BigDecimal(historyPoints).subtract(new BigDecimal(oldHistoryPoints)), user);
+		upCustomerGrade(dbCustomer,historyPoints-oldHistoryPoints, user);
 
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("points", points);
@@ -415,8 +428,8 @@ public class CustomerService {
 		return Integer.parseInt(id);
 	}
 
-	public void createPointLog(Integer cusId,  CustomerPointsType customerPointsType,BigDecimal points, String remark, IUser user) throws BusinessException{
-		if(points.doubleValue() != 0){
+	public void createPointLog(Integer cusId,  CustomerPointsType customerPointsType,int points, String remark, IUser user) throws BusinessException{
+		if(points != 0){
 			Map<String, Object> field = new HashMap<String, Object>();
 			field.put("cusId", cusId);
 			field.put("cuserId", null);
@@ -425,7 +438,7 @@ public class CustomerService {
 			field.put("points", points);
 			field.put("cdate", null);
 			field.put("remark", remark);
-			String row = entityService.create(MzfEntity.CUSTOMER_POINTS_FLOW, field, user);
+			entityService.create(MzfEntity.CUSTOMER_POINTS_FLOW, field, user);
 		}
 	}
 

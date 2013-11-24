@@ -354,6 +354,7 @@ public interface MzfEnum {
 	}
 
 	public enum CustomerPointsType implements MzfEnum{
+        payPoints,          //积分抵现
 		exchangePoints,     //兑换积分
 		historyPoints,      //历史积分
 		points,             //剩余积分

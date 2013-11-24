@@ -1,33 +1,12 @@
 package com.zonrong.salerule.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.basics.chit.service.ChitService;
 import com.zonrong.basics.customer.service.CustomerService;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.common.utils.MzfUtils;
-import com.zonrong.common.utils.MzfEnum.CustomerPointsType;
-import com.zonrong.common.utils.MzfEnum.InventoryStatus;
-import com.zonrong.common.utils.MzfEnum.ProductType;
-import com.zonrong.common.utils.MzfEnum.SaleDetailType;
-import com.zonrong.common.utils.MzfEnum.SaleType;
-import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.common.utils.MzfUtils.BillPrefix;
 import com.zonrong.core.dao.OrderBy;
 import com.zonrong.core.dao.OrderBy.OrderByDir;
@@ -42,10 +21,10 @@ import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.product.service.ProductInventoryService;
 import com.zonrong.inventory.product.service.SecondProductInventoryService;
-import com.zonrong.inventory.service.MaterialInventoryService;
-import com.zonrong.inventory.service.SecondGoldInventoryService;
 import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.MaterialInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.inventory.service.SecondGoldInventoryService;
 import com.zonrong.inventory.treasury.service.TreasuryEarnestService;
 import com.zonrong.inventory.treasury.service.TreasurySaleService;
 import com.zonrong.inventory.treasury.service.TreasuryService.MoneyStorageClass1;
@@ -54,6 +33,15 @@ import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;
 import com.zonrong.util.TpltUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * date: 2010-11-22
@@ -64,7 +52,7 @@ import com.zonrong.util.TpltUtils;
 @Service("saleService1")
 public class SaleService {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private MetadataProvider metadataProvider;
 	@Resource
@@ -97,12 +85,12 @@ public class SaleService {
 	private FlowLogService logService;
 	@Resource
 	private BusinessLogService businessLogService;
-	
+
 	public enum SaleOrderStatus {
 		waitPay,
 		over
 	}
-	
+
 	private void check(Map<String, Object> sale, List<Map<String, Object>> detailList, IUser user) throws BusinessException{
 		List<SaleDetailType> list = new ArrayList<SaleDetailType>();
 		Map<SaleDetailType, Object> map = new HashMap<SaleDetailType, Object>();
@@ -110,7 +98,7 @@ public class SaleService {
 //			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 //			map.put(type, null);
 //		}
-		
+
 		String error = "实收金额必须大于0";
 		try {
 			Float amount = MapUtils.getFloat(sale, "amount");
@@ -130,10 +118,10 @@ public class SaleService {
 //				throw new BusinessException("旧饰回收必须和商品销售一起进行");
 //			}
 //		}
-		
+
 		Set<String> numSet = new HashSet<String>();
 		int x = 0;
-		for (Map<String, Object> detail : detailList) {			
+		for (Map<String, Object> detail : detailList) {
 			String num = MapUtils.getString(detail, "targetNum");
 			if (StringUtils.isNotBlank(num)) {
 				numSet.add(num);
@@ -154,10 +142,10 @@ public class SaleService {
 				throw new BusinessException("客户积分不足不能兑换物料");
 			}
 		}
-		 
-		
+
+
 	}
-	
+
 	public int createSale(Map<String, Object> sale, List<Map<String, Object>> detailList, IUser user) throws BusinessException {
 		check(sale, detailList, user);
 		//新建销售单
@@ -176,37 +164,37 @@ public class SaleService {
 //		if(!isPtProduct){
 //			calcPoints(sale, detailList);
 //		}
-		
-		
+
+
 		int saleId = createBill(sale, detailList, user);
 		String num = MapUtils.getString(sale, "num");
-		
+
 		Integer cusId = MapUtils.getInteger(sale, "cusId");
-		
+
 		int transId = transactionService.createTransId();
-		
+
 		//商品出库
 		for (Map<String, Object> detail : detailList) {
 			    SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			    Integer targetId = MapUtils.getInteger(detail, "targetId");
 				String ptype = MapUtils.getString(detail, "ptype");
-				
+
 			if(ProductType.pt.toString().equals(ptype) && type == SaleDetailType.product){
 				BigDecimal weight = new BigDecimal(MapUtils.getString(detail,  "weight", MapUtils.getString(detail, "goldWeight")));
 				BigDecimal goldPrice = new BigDecimal(MapUtils.getString(detail, "goldPrice"));
 				BigDecimal ptPrice = weight.multiply(goldPrice);
 				productService.updatePTProductPrice(targetId, ptPrice, user);
-					
+
 			}
-			
+
 			if (type == SaleDetailType.product) {
 				sellProduct(targetId, detail, saleId, transId,num, user);
 			} else if (type == SaleDetailType.material) {
-				float exchangePoints = MapUtils.getFloatValue(detail,"exchangePoints",0);
+				int exchangePoints = MapUtils.getIntValue(detail, "exchangePoints", 0);
 				 //物料兑换记录
 				if(exchangePoints > 0){
 					String remark = "销售单号：" + num + ";物料条码：" + MapUtils.getString(detail,"targetNum");
-					customerService.createPointLog(cusId, CustomerPointsType.exchangePoints, new BigDecimal(exchangePoints),remark,user);
+					customerService.createPointLog(cusId, CustomerPointsType.exchangePoints, exchangePoints,remark,user);
 				}
 				sellMaterial(num, targetId, detail, user);
 			} else if (type == SaleDetailType.secondGold) {
@@ -227,20 +215,19 @@ public class SaleService {
 				throw new BusinessException("未指定销售类型");
 			}
 		}
-		
+
 		//货款入库
 		warehouseMoney(com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, saleId, sale, false, user);
-		
+
 		//更新客户积分
 		//String points = MapUtils.getString(sale, "points","0");
-		BigDecimal points = new BigDecimal(MapUtils.getString(sale, "points","0"));
-		String exchangePointsStr = MapUtils.getString(sale, "exchangePoints");
-		if(exchangePointsStr != null && !exchangePointsStr.equals("")){
-			customerService.addPoints(cusId, new BigDecimal(exchangePointsStr), points, user, num);	
+		int points = MapUtils.getIntValue(sale, "points", 0);
+		int exchangePoints = MapUtils.getIntValue(sale, "exchangePoints", 0);
+        int payPoints = MapUtils.getIntValue(sale,"payPoints",0);//抵现积分
+		if(exchangePoints>0 || points>0 || payPoints>0){
+			customerService.updatePoints(cusId, exchangePoints, points, payPoints,user, num);
 		}
 		//BigDecimal exchangePoints = new BigDecimal(exchangePointsStr);
-		
-		
 
 		//建立客户与该机构业务关联关系
 		customerService.createOrgRel(cusId, com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, saleId, user);
@@ -248,11 +235,11 @@ public class SaleService {
 		businessLogService.log("新开销售单", "销售单号为:" + num, user);
 		return saleId;
 	}
-	
+
 	private void sellProduct(Integer productId, Map<String, Object> detail, int saleId, int transId, String saleNum,IUser user) throws BusinessException {
 		productInventoryService.deliveryByProductId(BizType.sell, productId, "商品销售", InventoryStatus.onStorage, user);
 		productService.updateStatus(productId, ProductStatus.selled, "商品销售", null, user);
-		
+
 		//记录商品最终一口价和最终销售价
 		BigDecimal finalPrice = new BigDecimal(MapUtils.getString(detail, "price"));
 		BigDecimal discount = new BigDecimal(MapUtils.getString(detail, "totalDiscount", new Integer(0).toString()));
@@ -261,12 +248,12 @@ public class SaleService {
 		field.put("finalPrice", finalPrice);
 		field.put("finalSelledPrice", finalSelledPrice);
 		entityService.updateById(MzfEntity.PRODUCT, productId.toString(), field, user);
-		
+
 		Integer orderId = MapUtils.getInteger(detail, "orderId");
 		if (orderId != null) {
-			cusOrderService.finishCusOrderOnSell(orderId, user);			
+			cusOrderService.finishCusOrderOnSell(orderId, user);
 		}
-		
+
 		//记录流程
 		logService.createLog(transId, MzfEntity.SALE, Integer.toString(saleId), "新建销售单", TargetType.product, productId, "销售,销售单号为： "+saleNum, user);
 	}
@@ -292,7 +279,7 @@ public class SaleService {
 	private void sellChit(Integer chitId, Map<String, Object> detail, IUser user) throws BusinessException {
 		chitService.sellChit(chitId,user);
 	}
-	
+
 	private void returnsChit(Integer chitId, Integer saleId, Map<String, Object> detail, IUser user) throws BusinessException {
 		chitService.returnsChit(chitId, saleId, user);
 	}
@@ -309,7 +296,7 @@ public class SaleService {
 		sale.put("cdate", null);
 		String id = entityService.create(MzfEntity.SALE, sale, user);
 		int saleId = Integer.parseInt(id);
-		
+
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.SALE_DETAIL);
 		for (Map<String, Object> detail : detailList) {
 			detail.remove(metadata.getPkCode());
@@ -318,7 +305,7 @@ public class SaleService {
 				Integer productId = MapUtils.getInteger(detail, "targetId");
 				String productNum = MapUtils.getString(detail, "targetNum");
 				String productName = MapUtils.getString(detail, "targetName");
-				
+
 				  //记录旧饰回收日志
 				if(productId != null){
 					int transId = transactionService.createTransId();
@@ -330,26 +317,26 @@ public class SaleService {
 					Map<String, Object> product = entityService.getById(MzfEntity.PRODUCT, productId, user);
 					product.remove("id");
 					field = new HashMap<String, Object>(product);
-				} else {					
+				} else {
 					field.put("num", productNum);
 					field.put("name", productName);
 				}
 				field.put("buyPrice", MapUtils.getObject(detail, "price"));
 				field.put("status", ProductStatus.free);
-				
-				EntityMetadata spMetadata = metadataProvider.getEntityMetadata(MzfEntity.SECOND_PRODUCT);		
+
+				EntityMetadata spMetadata = metadataProvider.getEntityMetadata(MzfEntity.SECOND_PRODUCT);
 				String secondProductId = null;
-				if (productId != null) {					
+				if (productId != null) {
 					Map<String, Object> w = new HashMap<String, Object>();
-					w.put("num", productNum);				
-					OrderBy orderBy = new OrderBy(new String[]{spMetadata.getPkCode()}, OrderByDir.asc);		
+					w.put("num", productNum);
+					OrderBy orderBy = new OrderBy(new String[]{spMetadata.getPkCode()}, OrderByDir.asc);
 					List<Map<String, Object>> spList = entityService.list(spMetadata, w, orderBy, user.asSystem());
-					if (CollectionUtils.isEmpty(spList)) {					
+					if (CollectionUtils.isEmpty(spList)) {
 						secondProductId = entityService.create(spMetadata, field, user);
 					} else {
 						Map<String, Object> sp = spList.get(0);
 						secondProductId = MapUtils.getString(sp, spMetadata.getPkCode());
-						
+
 						entityService.updateById(spMetadata, secondProductId, field, user);
 					}
 				} else {
@@ -368,31 +355,31 @@ public class SaleService {
 
 		return saleId;
 	}
-	
+
 	public void warehouseMoney(com.zonrong.inventory.treasury.service.TreasuryService.BizType bizType, int targetId, Map<String, Object> sale, boolean isReturns, IUser user) throws BusinessException {
 		IEntityCode targetCode = MzfEntity.SALE;
-		
-		String remark = bizType.getName() + " 单号:" + MapUtils.getString(sale, "num");		
+
+		String remark = bizType.getName() + " 单号:" + MapUtils.getString(sale, "num");
         Integer orgId = MapUtils.getInteger(sale, "orgId", 0);
-		for (int i = 1; i <= 3; i++) {	
-			warehouseMoneyForDetail(bizType, sale, MoneyStorageClass1.bankCard, 
+		for (int i = 1; i <= 3; i++) {
+			warehouseMoneyForDetail(bizType, sale, MoneyStorageClass1.bankCard,
 					"bankCard" + i, MoneyStorageClass1.bankCard.getName() + "付款金额", "bankCardBank" + i, MoneyStorageClass1.bankCard.getName() + "的支付银行", targetCode, targetId, remark, isReturns, user);
-			
+
 			warehouseMoneyForDetail(bizType, sale, MoneyStorageClass1.valueCard,
 					"valueCard" + i, MoneyStorageClass1.valueCard.getName() + "付款金额", "valueCardType" + i, MoneyStorageClass1.valueCard.getName() + "的支付类型", targetCode, targetId, remark, isReturns, user);
-			
+
 			warehouseMoneyForDetail(bizType, sale, MoneyStorageClass1.coBrandedCard,
 					"coBrandedCard" + i, MoneyStorageClass1.coBrandedCard.getName() + "付款金额", "coBrandedCardBank" + i, MoneyStorageClass1.coBrandedCard.getName() + "的支付银行", targetCode, targetId, remark, isReturns, user);
-			
+
 			warehouseMoneyForDetail(bizType, sale, MoneyStorageClass1.foreignCard,
 					"foreignCard" + i, MoneyStorageClass1.foreignCard.getName() + "付款金额", "foreignCardType" + i, MoneyStorageClass1.foreignCard.getName() + "的支付类型", targetCode, targetId, remark, isReturns, user);
 		}
-		
+
 		String cash = MapUtils.getString(sale, "cash");
 		if (StringUtils.isNotBlank(cash)) {
 			BigDecimal money = new BigDecimal(cash);
 			if (isReturns) {
-				treaaurySaleService.delivery(bizType, orgId, money, MoneyStorageClass1.cash, null, false, targetCode, targetId, remark, user);				
+				treaaurySaleService.delivery(bizType, orgId, money, MoneyStorageClass1.cash, null, false, targetCode, targetId, remark, user);
 			} else {
 				treaaurySaleService.warehouse(bizType, orgId, money, MoneyStorageClass1.cash, null, false, targetCode, targetId, remark, user);
 			}
@@ -404,7 +391,7 @@ public class SaleService {
 				treaaurySaleService.delivery(bizType, orgId, money, MoneyStorageClass1.transfer, null, false, targetCode, targetId, remark, user);
 			} else {
 				treaaurySaleService.warehouse(bizType, orgId, money, MoneyStorageClass1.transfer, null, false, targetCode, targetId, remark, user);
-			}			
+			}
 		}
 		String chit = MapUtils.getString(sale, "chit");
 		if (StringUtils.isNotBlank(chit)) {
@@ -420,19 +407,19 @@ public class SaleService {
 			BigDecimal money = new BigDecimal(other);
 			if (isReturns) {
 				treaaurySaleService.delivery(bizType, orgId, money, MoneyStorageClass1.other, null, false, targetCode, targetId, remark, user);
-			} else {				
+			} else {
 				treaaurySaleService.warehouse(bizType, orgId, money, MoneyStorageClass1.other, null, false, targetCode, targetId, remark, user);
 			}
 		}
 	}
-	
+
 	private void warehouseMoneyForDetail(
 			com.zonrong.inventory.treasury.service.TreasuryService.BizType bizType, Map<String, Object> sale,
 			MoneyStorageClass1 class1,
 			String amountKey, String amountDesc,
 			String typekey, String typeDesc,
-			IEntityCode targetCode, int targetId, 
-			String remark,  boolean isReturns, 
+			IEntityCode targetCode, int targetId,
+			String remark,  boolean isReturns,
 			IUser user)
 			throws BusinessException {
 		String bankCard = MapUtils.getString(sale, amountKey);
@@ -440,24 +427,24 @@ public class SaleService {
         Integer orgId = MapUtils.getInteger(sale, "orgId", 0);
 		if (StringUtils.isNotBlank(bankCard) && StringUtils.isNotBlank(class2)) {
 			BigDecimal money = new BigDecimal(bankCard);
-			if (isReturns) {				
+			if (isReturns) {
 				treaaurySaleService.delivery(bizType, orgId, money, class1, class2, false, targetCode, targetId, remark, user);
-			} else {				
+			} else {
 				treaaurySaleService.warehouse(bizType, orgId, money, class1, class2, false, targetCode, targetId, remark, user);
 			}
 		} else if (StringUtils.isNotBlank(bankCard) && StringUtils.isBlank(class2)) {
 			throw new BusinessException("指定了" + amountDesc + "，但未指定" + typeDesc);
 		} else if (StringUtils.isBlank(bankCard) && StringUtils.isNotBlank(class2)) {
-			throw new BusinessException("指定了" + typeDesc + "，但未指定" + amountDesc ); 
+			throw new BusinessException("指定了" + typeDesc + "，但未指定" + amountDesc );
 		} else {
 			return;
 		}
 	}
-	
+
 	public int saveMarketProxy(int saleId, Map<String, Object> marketProxy, IUser user) throws BusinessException {
 		return 0;
 	}
-	
+
 	//审核销售单
 	public void approveSale(int saleId, Map<String, Object> approve, IUser user) throws BusinessException{
 		entityService.updateById(MzfEntity.SALE, Integer.toString(saleId), approve, user);
@@ -465,9 +452,9 @@ public class SaleService {
 		//记录流程
 		int transId = transactionService.findTransId(MzfEntity.SALE, Integer.toString(saleId), user);
 		logService.createLog(transId, MzfEntity.SALE, Integer.toString(saleId), "审核销售单", null, null, approveRemark, user);
-	} 
-	
-	public Map<String, Object> getPrintData(int saleId, IUser user) throws BusinessException {		
+	}
+
+	public Map<String, Object> getPrintData(int saleId, IUser user) throws BusinessException {
 		Map<String, Object> sale = entityService.getById(MzfEntity.SALE_VIEW, saleId, user);
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("saleId", saleId);
@@ -481,52 +468,52 @@ public class SaleService {
 //				Map<String, Object> product = productService.get(productId, user);
 //				String remark = MapUtils.getString(detail, "remark");
 //				detail.putAll(product);
-//				detail.put("remark", remark); 
+//				detail.put("remark", remark);
 				 //获得促销类型的text
 				String onsaleTypeValue = MapUtils.getString(detail, "onsaleType");
 				detail.put("onsaleTypeText", BizCodeService.getBizName("onsaleType", onsaleTypeValue));
-				
+
 				//根据订单编号获取订单
 				cusOrder = getCusOrderById(MapUtils.getString(detail, "orderId"));
 			}
-			
+
 			if (type == SaleDetailType.secondJewel) {
 				//针对旧饰回收做特殊处理
 				try {
 					String productNum = MapUtils.getString(detail, "targetNum");
-					if (StringUtils.isNotBlank(productNum)) {						
+					if (StringUtils.isNotBlank(productNum)) {
 						Map<String, Object> product = productService.findAllByProductNum(productNum, user);
 						ProductType productType = ProductType.valueOf(MapUtils.getString(product, "ptype"));
-						if (productType == ProductType.diamond) {					
+						if (productType == ProductType.diamond) {
 							float retailBasePrice = MapUtils.getFloat(product, "retailBasePrice");
 							float price = MapUtils.getFloat(detail, "price");
 							detail.put("price", retailBasePrice);
 							detail.put("totalDiscount", retailBasePrice - price);
-						}					
+						}
 					}
 				} catch (Exception e) {
 					e.printStackTrace();
 					logger.error(e.getMessage(), e);
 				}
 			}
-			
+
             detail.put("typeText", type.getText());
             String goldClass = MapUtils.getString(detail, "goldClass");
 			detail.put("goldClassText", null);
 			if (StringUtils.isNotBlank(goldClass)) {
 				GoldClass clazz = GoldClass.valueOf(goldClass);
-				detail.put("goldClassText", clazz.getText());	
+				detail.put("goldClassText", clazz.getText());
 			}
 		}
-		
-		List<Map<String, Object>> tempDetailList = new ArrayList<Map<String,Object>>(); 
+
+		List<Map<String, Object>> tempDetailList = new ArrayList<Map<String,Object>>();
 		for (Map<String, Object> detail : detailList) {
 			String certificateCode = MapUtils.getString(detail, "certificateCode");
 			String onsaleTypeText = MapUtils.getString(detail, "onsaleTypeText");
 			String remark = MapUtils.getString(detail, "remark");
-			
-			if (StringUtils.isNotBlank(certificateCode) || 
-					StringUtils.isNotBlank(onsaleTypeText) || 
+
+			if (StringUtils.isNotBlank(certificateCode) ||
+					StringUtils.isNotBlank(onsaleTypeText) ||
 					StringUtils.isNotBlank(remark)) {
 				Map<String, Object> d = new HashMap<String, Object>();
 				d.put("targetNum", MapUtils.getString(detail, "targetNum"));
@@ -536,7 +523,7 @@ public class SaleService {
 				tempDetailList.add(d);
 			}
 		}
-		
+
 		List<Map<String, Object>> remarkDetailList = new ArrayList<Map<String,Object>>();
 		for (int i = 0; i < tempDetailList.size(); i = i + 2) {
 			Map<String, Object> detail1 = tempDetailList.get(i);
@@ -546,28 +533,28 @@ public class SaleService {
 			d.put("onsaleTypeText1", MapUtils.getString(detail1, "onsaleTypeText"));
 			d.put("remark1", MapUtils.getString(detail1, "remark"));
 			if (i + 1 < tempDetailList.size()) {
-				Map<String, Object> detail2 = tempDetailList.get(i + 1);	
+				Map<String, Object> detail2 = tempDetailList.get(i + 1);
 				d.put("targetNum2", MapUtils.getString(detail2, "targetNum"));
 				d.put("certificateCode2", MapUtils.getString(detail2, "certificateCode"));
 				d.put("onsaleTypeText2", MapUtils.getString(detail2, "onsaleTypeText"));
 				d.put("remark2", MapUtils.getString(detail2, "remark"));
 			}
 			remarkDetailList.add(d);
-		}		
-		
+		}
+
 		Integer customerId = MapUtils.getInteger(sale, "cusId");
-		if (customerId != null) {			
-			String grade = customerService.findCustomerGrade(customerId); //客户级别		
+		if (customerId != null) {
+			String grade = customerService.findCustomerGrade(customerId); //客户级别
 			grade = BizCodeService.getBizName("cusGrade", grade);
 			sale.put("gradeText", grade);
 		}
 		if(cusOrder != null){
 			sale.put("orderCode", cusOrder.get("num"));
-			sale.put("orderDate", cusOrder.get("cdate"));	
+			sale.put("orderDate", cusOrder.get("cdate"));
 		}else{
 			sale.put("orderCode", null);
 			sale.put("orderDate", null);
-		} 
+		}
         String amountText = "";
         if(sale.get("amount") != null){
         	 String amount = MapUtils.getString(sale, "amount");
@@ -579,13 +566,13 @@ public class SaleService {
         sale.put("valueCard", MapUtils.getFloatValue(sale, "valueCard", 0) + MapUtils.getFloatValue(sale, "marketProxyValueCard", 0));
         sale.put("chit", MapUtils.getFloatValue(sale, "chit", 0) + MapUtils.getFloatValue(sale, "marketProxyChit", 0));
         sale.put("other", MapUtils.getFloatValue(sale, "other", 0) + MapUtils.getFloatValue(sale, "marketProxyOther", 0));
-        
+
         sale.put("amountText", amountText);
 		sale.put("detailList", detailList);
 		sale.put("remarkDetailList", remarkDetailList);
 		return sale;
-	}	
-	
+	}
+
 	//根据商品编号获得销售单号
 	public int getSaleIdByProductId(int productId, IUser user) throws BusinessException{
 		Map<String, Object> where = new HashMap<String, Object>();
@@ -596,7 +583,7 @@ public class SaleService {
 		for (Map detail : saleDetails) {
 			saleIds.add(MapUtils.getInteger(detail, "saleId"));
 		}
-		
+
 		if(saleIds.size() > 0){
 			Map<String, Object> filter = new HashMap<String, Object>();
 			filter.put("id", saleIds.toArray(new Integer[]{}));
@@ -617,7 +604,7 @@ public class SaleService {
 		}
 		return null;
 	}
-	
+
 	private Boolean isNewCustomer(int cusId) throws BusinessException {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("cusId", cusId);
@@ -627,7 +614,7 @@ public class SaleService {
 		}
 		return true;
 	}
-	
+
 	//按照实收计算总积分, 为每一件商品计算积分
 	private void calcPoints(Map<String, Object> bill, List<Map<String, Object>> details) throws BusinessException {
 		//实收 = 应收 - 定金支付 - 旧金支付 - 旧饰支付 - 折扣
@@ -637,9 +624,9 @@ public class SaleService {
 		BigDecimal productPay = new BigDecimal(MapUtils.getDoubleValue(bill, "productPay", 0.0));
 		BigDecimal discount = new BigDecimal(MapUtils.getDoubleValue(bill, "discount", 0.0));
 		BigDecimal pointsAmount = totalAmount.subtract(frontMoney).subtract(goldPay).subtract(productPay).subtract(discount);
-		
+
 		BigDecimal totalWeightPrice = new BigDecimal(0);
-		for (Map<String, Object> detail : details) {			
+		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			if (type == SaleDetailType.product) {
 				Integer productId = MapUtils.getInteger(detail, "targetId");
@@ -648,7 +635,7 @@ public class SaleService {
 				if (isBargains || isAuthorityDiscount) {
 					BigDecimal price = new BigDecimal(MapUtils.getString(detail, "price", Integer.toString(0)));
 					BigDecimal totalDiscount = new BigDecimal(MapUtils.getString(detail, "totalDiscount", Integer.toString(0)));
-					
+
 					totalWeightPrice = totalWeightPrice.add(price).subtract(totalDiscount);
 				}
 				detail.put("isBargains", isBargains);
@@ -656,19 +643,19 @@ public class SaleService {
 			}
 		}
 		pointsAmount = pointsAmount.subtract(totalWeightPrice);
-		
+
 		//计算总积分
 		int totalPoints = pointsAmount.divide(new BigDecimal(500), 0, BigDecimal.ROUND_FLOOR).intValue();
-		
+
 		//为每一件商品加权平均积分， 每件商品的权重 = 一口价 - 折扣
 		BigDecimal total = new BigDecimal(0);
-		for (Map<String, Object> detail : details) {			
+		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			if (type == SaleDetailType.product) {
-				if (!MapUtils.getBooleanValue(detail, "isBargains") && !MapUtils.getBooleanValue(detail, "isAuthorityDiscount")) {					
+				if (!MapUtils.getBooleanValue(detail, "isBargains") && !MapUtils.getBooleanValue(detail, "isAuthorityDiscount")) {
 					BigDecimal price = new BigDecimal(MapUtils.getString(detail, "price", Integer.toString(0)));
 					BigDecimal totalDiscount = new BigDecimal(MapUtils.getString(detail, "totalDiscount", Integer.toString(0)));
-					
+
 					BigDecimal weightPrice = price.subtract(totalDiscount);
 					total = total.add(weightPrice);
 				}
@@ -677,19 +664,19 @@ public class SaleService {
 		if(total.intValue() == 0){
 			return;
 		}
-		for (Map<String, Object> detail : details) {			
+		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			if (type == SaleDetailType.product) {
-				if (!MapUtils.getBooleanValue(detail, "isBargains") && !MapUtils.getBooleanValue(detail, "isAuthorityDiscount")) {					
+				if (!MapUtils.getBooleanValue(detail, "isBargains") && !MapUtils.getBooleanValue(detail, "isAuthorityDiscount")) {
 					BigDecimal price = new BigDecimal(MapUtils.getString(detail, "price", Integer.toString(0)));
 					BigDecimal totalDiscount = new BigDecimal(MapUtils.getString(detail, "totalDiscount", Integer.toString(0)));
-					
+
 					BigDecimal weightPrice = price.subtract(totalDiscount);
 					BigDecimal percent = weightPrice.divide(total, 2, BigDecimal.ROUND_HALF_EVEN);
 					int points = percent.multiply(new BigDecimal(totalPoints)).intValue();
 					detail.put("points", points);
 				}
-			}			
+			}
 		}
 		bill.put("points", totalPoints);
 	}

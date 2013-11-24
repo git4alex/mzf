@@ -134,16 +134,20 @@ public class SaleService {
 		//验证积分
 		int cusId = MapUtils.getIntValue(sale, "cusId",0);
 		Map<String, Object> customer = customerService.getCustomerById(cusId, user);
-		float saleExchangePoints = MapUtils.getFloatValue(sale, "exchangePoints",0);
-		if(customer != null && saleExchangePoints > 0){
-			float lockedPoints = MapUtils.getFloatValue(customer, "lockedPoints",0);
-			//float exchangePoints = MapUtils.getFloatValue(customer, "exchangePoints",0);
+		int saleExchangePoints = MapUtils.getInteger(sale, "exchangePoints", 0);
+        int payPoints = MapUtils.getInteger(sale,"payPoints",0);
+
+		if(customer != null){
+			int lockedPoints = MapUtils.getIntValue(customer, "lockedPoints", 0);
 			if(lockedPoints < saleExchangePoints){
-				throw new BusinessException("客户锁定积分不足以兑换物料");
+				throw new BusinessException("客户锁定积分不足");
 			}
+
+            int points = MapUtils.getIntValue(customer, "points", 0);
+            if(points < payPoints){
+                throw new BusinessException("客户剩余积分不足");
+            }
 		}
-
-
 	}
 
 	public int createSale(Map<String, Object> sale, List<Map<String, Object>> detailList, IUser user) throws BusinessException {
@@ -162,11 +166,10 @@ public class SaleService {
 		}
 		//自动积分
 		logger.debug("销售积分日志 一 ： 判断是是否积分");
-		if(!isPtProduct){
+		if(!isPtProduct){//铂金不积分
 			logger.debug("销售积分日志 二 ： 销售单符合积分规则");
 			calcPoints(sale, detailList);
 		}
-
 
 		int saleId = createBill(sale, detailList, user);
 		String num = MapUtils.getString(sale, "num");
@@ -177,31 +180,36 @@ public class SaleService {
 
 		//商品出库
 		for (Map<String, Object> detail : detailList) {
-			    SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
-			    Integer targetId = MapUtils.getInteger(detail, "targetId");
-				String ptype = MapUtils.getString(detail, "ptype");
-
-			if(ProductType.pt.toString().equals(ptype) && type == SaleDetailType.product){
-				BigDecimal weight = new BigDecimal(MapUtils.getString(detail,  "weight", MapUtils.getString(detail, "goldWeight")));
-				BigDecimal goldPrice = new BigDecimal(MapUtils.getString(detail, "goldPrice"));
-				BigDecimal ptPrice = weight.multiply(goldPrice);
-				productService.updatePTProductPrice(targetId, ptPrice, user);
-
-			}
+            SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
+            Integer targetId = MapUtils.getInteger(detail, "targetId");
+            String ptype = MapUtils.getString(detail, "ptype");
 
 			if (type == SaleDetailType.product) {
+                //商品销售
+                if(ProductType.pt.toString().equals(ptype)){
+                    //铂金类商品
+                    BigDecimal weight = new BigDecimal(MapUtils.getString(detail,  "weight", MapUtils.getString(detail, "goldWeight")));
+                    BigDecimal goldPrice = new BigDecimal(MapUtils.getString(detail, "goldPrice"));
+                    BigDecimal ptPrice = weight.multiply(goldPrice);
+                    //更新商品销售价格
+                    productService.updatePTProductPrice(targetId, ptPrice, user);
+                }
+
 				sellProduct(targetId, detail, saleId, transId,num, user);
 			} else if (type == SaleDetailType.material) {
-				float exchangePoints = MapUtils.getFloatValue(detail,"exchangePoints",0);
+                //物料销售
+				int exchangePoints = MapUtils.getIntValue(detail, "exchangePoints", 0);
 				 //物料兑换记录
 				if(exchangePoints > 0){
 					String remark = "销售单号：" + num + ";物料条码：" + MapUtils.getString(detail,"targetNum");
-					customerService.createPointLog(cusId, CustomerPointsType.exchangePoints, new BigDecimal(exchangePoints),remark,user);
+					customerService.createPointLog(cusId, CustomerPointsType.exchangePoints, exchangePoints,remark,user);
 				}
 				sellMaterial(num, targetId, detail, user);
 			} else if (type == SaleDetailType.secondGold) {
+			    //旧金回收
 				sellSecondGold(num, targetId, detail, user);
 			} else if (type == SaleDetailType.secondJewel) {
+			    //旧饰回收
 				//商品标记为回收
 				Map<String, Object> field = new HashMap<String, Object>();
 				field.put("isReturn", 1);
@@ -210,8 +218,10 @@ public class SaleService {
 				entityService.update(MzfEntity.PRODUCT, field, where, user);
 				sellSecondProduct(targetId, detail, user);
 			} else if (type == SaleDetailType.genChit) {
+			    //代金券销售
 				sellChit(targetId, detail, user);
 			} else if (type == SaleDetailType.returnsChit) {
+			    //代金券回收
 				returnsChit(targetId, saleId, detail, user);
 			} else {
 				throw new BusinessException("未指定销售类型");
@@ -222,16 +232,16 @@ public class SaleService {
 		warehouseMoney(com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, saleId, sale, false, user);
 
 		//更新客户积分
-		//String points = MapUtils.getString(sale, "points","0");
-		BigDecimal points = new BigDecimal(MapUtils.getString(sale, "points","0"));
-		//String exchangePoints = MapUtils.getString(sale, "exchangePoints","0");
-		BigDecimal exchangePoints = new BigDecimal(MapUtils.getString(sale, "exchangePoints","0"));
-		customerService.addPoints(cusId, exchangePoints, points, user, num);
+		int points = MapUtils.getIntValue(sale, "points", 0);//本次积分
+		int exchangePoints = MapUtils.getIntValue(sale, "exchangePoints", 0);//兑换积分
+        int payPoints = MapUtils.getIntValue(sale,"payPoints",0);//抵现积分
+        if(exchangePoints>0 || points>0 || payPoints>0){
+		    customerService.updatePoints(cusId, exchangePoints, points, payPoints, user, num);
+        }
 		//更新客户积分有效期
-		if(points.doubleValue() > 0){
+		if(points > 0){
 			customerService.updatePointsIndate(cusId, user);
 		}
-
 
 		//建立客户与该机构业务关联关系
 		customerService.createOrgRel(cusId, com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, saleId, user);
@@ -440,8 +450,6 @@ public class SaleService {
 			throw new BusinessException("指定了" + amountDesc + "，但未指定" + typeDesc);
 		} else if (StringUtils.isBlank(bankCard) && StringUtils.isNotBlank(class2)) {
 			throw new BusinessException("指定了" + typeDesc + "，但未指定" + amountDesc );
-		} else {
-			return;
 		}
 	}
 
@@ -605,8 +613,7 @@ public class SaleService {
 	}
 	private Map<String,Object> getCusOrderById(String orderId) throws BusinessException {
 		if(orderId != null){
-			Map<String,Object> cusOrder = entityService.getById(MzfEntity.CUS_ORDER, Integer.parseInt(orderId), User.getSystemUser());
-			return cusOrder;
+            return entityService.getById(MzfEntity.CUS_ORDER, Integer.parseInt(orderId), User.getSystemUser());
 		}
 		return null;
 	}
@@ -652,7 +659,7 @@ public class SaleService {
 		}
 		pointsAmount = pointsAmount.subtract(totalWeightPrice);
 
-		//计算总积分
+		//计算总积分（500块钱集一分）
 		int totalPoints = pointsAmount.divide(new BigDecimal(500), 0, BigDecimal.ROUND_FLOOR).intValue();
 		logger.debug("销售积分日志 三 ：进入积分计算函数：总积分："+totalPoints);
 		//为每一件商品加权平均积分， 每件商品的权重 = 一口价 - 折扣

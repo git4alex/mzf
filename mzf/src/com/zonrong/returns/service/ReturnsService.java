@@ -139,9 +139,9 @@ public class ReturnsService{
 		//更新客户积分
 		Integer cusId = MapUtils.getInteger(returns, "cusId");
 		//String points = MapUtils.getString(returns, "points");
-		BigDecimal points = new BigDecimal(MapUtils.getString(returns, "points", "0"));
-		BigDecimal exchangePoints = new BigDecimal(MapUtils.getString(returns, "exchangePoints", "0"));
-	    customerService.subtractPoints(cusId, points.multiply(new BigDecimal(-1)), exchangePoints, user, num);
+		int points = MapUtils.getIntValue(returns, "points", 0);
+		int exchangePoints = MapUtils.getIntValue(returns, "exchangePoints",0);
+	    customerService.subtractPoints(cusId, points*(-1), exchangePoints, user, num);
 
 
 		//如果销售单已经全部退货，做标志
