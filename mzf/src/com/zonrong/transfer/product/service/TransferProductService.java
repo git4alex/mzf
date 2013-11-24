@@ -187,7 +187,7 @@ public class TransferProductService extends TransferService {
 			final Map<String, Object> inventory = inventoryList.get(i);
 			final Integer productId = MapUtils.getInteger(inventory, "id");
 
-			TransferStatus status = TransferStatus.waitApprove;;
+			TransferStatus status = TransferStatus.waitApprove;
 			Integer sourceOrgId = MapUtils.getInteger(inventory, "orgId");
 			if (targetOrgId != null) {
 				if (!orgRelService.isRequireApprove(sourceOrgId, targetOrgId)) {
