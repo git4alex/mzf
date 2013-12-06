@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" hash="3864283046">
-    <data-source source="LOCAL" name="Data Source" product="Microsoft SQL Server" version="10.50.1617" jdbc-version="3.0" driver-name="jTDS Type 4 JDBC Driver for MS SQL Server and Sybase" driver-version="1.2.5" uuid="3c731399-37ce-4a89-9c4a-2fa24001aeea">
-      <extra-name-characters>$#@</extra-name-characters>
-      <identifier-quote-string>&quot;</identifier-quote-string>
+    <data-source source="LOCAL" name="Data Source" uuid="3c731399-37ce-4a89-9c4a-2fa24001aeea">
+      <driver-ref>sqlserver.jtds</driver-ref>
       <jdbc-driver>net.sourceforge.jtds.jdbc.Driver</jdbc-driver>
       <jdbc-url>jdbc:jtds:sqlserver://localhost/ERP-MZF;user=sa;password=000000</jdbc-url>
       <user-name>sa</user-name>

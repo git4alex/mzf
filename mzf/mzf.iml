@@ -31,6 +31,7 @@
     <orderEntry type="library" scope="PROVIDED" name="Tomcat 6.0" level="application_server_libraries" />
     <orderEntry type="library" name="tplt2-3rd" level="project" />
     <orderEntry type="module" module-name="tplt2" />
+    <orderEntry type="library" name="tplt2-3rd" level="project" />
   </component>
 </module>
 
