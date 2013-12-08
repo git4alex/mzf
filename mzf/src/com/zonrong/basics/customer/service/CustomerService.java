@@ -224,7 +224,7 @@ public class CustomerService {
 
             //积分流水
             String remark = "剩余积分："+oldCusPoints+";销售单号：" + saleNum;
-            createPointLog(cusId, CustomerPointsType.points, payPoints, remark, user);
+            createPointLog(cusId, CustomerPointsType.points, curPoints, remark, user);
 
             field.put("points", oldCusPoints); //更新剩余积分
             field.put("historyPoints", oldCusHisPoints);//更新历史积分
@@ -294,10 +294,6 @@ public class CustomerService {
 		upCustomerGrade(dbCustomer, subPoints, user);
 		//剩余积分
 		int oldCusPoints = MapUtils.getIntValue(dbCustomer, "points", 0);
-		//积分流水
-		String remark = "客户剩余积分：" + oldCusPoints + ";退货单号：" + returnsNum;
-		createPointLog(cusId, CustomerPointsType.points, subPoints+exchangePoints, remark, user);
-
 		oldCusPoints = oldCusPoints+subPoints+exchangePoints;
 
 		//历史积分
@@ -318,7 +314,11 @@ public class CustomerService {
 			throw new BusinessException("未找到客户[" + cusId + "]");
 		}
 
-	}
+        //积分流水
+        String remark = "剩余积分：" + oldCusPoints + ";退货单号：" + returnsNum;
+        createPointLog(cusId, CustomerPointsType.points, subPoints+exchangePoints, remark, user);
+    }
+
 	public void upPoints(int cusId, int points,int historyPoints,int exchangePoints, String remark, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.CUSTOMER);
 		Map<String, Object> dbCustomer = entityService.getById(metadata, cusId, user.asSystem());
