@@ -313,7 +313,7 @@ public class RawmaterialService {
 		BigDecimal dbCost = new BigDecimal(MapUtils.getString(rawmaterial, "cost"));
 		dbCost = dbCost.add(cost);
 		if (dbCost.doubleValue() < 0) {
-			throw new BusinessException("该原料总价已经低于0");
+			throw new BusinessException("该原料成本已经低于0");
 		}
 
 		Map<String, Object> field = new HashMap<String, Object>();

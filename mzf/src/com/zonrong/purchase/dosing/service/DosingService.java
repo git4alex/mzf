@@ -83,9 +83,6 @@ public class DosingService {
 //			throw new BusinessException("当前不允许配料");
 //		}
 
-        Map<String, Object> where = new HashMap<String, Object>();
-        where.put("detailId", detailId);
-        where.put("bomId", bomId);
         Filter f = Filter.field("detail_id").eq(detailId).and(Filter.field("bom_id").eq(bomId)).and(Filter.field("status").notIn(new String[]{"unReturn","returned"}));
         List<Map<String, Object>> list = entityService.list(MzfEntity.DOSING, f, null, user.asSystem());
         if (CollectionUtils.isNotEmpty(list)) {
@@ -183,10 +180,7 @@ public class DosingService {
         Map<String, Object> field = new HashMap<String, Object>(dosing);
 
         String minorType = MapUtils.getString(field, "minorType");
-        String dosingMinorType = MapUtils.getString(field, "dosingMinorType");
-        if (StringUtils.isBlank(dosingMinorType) || !dosingMinorType.equalsIgnoreCase(minorType)) {
-//			throw new BusinessException("实配原料小类和需求原料小类不一致");
-        }
+
         field.put("detailId", detailId);
         field.put("bomId", bomId);
         field.put("status", DosingStatus.New);
@@ -199,11 +193,6 @@ public class DosingService {
     }
 
     private void dosing(int dosingId, Map<String, Object> dosing, IUser user) throws BusinessException {
-        String minorType = MapUtils.getString(dosing, "minorType");
-        String dosingMinorType = MapUtils.getString(dosing, "dosingMinorType");
-        if (StringUtils.isBlank(dosingMinorType) || !dosingMinorType.equalsIgnoreCase(minorType)) {
-//			throw new BusinessException("实配原料小类和需求原料小类不一致");
-        }
         Integer rawmaterialId = MapUtils.getInteger(dosing, "dosingRawmaterialId");
         if (rawmaterialId == null) {
             throw new BusinessException("数据不完整，缺少：原料ID");
@@ -309,10 +298,9 @@ public class DosingService {
         }
 
         //解锁原料
-        String message = "原料解锁失败";
         String remark = "委外加工订单删除配料，解锁原料";
-        rawmaterialInventoryService.freeDiamond(diamondList.toArray(new Integer[diamondList.size()]), message, remark, user);
-        rawmaterialInventoryService.freeByQuantity(dosingMap, null, user);
+        rawmaterialInventoryService.freeDiamond(diamondList.toArray(new Integer[diamondList.size()]), remark, user);
+        rawmaterialInventoryService.freeByQuantity(dosingMap, user);
     }
 
     private void lockRawmaterialInventory(int dosingId, IUser user) throws BusinessException {
@@ -337,10 +325,9 @@ public class DosingService {
         }
 
         //锁定原料
-        String message = "原料锁定失败";
         String remark = "委外加工订单锁定原料";
-        rawmaterialInventoryService.lockDiamond(diamondList.toArray(new Integer[diamondList.size()]), message, remark, user);
-        rawmaterialInventoryService.lockByQuantity(dosingMap, null, user);
+        rawmaterialInventoryService.lockDiamond(diamondList.toArray(new Integer[diamondList.size()]), remark, user);
+        rawmaterialInventoryService.lockByQuantity(dosingMap, user);
     }
 
     public void validDosing(Integer[] dosingId, IUser user) throws BusinessException {
@@ -385,11 +372,11 @@ public class DosingService {
         RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(m, "type"));
 
         if (type == RawmaterialType.nakedDiamond) {
-            rawmaterialInventoryService.lockDiamond(new Integer[]{mid}, "配料锁定", "配料锁定", user);
+            rawmaterialInventoryService.lockDiamond(new Integer[]{mid}, "配料锁定", user);
         } else {
             Map<Integer, BigDecimal> tmp = new HashMap<Integer, BigDecimal>();
             tmp.put(mid, new BigDecimal(quantity));
-            rawmaterialInventoryService.lockByQuantity(tmp, "配料锁定", user);
+            rawmaterialInventoryService.lockByQuantity(tmp, user);
         }
     }
 
@@ -398,11 +385,11 @@ public class DosingService {
         RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(m, "type"));
 
         if (type == RawmaterialType.nakedDiamond) {
-            rawmaterialInventoryService.freeDiamond(new Integer[]{mid}, "配料解锁", "", user);
+            rawmaterialInventoryService.freeDiamond(new Integer[]{mid}, "配料解锁", user);
         } else {
             Map<Integer, BigDecimal> tmp = new HashMap<Integer, BigDecimal>();
             tmp.put(mid, new BigDecimal(quantity));
-            rawmaterialInventoryService.freeByQuantity(tmp, "", user);
+            rawmaterialInventoryService.freeByQuantity(tmp, user);
         }
     }
 

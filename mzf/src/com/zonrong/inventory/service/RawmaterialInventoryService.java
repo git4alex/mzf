@@ -8,8 +8,6 @@ import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.common.utils.MzfUtils;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.log.BusinessLogService;
-import com.zonrong.core.log.FlowLogService;
-import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.DosingBom;
@@ -25,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -48,10 +47,6 @@ public class RawmaterialInventoryService {
 	private RawmaterialService rawmaterialService;
 	@Resource
 	private BusinessLogService businessLogService;
-    @Resource
-    private FlowLogService flowLogService;
-    @Resource
-    private TransactionService transactionService;
 
 	public enum GoldClass {
 		pt900,			//铂900
@@ -59,7 +54,6 @@ public class RawmaterialInventoryService {
 		k750,			//金750
 		pd950,			//钯
 		silver,			//银
-		no,             //无
 		gold;			//黄金
 
 		public String getText() {
@@ -123,7 +117,7 @@ public class RawmaterialInventoryService {
 			throw new BusinessException("未指定仓库类型");
 		}
 		Map<String, Object> inventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, user);
-		Integer inventoryId = null;
+		Integer inventoryId;
 		if (inventory == null) {
 			inventoryId = inventoryService.createRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, "原料采购收货入库", user);
 		} else {
@@ -143,7 +137,7 @@ public class RawmaterialInventoryService {
 		}
 
 		Map<String, Object> inventory = inventoryService.findSecondGoldInventory(rawmaterialId, user.getOrgId(), storageType, user);
-		Integer inventoryId = null;
+		Integer inventoryId;
 		if (inventory == null) {
 			inventoryId = inventoryService.createSecondGoldInventory(rawmaterialId, user.getOrgId(), storageType, null, user);
 		} else {
@@ -157,10 +151,7 @@ public class RawmaterialInventoryService {
 
 	/**
 	 * 裸石强制出库
-	 * @param bizType
-	 * @param rawmaterialId
-	 * @param remark
-	 * @param user
+     *
 	 * @throws BusinessException
 	 */
 	public void deliveryDiamondByRawmaterialId(BizType bizType, int rawmaterialId, String remark, IUser user) throws BusinessException {
@@ -183,14 +174,11 @@ public class RawmaterialInventoryService {
 	/**
 	 * 提交委外订单时配料出库
 	 *
-	 * @param bizType
-	 * @param rawmaterialQuantityMap	key:rawmaterialId，value:DosingBom
-	 * @param orgId
-	 * @param user
 	 * @throws BusinessException
 	 */
 	public void deliveryByQuantityOnOEM(BizType bizType, Map<Integer, DosingBom> rawmaterialQuantityMap, int orgId, String remark, IUser user) throws BusinessException {
-		Integer[] rawmaterialIds = rawmaterialQuantityMap.keySet().toArray(new Integer[]{});
+        Set<Integer> rids = rawmaterialQuantityMap.keySet();
+        Integer[] rawmaterialIds = rids.toArray(new Integer[rids.size()]);
 		List<Map<String, Object>> list = listRawmaterialInventory(rawmaterialIds, orgId, user);
 		for (Map<String, Object> map : list) {
 			Integer rawmaterialId = MapUtils.getInteger(map, "id");
@@ -206,14 +194,14 @@ public class RawmaterialInventoryService {
 			}
 			Double allQuantity = dbQuantity;
 			if (dbLockedQuantity != null) {
-				allQuantity = allQuantity.doubleValue() + dbLockedQuantity.doubleValue();
+				allQuantity = allQuantity + dbLockedQuantity;
 			}
 
 
 			//加权平均，更新原料价格
 			DosingBom dosingBom = rawmaterialQuantityMap.get(rawmaterialId);
 			BigDecimal quantity = dosingBom.getQuantity();
-			BigDecimal outCost = MzfUtils.getAvgByWeighted(allQuantity, dbCost, quantity);
+			BigDecimal outCost = new BigDecimal(MzfUtils.getAvgByWeighted(allQuantity, dbCost, quantity));
 			outCost = outCost.multiply(new BigDecimal(-1));
 			rawmaterialService.addCost(rawmaterialId, outCost, user);
 
@@ -236,68 +224,87 @@ public class RawmaterialInventoryService {
 
 	 /**
 	  * 原料强制出库（非裸石）
-	  * @param bizType
-	  * @param quantity
-	  * @param rawmaterialId
-	  * @param remark
-	  * @param user
+      *
 	  * @throws BusinessException
 	  */
 	public void deliveryRawmaterialById(BizType bizType,BigDecimal quantity,BigDecimal weight, int rawmaterialId, String remark, IUser user) throws BusinessException {
 		List<Map<String, Object>> list = listRawmaterialInventory(new Integer[] { rawmaterialId }, 1, user);
-		Map<String, Object> map = new HashMap<String, Object>();
-		if (list != null && list.size() == 1) {
-			map = list.get(0);
-		} else {
-			throw new BusinessException("原料数据有误，不能出库");
+		Map<String, Object> map;
+
+        if(CollectionUtils.isEmpty(list)){
+            throw new BusinessException("原料库存记录为空，原料ID：["+rawmaterialId+"]");
+        }
+
+        if(list.size()>1){
+            throw new BusinessException("原料库存记录不唯一，原料ID：["+rawmaterialId+"]");
+        }
+
+        map = list.get(0);
+        //获取原料库存数据
+
+		Double dbCost = MapUtils.getDouble(map, "cost",0d);
+		Double dbQuantity = MapUtils.getDouble(map, "quantity",0d);
+		Double dbLockedQuantity = MapUtils.getDouble(map, "lockedQuantity",0d);
+
+		if (dbCost <= 0) {
+			throw new BusinessException("库存成本异常，为：["+dbCost+"]");
+		}
+		if (dbQuantity < quantity.doubleValue()) {
+			throw new BusinessException("库存数量不足，为：["+dbQuantity+"]");
 		}
 
-		Integer id = MapUtils.getInteger(map, "id");
-		String num = MapUtils.getString(map, "num");
-		Double dbCost = MapUtils.getDouble(map, "cost");
-		Double dbQuantity = MapUtils.getDouble(map, "quantity");
-		Double dbLockedQuantity = MapUtils.getDouble(map, "lockedQuantity");
-		if (dbCost == null || dbCost < 0) {
-			throw new BusinessException("原料[" + num + "]价格为空或低于0");
-		}
-		if (dbQuantity == null || dbQuantity < 0) {
-			throw new BusinessException("原料[" + num + "]数量为空或低于0");
-		}
 		Double allQuantity = dbQuantity;
 		if (dbLockedQuantity != null) {
-			allQuantity = allQuantity.doubleValue()
-					+ dbLockedQuantity.doubleValue();
+			allQuantity = allQuantity + dbLockedQuantity;
 		}
 
-		// 加权平均，更新原料价格
-		BigDecimal outCost = MzfUtils.getAvgByWeighted(allQuantity, dbCost,quantity);
-		outCost = outCost.multiply(new BigDecimal(-1));
-		rawmaterialService.addCost(id, outCost, user);
+		// 加权平均，计算本次出库原料成本
+		Double outCost = MzfUtils.getAvgByWeighted(allQuantity, dbCost,quantity);
+
+        Map<String,Object> value=new HashMap<String,Object>();
+        value.put("quantity", dbQuantity - quantity.doubleValue());
+
+        //更新库存
+        Integer inventoryId = MapUtils.getInteger(map, "inventoryId");
+        entityService.updateById(MzfEntity.INVENTORY,inventoryId.toString(),value,user);
+
+        value.clear();
+        String fRemark = "剩余数量：["+(dbQuantity - quantity.doubleValue())+"]";
 		RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(map,"type"));
 		if (type == RawmaterialType.gravel) {
-
 			if (weight == null) {
 				throw new BusinessException("未指定碎石出库重量");
 			}
-			weight = weight.multiply(new BigDecimal(-1));
-			rawmaterialService.addWeight(id, weight, user);
-		}
+            Double dbWeight = MapUtils.getDouble(map,"weight",0d);
 
-		Integer inventoryId = MapUtils.getInteger(map, "inventoryId");
-		inventoryService.deliveryByQuantityFlow(bizType, inventoryId, quantity,null, "强制出库", true, remark, user);
+            if(dbWeight < weight.doubleValue() ){
+                throw new BusinessException("碎石库存重量不足：为["+dbWeight+"]");
+            }
+
+            value.put("weight", dbWeight - weight.doubleValue());
+            fRemark = fRemark + ";碎石剩余重量：["+(new BigDecimal(dbWeight).subtract(weight).round(new MathContext(3)))+"]";
+		}
+        value.put("cost", dbCost - outCost);
+        String rid = MapUtils.getString(map,"id");
+        entityService.updateById(MzfEntity.RAWMATERIAL,rid,value,user);
+
+        //记录出库
+
+        inventoryService.createFlowOnQuantity(bizType, inventoryId, quantity, InventoryType.delivery, outCost, remark, fRemark, user);
+
 		//记录操作日志
 		businessLogService.log("原料库强制出库", "库存编号为：" + inventoryId, user);
 	}
 
-	public void lockDiamond(Integer[] rawmaterialId, String message, String remark, IUser user) throws BusinessException {
+	public void lockDiamond(Integer[] rawmaterialId, String remark, IUser user) throws BusinessException {
 		rawmaterialService.lockDiamond(rawmaterialId, remark, user);
 	}
 
-	public void freeDiamond(Integer[] rawmaterialId, String message, String remark, IUser user) throws BusinessException {
+	public void freeDiamond(Integer[] rawmaterialId, String remark, IUser user) throws BusinessException {
 		rawmaterialService.freeDiamond(rawmaterialId, remark, user);
 	}
 
-	public void lockByQuantity(Map<Integer, BigDecimal> rawmaterialIdQuantityMap, String remark, IUser user) throws BusinessException {
+	public void lockByQuantity(Map<Integer, BigDecimal> rawmaterialIdQuantityMap, IUser user) throws BusinessException {
 		if (MapUtils.isEmpty(rawmaterialIdQuantityMap)) {
 			return;
 		}
@@ -310,19 +317,18 @@ public class RawmaterialInventoryService {
         }
 	}
 
-	public void freeByQuantity(Map<Integer, BigDecimal> rawmaterialIdQuantityMap, String remark, IUser user) throws BusinessException {
+	public void freeByQuantity(Map<Integer, BigDecimal> rawmaterialIdQuantityMap,IUser user) throws BusinessException {
 		if (MapUtils.isEmpty(rawmaterialIdQuantityMap)) {
 			return;
 		}
 
 		Map<Integer, BigDecimal> inventoryIdQuantityMap = convertToInventoryQuantityMap(rawmaterialIdQuantityMap, user);
-		for (Iterator<Entry<Integer, BigDecimal>> it = inventoryIdQuantityMap.entrySet().iterator(); it.hasNext();) {
-			Entry<Integer, BigDecimal> en = it.next();
-			int inventoryId = en.getKey();
-			BigDecimal lockedQuantity = en.getValue();
-			lockedQuantity = lockedQuantity.multiply(new BigDecimal(-1));
-			inventoryService.addLockedQuantity(inventoryId, lockedQuantity, user);
-		}
+        for (Entry<Integer, BigDecimal> en : inventoryIdQuantityMap.entrySet()) {
+            int inventoryId = en.getKey();
+            BigDecimal lockedQuantity = en.getValue();
+            lockedQuantity = lockedQuantity.multiply(new BigDecimal(-1));
+            inventoryService.addLockedQuantity(inventoryId, lockedQuantity, user);
+        }
 	}
 
 	public List<Map<String, Object>> listRawmaterialInventory(Integer[] rawmaterialIds, int orgId, IUser user) throws BusinessException {
@@ -330,8 +336,7 @@ public class RawmaterialInventoryService {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("id", rawmaterialIds);
 		where.put("orgId", orgId);
-		List<Map<String, Object>> rawmaterialInventoryList = entityService.list(metadata, where, null, user.asSystem());
-		return rawmaterialInventoryList;
+        return entityService.list(metadata, where, null, user.asSystem());
 	}
 
 	public Map<String, Object> getRawmaterialInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
@@ -341,20 +346,19 @@ public class RawmaterialInventoryService {
 		} else if (rawmaterialInventoryList.size() > 1) {
 			throw new BusinessException("库存中找到多件原料[" + rawmaterialId + "]");
 		}
-		Map<String, Object> dbInventory = rawmaterialInventoryList.get(0);
 
-		return dbInventory;
+        return rawmaterialInventoryList.get(0);
 	}
 
 	/**
 	 * 传入的参数中的key值为原料Id，将其对应成库存Id
+     *
 	 * @param rawmaterialIdQuantityMap	key:存放rawmaterialId
-	 * @param user
 	 * @return		key:存放inventoryId
 	 * @throws BusinessException
 	 */
 	private Map<Integer, BigDecimal> convertToInventoryQuantityMap(Map<Integer, BigDecimal> rawmaterialIdQuantityMap, IUser user) throws BusinessException {
-		Integer[] rawmaterialId = new ArrayList<Integer>(rawmaterialIdQuantityMap.keySet()).toArray(new Integer[]{});
+		Integer[] rawmaterialId = new ArrayList<Integer>(rawmaterialIdQuantityMap.keySet()).toArray(new Integer[new ArrayList<Integer>(rawmaterialIdQuantityMap.keySet()).size()]);
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("orgId", user.getOrgId());
 		where.put("targetType", TargetType.rawmaterial);

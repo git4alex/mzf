@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -203,9 +204,9 @@ public class InventoryService {
             //发生金额为商品成本
         }else if(targetType == TargetType.rawmaterial){//原料出入库
             //发生金额为原料成本
-            if(storageType == StorageType.rawmaterial_gold){
+            if(storageType == StorageType.rawmaterial_gold || storageType == StorageType.rawmaterial_gravel){
                 //金料的发生金额为本次入库的成本，参见：createFlowOnQuantity
-                flow.put("cost",Integer.valueOf(deliveryReason));
+                flow.put("cost",Float.valueOf(deliveryReason));
             }else{
                 Map<String,Object> target = entityService.getById(MzfEntity.RAWMATERIAL,targetId,user);
                 flow.put("cost",MapUtils.getFloat(target,"cost"));
@@ -283,7 +284,7 @@ public class InventoryService {
 		}
 //		inventory.remove(metadata.getPkCode());
 
-		createFlowOnQuantity(bizType, inventoryId, quantity, type, cost, costDesc, remark, user);
+		createFlowOnQuantity(bizType, inventoryId, quantity, type, cost.doubleValue(), costDesc, remark, user);
 	}
 
 	public void deliveryByQuantityIgnoreFlow(BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String costDesc, boolean isUpdateLockedQuantity, String remark, IUser user) throws BusinessException {
@@ -310,7 +311,7 @@ public class InventoryService {
 			throw new BusinessException("库存量不足");
 		}
 		if (isUpdateLockedQuantity) {
-			BigDecimal lq = new BigDecimal(MapUtils.getString(inventory, "lockedQuantity", new Integer(0).toString()));
+			BigDecimal lq = new BigDecimal(MapUtils.getString(inventory, "lockedQuantity", Integer.toString(0)));
 			lq = lq.subtract(quantity);
 			if (lq.doubleValue() >= 0) {
 				field.put("lockedQuantity", lq);
@@ -323,11 +324,11 @@ public class InventoryService {
 
 		//记录出库流水
 		if (isFlow) {
-			createFlowOnQuantity(bizType, inventoryId, quantity, InventoryType.delivery, cost, costDesc, remark, user);
+			createFlowOnQuantity(bizType, inventoryId, quantity, InventoryType.delivery, cost.doubleValue(), costDesc, remark, user);
 		}
 	}
 
-	public void createFlowOnQuantity(BizType bizType, int inventoryId, BigDecimal quantity, InventoryType type, BigDecimal cost, String costDesc, String remark, IUser user) throws BusinessException {
+	public void createFlowOnQuantity(BizType bizType, int inventoryId, BigDecimal quantity, InventoryType type, Double cost, String costDesc, String remark, IUser user) throws BusinessException {
 		EntityMetadata metadata = getEntityMetadataOfInventory();
 		Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
 		Integer orgId = MapUtils.getInteger(inventory, "orgId");
@@ -373,7 +374,7 @@ public class InventoryService {
 		field.put("mdate", null);
 		int row = entityService.update(metadata, field, where, user);
 		if (row != inventoryId.length) {
-			throw new BusinessException("更新库存状态失败。原因：未找到相应库存[" + inventoryId + "]");
+			throw new BusinessException("更新库存状态失败。原因：未找到相应库存[" + Arrays.toString(inventoryId) + "]");
 		}
 	}
 
