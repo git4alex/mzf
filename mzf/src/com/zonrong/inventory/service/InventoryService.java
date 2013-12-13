@@ -325,6 +325,9 @@ public class InventoryService {
 		}
 		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
 
+        if(cost == null){
+            cost = new BigDecimal(0);
+        }
 		//记录出库流水
 		if (isFlow) {
 			createFlowOnQuantity(bizType, inventoryId, quantity, InventoryType.delivery, cost.doubleValue(), costDesc, remark, user);
