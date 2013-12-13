@@ -5,8 +5,8 @@ html {
 .editbox {
   margin: .4em;
   padding: 0;
-  font-family: "consolas","courier new","segoe ui";
-  font-size: 9pt;
+  font-family: "consolas","microsoft yahei","courier new","segoe ui";
+  font-size: 10pt;
   color: black;
 }
 
@@ -57,5 +57,4 @@ span.js-comment {
 
 span.js-string {
   color: #AA2222;
-  font-weight: bold;
 }
