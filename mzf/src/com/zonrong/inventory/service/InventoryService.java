@@ -284,6 +284,9 @@ public class InventoryService {
 		}
 //		inventory.remove(metadata.getPkCode());
 
+        if(cost == null){
+            cost = new BigDecimal(0);
+        }
 		createFlowOnQuantity(bizType, inventoryId, quantity, type, cost.doubleValue(), costDesc, remark, user);
 	}
 
