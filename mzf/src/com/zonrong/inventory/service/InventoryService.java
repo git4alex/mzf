@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -207,9 +208,22 @@ public class InventoryService {
             if(storageType == StorageType.rawmaterial_gold || storageType == StorageType.rawmaterial_gravel){
                 //金料的发生金额为本次入库的成本，参见：createFlowOnQuantity
                 flow.put("cost",Float.valueOf(deliveryReason));
+
+                if(storageType == StorageType.rawmaterial_gravel){
+                    int idx = remark.lastIndexOf('|');
+                    String wStr = remark.substring(idx+1);
+                    remark = remark.substring(0,idx);
+                    flow.put("remark",remark);
+                    flow.put("weight",new BigDecimal(wStr).round(new MathContext(3)).toString());
+                }else{
+                    flow.put("weight",quantity);
+                }
             }else{
                 Map<String,Object> target = entityService.getById(MzfEntity.RAWMATERIAL,targetId,user);
                 flow.put("cost",MapUtils.getFloat(target,"cost"));
+                if(storageType == StorageType.rawmaterial_nakedDiamond){
+                    flow.put("weight",MapUtils.getFloat(target, "spec"));
+                }
             }
         }else if(targetType == TargetType.secondProduct){//旧饰出入库
             //发生金额为旧饰回收价格

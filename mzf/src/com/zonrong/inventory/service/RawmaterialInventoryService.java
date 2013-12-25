@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.DecimalFormat;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -97,6 +98,7 @@ public class RawmaterialInventoryService {
 			BigDecimal quantity, BigDecimal cost, BigDecimal weight, String remark, IUser user)
 			throws BusinessException {
 		StorageType storageType = StorageType.rawmaterial_gravel;
+        remark = remark + "|" + weight.round(new MathContext(4));
 		warehouseByQuantity(bizType, storageType, rawmaterialId, quantity, cost, remark, user);
 
 		//更新碎石重量
@@ -213,6 +215,7 @@ public class RawmaterialInventoryService {
 				}
 				weight = weight.multiply(new BigDecimal(-1));
 				rawmaterialService.addWeight(rawmaterialId, weight, user);
+                remark = remark + "|" + weight;
 			}
 
 			Integer inventoryId = MapUtils.getInteger(map, "inventoryId");
@@ -269,7 +272,7 @@ public class RawmaterialInventoryService {
         entityService.updateById(MzfEntity.INVENTORY,inventoryId.toString(),value,user);
 
         value.clear();
-        String fRemark = "剩余数量：["+(dbQuantity - quantity.doubleValue())+"]";
+        String fRemark = "剩余数量：["+(new DecimalFormat(".###").format(dbQuantity - quantity.doubleValue()))+"]";
 		RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(map,"type"));
 		if (type == RawmaterialType.gravel) {
 			if (weight == null) {
@@ -282,7 +285,7 @@ public class RawmaterialInventoryService {
             }
 
             value.put("weight", dbWeight - weight.doubleValue());
-            fRemark = fRemark + ";碎石剩余重量：["+(new BigDecimal(dbWeight).subtract(weight).round(new MathContext(3)))+"]";
+            fRemark = fRemark + ";剩余重量：["+(new BigDecimal(dbWeight).subtract(weight).round(new MathContext(4)))+"]|"+weight.round(new MathContext(3));
 		}
         value.put("cost", dbCost - outCost);
         String rid = MapUtils.getString(map,"id");
