@@ -113,7 +113,13 @@ public class ProductDemandCRUDService extends BillStatusService<DemandStatus>{
 			if (StringUtils.isEmpty(MapUtils.getString(demand, "goldWeight2"))) {
 				String goldClassStr = MapUtils.getString(demand, "goldClass");
 				if (StringUtils.isNotBlank(goldClassStr)) {
-					GoldClass goldClass = GoldClass.valueOf(goldClassStr);
+                    GoldClass goldClass = null;
+                    try{
+                        goldClass = GoldClass.valueOf(goldClassStr);
+                    }catch (Exception e){
+
+                    }
+
 					String goldWeight = null;
 					if (goldClass == GoldClass.pt900 || goldClass == GoldClass.pt950) {
 						goldWeight = MapUtils.getString(dbStyle, "ptWeight");
