@@ -9,19 +9,19 @@ import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2010-11-2
@@ -31,14 +31,8 @@ import java.util.*;
  */
 @Service
 public class ProductAdjustService {
-	private Logger logger = Logger.getLogger(this.getClass());
-
-	@Resource
-	private MetadataProvider metadataProvider;
 	@Resource
 	private EntityService entityService;
-	@Resource
-	private ProductInventoryService productInventoryService;
 	@Resource
 	private TransactionService transactionService;
 	@Resource
@@ -105,7 +99,7 @@ public class ProductAdjustService {
 
 	public void cancelAdjust(Integer[] adjustIds, IUser user) throws BusinessException {
 		if (ArrayUtils.isEmpty(adjustIds)) {
-			throw new BusinessException("未指定调价申请");
+			throw new BusinessException("未指定要取消的调价记录");
 		}
 
 		Map<String, Object> where = new HashMap<String, Object>();
@@ -134,8 +128,7 @@ public class ProductAdjustService {
 
 	/**
 	 * 调价
-	 * @param list
-	 * @param user
+     *
 	 * @throws BusinessException
 	 */
 	public void adjustPrice(List<Map<String, Object>> list, IUser user) throws BusinessException {
@@ -143,16 +136,13 @@ public class ProductAdjustService {
 			throw new BusinessException("未指定商品");
 		}
 
-		List<Integer> adjustIdList = new ArrayList<Integer>();
 		for (Map<String, Object> product : list) {
 			Object adjustPrice = MapUtils.getObject(product, "adjustPrice");
 			Integer id = MapUtils.getInteger(product, "id");
-			adjustIdList.add(id);
 			if (adjustPrice == null || id == null) {
 				throw new BusinessException("缺少参数");
 			}
 
-			Integer[] adjustIds = adjustIdList.toArray(new Integer[]{});
 			Map<String, Object> where = new HashMap<String, Object>();
 			where.put("id", id);
 			where.put("status", new String[]{AdjustStatus.New.toString(), AdjustStatus.waitConfirm.toString()});
@@ -161,13 +151,13 @@ public class ProductAdjustService {
 			field.put("status", AdjustStatus.waitConfirm);
 			field.put("adjustPrice", adjustPrice);
 
-			int row = entityService.update(MzfEntity.PRODUCT_ADJUST, field, where, user);
+			entityService.update(MzfEntity.PRODUCT_ADJUST, field, where, user);
 		}
 	}
 
 	/**
 	 * 确认调价
-	 * @param user
+     *
 	 * @throws BusinessException
 	 */
 	public void confirm(Integer[] adjustIds, IUser user) throws BusinessException {
