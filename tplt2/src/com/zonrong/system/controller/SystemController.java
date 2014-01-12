@@ -27,6 +27,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 /**
  * date: 2010-7-27
@@ -121,6 +122,27 @@ public class SystemController {
         return templete.operate();
     }
 
+    @RequestMapping(value = "/jvmmem", method = RequestMethod.GET)
+    @ResponseBody
+    public Map getJvmMemStatus() {
+        OperateTemplete tmp = new OperateTemplete() {
+            @Override
+            protected void doSomething() throws BusinessException {
+                Runtime rt = Runtime.getRuntime();
+                this.put("maxMemory", (rt.maxMemory()/1024/1024)+"M");
+                this.put("freeMemory", (rt.freeMemory()/1024/1024)+"M");
+                this.put("totalMemory", (rt.totalMemory()/1024/1024)+"M");
+
+                Properties ps = System.getProperties();
+                for (Object o : ps.keySet()) {
+                    String k = o.toString();
+                    this.put(k, ps.getProperty(k));
+                }
+            }
+        };
+        return tmp.operate();
+    }
+
     @RequestMapping(value = "/module/{dbId}", method = RequestMethod.PUT)
     @ResponseBody
     public Map updateModule(final @PathVariable String dbId, final @RequestBody Map<String, Object> module, @RequestParam Map<String, Object> params, HttpServletRequest request) {
@@ -206,7 +228,7 @@ public class SystemController {
      * @param configFile format:{type:[{config1},{config2}],type2:[{config1},{config2}]}
      */
     @RequestMapping(value = "/sysConfig", method = RequestMethod.POST)
-    public void impConfig(@RequestParam(required = false) final MultipartFile configFile,HttpServletResponse response) {
+    public void impConfig(@RequestParam(required = false) final MultipartFile configFile, HttpServletResponse response) {
         OperateTemplete tpl = new OperateTemplete() {
             @Override
             protected void doSomething() throws BusinessException {
@@ -221,7 +243,7 @@ public class SystemController {
             }
         };
 
-        Map<String,Object> ret = tpl.operate();
+        Map<String, Object> ret = tpl.operate();
         try {
             response.setContentType("text/html");
             response.getWriter().write(new ObjectMapper().writeValueAsString(ret));
