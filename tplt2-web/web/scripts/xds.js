@@ -882,8 +882,12 @@ xds.Project = Ext.extend(Ext.util.Observable, {
     },
 
     save: function (asData,cb,autoSave) {
-        var xdsJson = Ext.encode(xds.project.getData());
         var module = xds.inspector.root.module;
+
+        module.version = module.version || 0;
+        module.version ++;
+
+        var xdsJson = Ext.encode(xds.project.getData());
         var cfgStr = module.getModuleConfig();
         var data = {};
         if (module.dbId) {

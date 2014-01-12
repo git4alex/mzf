@@ -508,6 +508,9 @@ xds.types.Module = Ext.extend(xds.types.BaseType, {
             ret.components.push(node.component.getInternals(true));
             node = node.nextSibling;
         }
+
+        ret.version = this.version || 0;
+
         return ret;
     },
     getModuleConfig: function () {
@@ -547,6 +550,10 @@ xds.types.Module = Ext.extend(xds.types.BaseType, {
             cfgStr = cfgStr.substring(0, cfgStr.length - 1);
             cfgStr += '}';
         }
+
+        var version = this.version || 0;
+        cfgStr+=",version:"+version;
+
         cfgStr += ",components:[" + tmp.join(',') + "]}";
         return cfgStr;
     },
