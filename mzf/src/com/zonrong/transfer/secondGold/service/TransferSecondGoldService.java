@@ -1,18 +1,5 @@
 package com.zonrong.transfer.secondGold.service;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum.SettlementType;
 import com.zonrong.common.utils.MzfEnum.TargetType;
@@ -20,7 +7,6 @@ import com.zonrong.common.utils.MzfEnum.TransferStatus;
 import com.zonrong.common.utils.MzfEnum.TransferTargetType;
 import com.zonrong.core.dao.Dao;
 import com.zonrong.core.dao.OrderBy;
-import com.zonrong.core.dao.QueryParam;
 import com.zonrong.core.dao.OrderBy.OrderByDir;
 import com.zonrong.core.dao.filter.Filter;
 import com.zonrong.core.exception.BusinessException;
@@ -37,6 +23,17 @@ import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.settlement.service.SettlementService;
 import com.zonrong.system.service.BizCodeService;
 import com.zonrong.transfer.common.service.TransferService;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2010-11-22
@@ -86,8 +83,7 @@ public class TransferSecondGoldService extends TransferService {
 
 	/**
 	 * 待审核或者待发货是可取消
-	 * @param transferId
-	 * @param user
+     *
 	 * @throws BusinessException
 	 */
 	@Override
