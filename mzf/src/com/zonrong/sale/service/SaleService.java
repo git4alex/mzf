@@ -155,19 +155,21 @@ public class SaleService {
 		check(sale, detailList, user);
 		//新建销售单
 		sale.put("type", SaleType.sale);
-		 //销售单中是否有铂金
+		 //销售单中是否有铂金 或 黄金
 		boolean isPtProduct = false;
 		for (Map<String, Object> detail : detailList) {
 			String ptype = MapUtils.getString(detail, "ptype");
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
-			if(type == SaleDetailType.product && ProductType.pt.toString().equals(ptype)){
-				isPtProduct = true;
-				break;
+			if(type == SaleDetailType.product){
+                if(ProductType.pt.toString().equals(ptype) || ProductType.gold.toString().equals(ptype)){
+                    isPtProduct = true;
+                    break;
+                }
 			}
 		}
 		//自动积分
 		logger.debug("销售积分日志 一 ： 判断是是否积分");
-		if(!isPtProduct){//铂金不积分
+		if(!isPtProduct){//铂金 黄金 不积分
 			logger.debug("销售积分日志 二 ： 销售单符合积分规则");
 			calcPoints(sale, detailList);
 		}
