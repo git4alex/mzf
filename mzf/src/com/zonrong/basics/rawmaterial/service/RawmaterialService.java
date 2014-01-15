@@ -84,7 +84,8 @@ public class RawmaterialService {
 	public enum RawmaterialStatus {
 		free,			//正常
 		locked,			//锁定
-		canedled		//核销
+		canedled,		//核销
+        sold            //已售
 	}
 
 	public int createRawmaterial(Map<String, Object> rawmaterial, IUser user) throws BusinessException {

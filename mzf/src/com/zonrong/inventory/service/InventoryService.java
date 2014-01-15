@@ -71,7 +71,8 @@ public class InventoryService {
 		maintain,					//维修
 		translateToProduct,			//原料裸石转化为商品
 		translateToRawmaterial,		//商品裸钻转化为原料裸石
-		delivery                    //强制出库
+		delivery,                    //强制出库
+        vendorSell                  //供应商销售
 	}
 
 	public Map<String, Object> findProductInventory(int productId, int orgId, IUser user) throws BusinessException {

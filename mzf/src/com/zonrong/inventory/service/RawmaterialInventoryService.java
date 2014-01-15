@@ -231,6 +231,7 @@ public class RawmaterialInventoryService {
 	  * @throws BusinessException
 	  */
 	public void deliveryRawmaterialById(BizType bizType,BigDecimal quantity,BigDecimal weight, int rawmaterialId, String remark, IUser user) throws BusinessException {
+        //TODO:此处实现有问题，应该使用库存ID
 		List<Map<String, Object>> list = listRawmaterialInventory(new Integer[] { rawmaterialId }, 1, user);
 		Map<String, Object> map;
 
