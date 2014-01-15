@@ -1,17 +1,5 @@
 package com.zonrong.inventory.service;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
@@ -24,6 +12,16 @@ import com.zonrong.inventory.service.InventoryService.InventoryType;
 import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2010-11-3
@@ -34,31 +32,19 @@ import com.zonrong.metadata.service.MetadataProvider;
 @Service
 public class SecondGoldInventoryService {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private MetadataProvider metadataProvider;
 	@Resource
 	private EntityService entityService;
 	@Resource
-	private RawmaterialInventoryService rawmaterialInventoryService;  		
+	private RawmaterialInventoryService rawmaterialInventoryService;
 	@Resource
 	private RawmaterialService rawmaterialService;
 	@Resource
 	private InventoryService inventoryService;
-	
-	public void warehouse(BizType bizType, int secondGoldId, BigDecimal quantity, BigDecimal cost, String costDesc, String remark, IUser user) throws BusinessException {
-		StorageType storageType = StorageType.second_secondGold;
-		Map<String, Object> inventory = inventoryService.findSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, user);
-		Integer inventoryId = null;
-		if (inventory == null) {
-			inventoryId = inventoryService.createSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, remark, user);
-		} else {
-			inventoryId = MapUtils.getInteger(inventory, "id");
-		}
-		
-		inventoryService.addQuantity(bizType, inventoryId, quantity, cost, "成本", remark, user);
-	}	
 
+    //回收入库
 	public void warehouse(BizType bizType, GoldClass goldClass, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
 		Integer secondGoldId = rawmaterialService.findSecondGold(goldClass, user);
 		if (secondGoldId == null) {
@@ -68,37 +54,35 @@ public class SecondGoldInventoryService {
 			rawmaterial.put("quantity", 0);
 			rawmaterial.put("cost", 0);
 			secondGoldId = rawmaterialService.createRawmaterial(rawmaterial, user);
-		} 
-		
+		}
+
 		rawmaterialInventoryService.warehouseSecondGold(bizType, secondGoldId, quantity, cost, remark, user);
 	}
-	
+
 	public List<Map<String, Object>> listSecondGoldInventory(Integer[] secondGoldIds, int orgId, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.SECOND_GOLD_INVENTORY_VIEW);
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("id", secondGoldIds);
 		where.put("orgId", orgId);
-		List<Map<String, Object>> list = entityService.list(metadata, where, null, user.asSystem());		
-		return list;
+        return entityService.list(metadata, where, null, user.asSystem());
 	}
-	
+
 	public Map<String, Object> getSecondGoldInventory(int secondGoldId, int orgId, IUser user) throws BusinessException {
-		List<Map<String, Object>> list = listSecondGoldInventory(new Integer[]{secondGoldId}, orgId, user);	
+		List<Map<String, Object>> list = listSecondGoldInventory(new Integer[]{secondGoldId}, orgId, user);
 		if (CollectionUtils.isEmpty(list)) {
 			throw new BusinessException("库存中未找到该旧金[" + secondGoldId + "]");
 		} else if (list.size() > 1) {
 			throw new BusinessException("库存中找到多件旧金[" + secondGoldId + "]");
 		}
-		Map<String, Object> inventory = list.get(0);
-		
-		return inventory;
+
+        return list.get(0);
 	}
-	
+
 
 	public void delivery(BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String costDesc, boolean isUpdateLockedQuantity, String remark, IUser user) throws BusinessException {
 		inventoryService.deliveryByQuantityFlow(bizType, inventoryId, quantity, cost, costDesc, isUpdateLockedQuantity, remark, user);
 	}
-	
+
 	public void delivery(BizType bizType, GoldClass goldClass, int orgId, BigDecimal quantity, BigDecimal cost, String costDesc, boolean isUpdateLockedQuantity, String remark, IUser user) throws BusinessException {
 		Integer secondGoldId = rawmaterialService.findSecondGold(goldClass, user);
 		if (secondGoldId == null) {
@@ -106,34 +90,66 @@ public class SecondGoldInventoryService {
 		}
 		Map<String, Object> inventory =  getSecondGoldInventory(secondGoldId, orgId, user);
 		Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-		
+
 		delivery(bizType, inventoryId, quantity, cost, costDesc, isUpdateLockedQuantity, remark, user);
 	}
-	
+
 	public void send(int secondGoldId, BigDecimal quantity, int sourceOrgId, String remark, IUser user) throws BusinessException {
 		Map<String, Object> inventory =  getSecondGoldInventory(secondGoldId, sourceOrgId, user);
 		Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-		
+
 		inventoryService.createFlowOnQuantity(BizType.send, inventoryId, quantity, InventoryType.delivery, null, null, remark, user);
 	}
-	
+
 	public void receive(int secondGoldId, BigDecimal quantity, BigDecimal actualQuantity, int sourceOrgId, int targetOrgId, String remark, IUser user) throws BusinessException {
 		if (targetOrgId != user.getOrgId()) {
 			throw new BusinessException("操作员所在部门非调入部门，不允许收货");
 		}
-		
-		Map<String, Object> inventory =  getSecondGoldInventory(secondGoldId, sourceOrgId, user);
-		Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-		
-		inventoryService.deliveryByQuantityIgnoreFlow(BizType.receive, inventoryId, quantity, null, null, true, remark, user);
-		warehouse(BizType.receive, secondGoldId, actualQuantity, null, null, remark, user);
+
+		Map<String, Object> srcInventory =  getSecondGoldInventory(secondGoldId, sourceOrgId, user);
+		Integer srcInventoryId = MapUtils.getInteger(srcInventory, "inventoryId");
+
+        //计算发生成本
+        BigDecimal cost=new BigDecimal(0);
+
+        //调出部门出库
+		inventoryService.deliveryByQuantityIgnoreFlow(BizType.receive, srcInventoryId, quantity, null, null, true, remark, user);
 
 		//记录损耗
 //		if (quantity.doubleValue() != actualQuantity.doubleValue()) {
 //			BigDecimal lossQuantity = quantity.subtract(actualQuantity);
 //			delivery(BizType.receive, inventoryId, lossQuantity, null, null, false, "旧金调拨损耗", user);
 //		}
-	}	
+
+        //调入部门入库
+        //warehouse(BizType.receive, secondGoldId, actualQuantity, user);
+        StorageType storageType = StorageType.second_secondGold;
+        Map<String, Object> tgtInventory = inventoryService.findSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, user);
+        Integer tgtInventoryId;
+        if (tgtInventory == null) {
+            tgtInventoryId = inventoryService.createSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, remark, user);
+        } else {
+            tgtInventoryId = MapUtils.getInteger(tgtInventory, "id");
+        }
+
+        inventoryService.addQuantity(BizType.receive, tgtInventoryId, actualQuantity, cost, "成本", remark, user);
+	}
+
+    //调拨入库
+//    private void warehouse(BizType bizType, int secondGoldId, BigDecimal quantity,IUser user) throws BusinessException {
+//        StorageType storageType = StorageType.second_secondGold;
+//        Map<String, Object> inventory = inventoryService.findSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, user);
+//        Integer inventoryId;
+//        if (inventory == null) {
+//            inventoryId = inventoryService.createSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, remark, user);
+//        } else {
+//            inventoryId = MapUtils.getInteger(inventory, "id");
+//        }
+//
+//        String remark="";
+//
+//        inventoryService.addQuantity(bizType, inventoryId, quantity, cost, "成本", remark, user);
+//    }
 }
 
 
