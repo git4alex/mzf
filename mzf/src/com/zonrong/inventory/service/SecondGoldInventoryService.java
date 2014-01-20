@@ -3,7 +3,6 @@ package com.zonrong.inventory.service;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
-import com.zonrong.common.utils.MzfEnum.StorageType;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
@@ -56,7 +55,7 @@ public class SecondGoldInventoryService {
 			secondGoldId = rawmaterialService.createRawmaterial(rawmaterial, user);
 		}
 
-		rawmaterialInventoryService.warehouseSecondGold(bizType, secondGoldId, quantity, cost, remark, user);
+		rawmaterialInventoryService.warehouseSecondGoldByQuantity(bizType,secondGoldId, quantity, cost, remark, user);
 	}
 
 	public List<Map<String, Object>> listSecondGoldInventory(Integer[] secondGoldIds, int orgId, IUser user) throws BusinessException {
@@ -123,11 +122,11 @@ public class SecondGoldInventoryService {
 
         //调入部门入库
         //warehouse(BizType.receive, secondGoldId, actualQuantity, user);
-        StorageType storageType = StorageType.second_secondGold;
-        Map<String, Object> tgtInventory = inventoryService.findSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, user);
+
+        Map<String, Object> tgtInventory = inventoryService.findSecondGoldInventory(secondGoldId, user.getOrgId(), user);
         Integer tgtInventoryId;
         if (tgtInventory == null) {
-            tgtInventoryId = inventoryService.createSecondGoldInventory(secondGoldId, user.getOrgId(), storageType, remark, user);
+            tgtInventoryId = inventoryService.createSecondGoldInventory(secondGoldId, user.getOrgId(), remark, user);
         } else {
             tgtInventoryId = MapUtils.getInteger(tgtInventory, "id");
         }

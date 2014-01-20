@@ -87,12 +87,11 @@ public class RawmaterialInventoryService {
 		warehouseByQuantity(bizType, storageType, rawmaterialId, quantity, cost, remark, user);
 	}
 
-	public void warehouseSecondGold(BizType bizType, int rawmaterialId,
-			BigDecimal quantity, BigDecimal cost, String remark, IUser user)
-			throws BusinessException {
-		StorageType storageType = StorageType.second_secondGold;
-		warehouseSecondGoldByQuantity(bizType, storageType, rawmaterialId, quantity, cost, remark, user);
-	}
+//	public void warehouseSecondGold(BizType bizType, int rawmaterialId,
+//			BigDecimal quantity, BigDecimal cost, String remark, IUser user)
+//			throws BusinessException {
+//		warehouseSecondGoldByQuantity(bizType, StorageType.second_secondGold, rawmaterialId, quantity, cost, remark, user);
+//	}
 
 	public void warehouseGravel(BizType bizType, int rawmaterialId,
 			BigDecimal quantity, BigDecimal cost, BigDecimal weight, String remark, IUser user)
@@ -118,7 +117,7 @@ public class RawmaterialInventoryService {
 		if (storageType == null) {
 			throw new BusinessException("未指定仓库类型");
 		}
-		Map<String, Object> inventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, user);
+		Map<String, Object> inventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), user);
 		Integer inventoryId;
 		if (inventory == null) {
 			inventoryId = inventoryService.createRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, "原料采购收货入库", user);
@@ -131,17 +130,14 @@ public class RawmaterialInventoryService {
 		rawmaterialService.addCost(rawmaterialId, cost, user);
 	}
 
-	private void warehouseSecondGoldByQuantity(BizType bizType, StorageType storageType,
+	public void warehouseSecondGoldByQuantity(BizType bizType,
 			int rawmaterialId, BigDecimal quantity, BigDecimal cost, String remark, IUser user)
 			throws BusinessException {
-		if (storageType == null) {
-			throw new BusinessException("未指定仓库类型");
-		}
-
-		Map<String, Object> inventory = inventoryService.findSecondGoldInventory(rawmaterialId, user.getOrgId(), storageType, user);
+        //查找当前用户所在部门的旧金库存
+		Map<String, Object> inventory = inventoryService.findSecondGoldInventory(rawmaterialId, user.getOrgId(), user);
 		Integer inventoryId;
 		if (inventory == null) {
-			inventoryId = inventoryService.createSecondGoldInventory(rawmaterialId, user.getOrgId(), storageType, null, user);
+			inventoryId = inventoryService.createSecondGoldInventory(rawmaterialId, user.getOrgId(), null, user);
 		} else {
 			inventoryId = MapUtils.getInteger(inventory, "id");
 		}
@@ -158,7 +154,7 @@ public class RawmaterialInventoryService {
 	 */
 	public void deliveryDiamondByRawmaterialId(BizType bizType, int rawmaterialId, String remark, IUser user) throws BusinessException {
 		StorageType storageType = StorageType.rawmaterial_nakedDiamond;
-		Map<String, Object> dbInventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, user);
+		Map<String, Object> dbInventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), user);
 		Integer inventoryId = MapUtils.getInteger(dbInventory, "id");
 
 		EntityMetadata metadata = inventoryService.getEntityMetadataOfInventory();

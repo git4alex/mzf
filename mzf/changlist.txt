@@ -1,0 +1,3 @@
+2014/01/16
+表：MZF_INVENTORY 增加cost字段，记录原料成本
+视图：V_MZF_RAWMATERIAL_INVENTORY 增加cost2字段，从库存记录中取原料成本

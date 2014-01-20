@@ -456,11 +456,13 @@ public interface MzfEnum {
 
 		second_secondGold("旧金库", "forSecondGold"),
 		second_secondProduct("旧饰库", "forSecondProduct"),
-		product_maintain("维修库", "forProduct"),
 
+		product_maintain("维修库", "forProduct"),
 		product_borrow("借货库"),
 		product_temporary("临时库", "forTemporaryProduct"),
+
 		material("物料库", "forMaterial"),
+
 		Sale("现金库"),
 		Earnest("定金库");
 

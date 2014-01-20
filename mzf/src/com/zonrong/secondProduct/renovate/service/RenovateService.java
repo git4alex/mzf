@@ -106,7 +106,7 @@ public class RenovateService {
 
 		//商品入库
 		StorageType storageType = StorageType.product_temporary;
-		productInventoryService.warehouse(BizType.renovate, newProductId, user.getOrgId(), storageType, user.getId(), user.getOrgId(), "旧饰条码：[" + num + "]", user);
+		productInventoryService.warehouse(BizType.renovate, newProductId, user.getOrgId(), storageType, user.getOrgId(), "旧饰条码：[" + num + "]", user);
 
 		//记录翻新操作
 		int renvoteId = createRenovate(renovate, secondProductId, newProductId, user);

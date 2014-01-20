@@ -178,7 +178,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
         //String num = MzfUtils.getBillNum(BillPrefix.WX, user);
 
-        productInventoryService.warehouse(BizType.maintain, productId, targetOrgId, storageType, ownerId, user.getOrgId(), "维修单号：["+ maintainCode +"]", user);
+        productInventoryService.warehouse(BizType.maintain, productId, targetOrgId, storageType, user.getOrgId(), "维修单号：["+ maintainCode +"]", user);
 
         Map<String, Object> earnestFlow = new HashMap<String, Object>(maintain);
 
@@ -274,7 +274,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
                 //入商品库
                 StorageType storageType = productInventoryService.getDefaultStorageType(productId);
-                productInventoryService.warehouse(BizType.maintainOver, productId, maintainOrgId, storageType, user.getId(), sourceOrgId, "修复入库", user);
+                productInventoryService.warehouse(BizType.maintainOver, productId, maintainOrgId, storageType, sourceOrgId, "修复入库", user);
 
                 //如果是在库商品，目标状态为完成
                 targetStatus = MaintainStatus.over;
@@ -351,7 +351,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
             //入商品库
             Integer sourceOrgId = MapUtils.getInteger(inventory, "sourceOrgId");
             StorageType storageType = productInventoryService.getDefaultStorageType(productId);
-            productInventoryService.warehouse(BizType.maintainOver, productId, orgId, storageType, user.getId(), sourceOrgId, remark, user);
+            productInventoryService.warehouse(BizType.maintainOver, productId, orgId, storageType,sourceOrgId, remark, user);
         }
 
         //记录流程

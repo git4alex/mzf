@@ -99,7 +99,7 @@ public class ReturnsService{
 				//更新商品状态
 				productService.updateStatus(targetId, ProductStatus.free, remark, null, user);
 				//商品入库
-				productInventoryService.warehouse(BizType.returned, targetId, orgId, storageType, orgId, orgId, remark, user);
+				productInventoryService.warehouse(BizType.returned, targetId, orgId, storageType, orgId, remark, user);
 
 				//记录流程
 				logService.createLog(transId, MzfEntity.SALE, Integer.toString(returnsId), "新建退货单", TargetType.product, targetId, remark, user);

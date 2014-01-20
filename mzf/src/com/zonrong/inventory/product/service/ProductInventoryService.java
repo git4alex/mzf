@@ -23,7 +23,6 @@ import com.zonrong.inventory.service.InventoryService.InventoryType;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
-import com.zonrong.salerule.service.PointsruleService;
 import com.zonrong.showcase.service.ShowcaseCheckService;
 import com.zonrong.system.service.OrgService;
 import org.apache.commons.collections.CollectionUtils;
@@ -67,8 +66,6 @@ public class ProductInventoryService {
 	@Resource
 	private RawmaterialInventoryService rawmaterialInventoryService;
 	@Resource
-	private PointsruleService pointsruleService;
-	@Resource
 	private TransactionService transactionService;
 	@Resource
 	private FlowLogService logService;
@@ -89,14 +86,12 @@ public class ProductInventoryService {
      * @param productId 商品ID
      * @param targetOrgId 部门ID
      * @param storageType 仓库类型
-     * @param ownerId
      * @param sourceOrgId 来源部门ID
-     * @param remark
-     * @param user
-     * @return
+     * @param remark 备注
+     * @return 库存记录ID
      * @throws BusinessException
      */
-	public int warehouse(BizType bizType, int productId, int targetOrgId, StorageType storageType, int ownerId, int sourceOrgId, String remark, IUser user) throws BusinessException {
+	public int warehouse(BizType bizType, int productId, int targetOrgId, StorageType storageType, int sourceOrgId, String remark, IUser user) throws BusinessException {
 		if (storageType == null) {
 			throw new BusinessException("未指定仓库");
 		}
@@ -115,7 +110,7 @@ public class ProductInventoryService {
 		Map<String, Object> inventory = new HashMap<String, Object>();
 		inventory.put("targetType", TargetType.product);
 		inventory.put("targetId", productId);
-		inventory.put("ownerId", ownerId);
+
 		int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType, sourceOrgId, remark, user);
 
 		inventoryService.createFlow(bizType, targetOrgId, new BigDecimal(1), InventoryType.warehouse,
@@ -208,7 +203,7 @@ public class ProductInventoryService {
 			rawmaterialInventoryService.warehouseDiamond(BizType.receive, rawmaterialId, user.getOrgId(), remark, user);
 		} else {
             //收货入库
-			warehouse(BizType.receive, productId, targetOrgId, storageType, user.getId(), sourceOrgId, remark, user);
+			warehouse(BizType.receive, productId, targetOrgId, storageType, sourceOrgId, remark, user);
 		}
 	}
 

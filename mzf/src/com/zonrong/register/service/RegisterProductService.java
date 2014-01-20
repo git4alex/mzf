@@ -85,7 +85,7 @@ public class RegisterProductService {
         Map<String,Object> order = entityService.getById(MzfEntity.VENDOR_ORDER,orderId,user);
         String orderNum=MapUtils.getString(order,"num");
 		productInventoryService.warehouse(BizType.register, productId,
-                user.getOrgId(), storageType, user.getId(), user.getOrgId(), "订单编号：["+orderNum+"]", user);
+                user.getOrgId(), storageType, user.getId(), "订单编号：["+orderNum+"]", user);
 
 		//收货记录
 //		Integer orderId = MapUtils.getInteger(dbDetail, "orderId");

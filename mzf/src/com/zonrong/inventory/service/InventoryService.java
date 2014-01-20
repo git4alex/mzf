@@ -15,7 +15,6 @@ import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -34,8 +33,6 @@ import java.util.Map;
  */
 @Service
 public class InventoryService {
-	private Logger logger = Logger.getLogger(this.getClass());
-
 	@Resource
 	private MetadataProvider metadataProvider;
 	@Resource
@@ -75,6 +72,14 @@ public class InventoryService {
         vendorSell                  //供应商销售
 	}
 
+    /**
+     * 查询指定部门，指定商品的库存记录
+     *
+     * @param productId 商品ID
+     * @param orgId 部门ID
+     * @return 库存记录
+     * @throws BusinessException
+     */
 	public Map<String, Object> findProductInventory(int productId, int orgId, IUser user) throws BusinessException {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("orgId", orgId);
@@ -83,24 +88,50 @@ public class InventoryService {
 		return getInventory(where, user);
 	}
 
-	public Map<String, Object> findRawmaterialInventory(int rawmaterialId, int orgId, StorageType storageType, IUser user) throws BusinessException {
+    /**
+     * 查找指定部门，指定类型的原料库存记录
+     * 同一种原料在同一个部门只能存在于一个仓库中
+     *
+     * @param rawmaterialId 原料ID
+     * @param orgId 部门ID
+     * @return 库存记录
+     * @throws BusinessException
+     */
+	public Map<String, Object> findRawmaterialInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("orgId", orgId);
-		where.put("storageType", storageType);
 		where.put("targetType", TargetType.rawmaterial);
 		where.put("targetId", rawmaterialId);
 		return getInventory(where, user);
 	}
 
-	public Map<String, Object> findSecondGoldInventory(int secondGoldId, int orgId, StorageType storageType, IUser user) throws BusinessException {
+    /**
+     * 查找指定部门，指定类型的旧金库存记录
+     * 同一种旧金在同一个部门只能存在于一个仓库中
+     *
+     * @param secondGoldId 旧金ID
+     * @param orgId 部门ID
+     * @return 库存记录
+     * @throws BusinessException
+     */
+	public Map<String, Object> findSecondGoldInventory(int secondGoldId, int orgId,IUser user) throws BusinessException {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("orgId", orgId);
-		where.put("storageType", storageType);
+        where.put("storageType", StorageType.second_secondGold);
 		where.put("targetType", TargetType.secondGold);
 		where.put("targetId", secondGoldId);
 		return getInventory(where, user);
 	}
 
+    /**
+     * 查找指定部门，指定类型的物料库存记录
+     * 同一种旧金在同一个部门只能存在于一个仓库中
+     *
+     * @param materialId 物料ID
+     * @param orgId 部门ID
+     * @return 库存记录
+     * @throws BusinessException
+     */
 	public Map<String, Object> findMaterialInventory(int materialId, int orgId, IUser user) throws BusinessException {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("orgId", orgId);
@@ -110,6 +141,18 @@ public class InventoryService {
 		return getInventory(where, user);
 	}
 
+    private Map<String, Object> getInventory(Map<String, Object> where, IUser user) throws BusinessException {
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        List<Map<String, Object>> dbInventoryList = entityService.list(metadata, where, null, user.asSystem());
+        if (CollectionUtils.isEmpty(dbInventoryList)) {
+            return null;
+        } else if (dbInventoryList.size() > 1) {
+            throw new BusinessException("同一仓库中找到ID相同的多件货品");
+        }
+
+        return dbInventoryList.get(0);
+    }
+
 	public int createRawmaterialInventory(int rawmaterialId, int orgId, StorageType storageType, String remark, IUser user) throws BusinessException {
 		Map<String, Object> inventory = new HashMap<String, Object>();
 		inventory.put("targetType", TargetType.rawmaterial);
@@ -117,11 +160,11 @@ public class InventoryService {
 		return createInventory(inventory, orgId, new BigDecimal(0), storageType, orgId, remark, user);
 	}
 
-	public int createSecondGoldInventory(int secondGoldId, int orgId, StorageType storageType, String remark, IUser user) throws BusinessException {
+	public int createSecondGoldInventory(int secondGoldId, int orgId, String remark, IUser user) throws BusinessException {
 		Map<String, Object> inventory = new HashMap<String, Object>();
 		inventory.put("targetType", TargetType.secondGold);
 		inventory.put("targetId", secondGoldId);
-		return createInventory(inventory, orgId, new BigDecimal(0), storageType, orgId, remark, user);
+		return createInventory(inventory, orgId, new BigDecimal(0), StorageType.second_secondGold, orgId, remark, user);
 	}
 
 	public int createMaterialInventory(int materialId, int orgId, String remark, IUser user) throws BusinessException {
@@ -131,17 +174,7 @@ public class InventoryService {
 		return createInventory(inventory, orgId, new BigDecimal(0), StorageType.material, orgId, remark, user);
 	}
 
-	private Map<String, Object> getInventory(Map<String, Object> where, IUser user) throws BusinessException {
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		List<Map<String, Object>> dbInventoryList = entityService.list(metadata, where, null, user.asSystem());
-		if (CollectionUtils.isEmpty(dbInventoryList)) {
-			return null;
-		} else if (dbInventoryList.size() > 1) {
-			throw new BusinessException("同一仓库中找到ID相同的多件货品");
-		}
 
-        return dbInventoryList.get(0);
-	}
 
 	public int createInventory(Map<String, Object> inventory, int orgId,
 			BigDecimal quantity, StorageType storageType, int sourceOrgId, String remark,
@@ -149,7 +182,7 @@ public class InventoryService {
 		inventory.put("orgId", orgId);
 		inventory.put("storageType", storageType);
 		inventory.put("quantity", quantity);
-		inventory.put("ownerId", user.getId());
+//		inventory.put("ownerId", user.getId());
 		inventory.put("remark", remark);
 		inventory.put("status", InventoryStatus.onStorage);
 		inventory.put("sourceOrgId", sourceOrgId);
@@ -255,8 +288,6 @@ public class InventoryService {
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("lockedQuantity", lq);
 		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
-
-		//TODO 记录XXX锁定多少
 	}
 
 //	public void warehouseByQuantity(int inventoryId, BigDecimal quantity, IUser user) throws BusinessException {
@@ -280,28 +311,36 @@ public class InventoryService {
 		EntityMetadata metadata = getEntityMetadataOfInventory();
 		Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
 
+        if(inventory == null){
+            throw new BusinessException("无库存记录，ID:["+inventoryId+"]");
+        }
+
+        //当前库存
 		BigDecimal dbQuantity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
+        BigDecimal dbCost = new BigDecimal(MapUtils.getFloatValue(inventory,"cost"));
 		dbQuantity = dbQuantity.add(quantity);
+        dbCost = dbCost.add(cost);
 		if (dbQuantity.doubleValue() < 0) {
 			throw new BusinessException("库存不足");
 		}
 
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("quantity", dbQuantity);
+        field.put("cost",dbCost);
 		field.put("lastQuantity", quantity);
 		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
 
-		InventoryType type = null;
+		InventoryType type;
 		if (quantity.doubleValue() > 0) {
 			type = InventoryType.warehouse;
 		} else {
 			type = InventoryType.delivery;
 		}
-//		inventory.remove(metadata.getPkCode());
 
         if(cost == null){
             cost = new BigDecimal(0);
         }
+
 		createFlowOnQuantity(bizType, inventoryId, quantity, type, cost.doubleValue(), costDesc, remark, user);
 	}
 
@@ -403,7 +442,7 @@ public class InventoryService {
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("ownerId", ownerId);
 
-		int rowNum = entityService.updateById(getEntityMetadataOfInventory(), Integer.toString(inventoryId), field, user);
+		entityService.updateById(getEntityMetadataOfInventory(), Integer.toString(inventoryId), field, user);
 	}
 
 	public int getInventoryId(int targetId, TargetType type, int orgId) throws BusinessException {

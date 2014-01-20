@@ -304,7 +304,7 @@ public class RawmaterialService {
 		//商品入库
         remark = "原料条码：["+MapUtils.getString(source,"num")+"]";
 		StorageType storageType = productInventoryService.getDefaultStorageType(productId);
-		productInventoryService.warehouse(bizType, productId, user.getOrgId(), storageType, user.getId(), user.getOrgId(), remark, user);
+		productInventoryService.warehouse(bizType, productId, user.getOrgId(), storageType, user.getOrgId(), remark, user);
 	}
 
 	public void addCost(int rawmaterialId, BigDecimal cost, IUser user) throws BusinessException {
