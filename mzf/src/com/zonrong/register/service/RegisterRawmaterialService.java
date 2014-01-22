@@ -3,6 +3,7 @@ package com.zonrong.register.service;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.log.BusinessLogService;
@@ -12,7 +13,7 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -85,7 +86,7 @@ public class RegisterRawmaterialService {
             v.put("statusRemark","正常");
             entityService.updateById(MzfEntity.RAWMATERIAL,rawmaterialId+"",v,user);
 
-            rawmaterialInventoryService.warehouseDiamond(BizType.oemReturn, rawmaterialId, user.getOrgId(), remark, user);
+            rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.oemReturn, rawmaterialId, user.getOrgId(), remark, user);
         }else if(type == RawmaterialType.gold){
             GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
             Integer dbRawmaterialId = rawmaterialService.findGold(goldClass, user);
@@ -97,7 +98,7 @@ public class RegisterRawmaterialService {
             }
 
             quantity = new BigDecimal(MapUtils.getString(rawmaterial, "dosingQuantity"));
-            rawmaterialInventoryService.warehouseGold(BizType.oemReturn, rawmaterialId, quantity,new BigDecimal(0), remark, user);
+            rawmaterialInventoryService.warehouseGold(MzfEnum.BizType.oemReturn, rawmaterialId, quantity,new BigDecimal(0), remark, user);
         }else if(type == RawmaterialType.gravel){
             String gravelStandard = MapUtils.getString(rawmaterial, "gravelStandard");
             Integer dbRawmaterialId = rawmaterialService.findGravel(gravelStandard, user);
@@ -111,7 +112,7 @@ public class RegisterRawmaterialService {
 
             quantity = new BigDecimal(MapUtils.getString(rawmaterial, "dosingQuantity"));
             BigDecimal weight = new BigDecimal(MapUtils.getString(rawmaterial, "dosingWeight"));
-            rawmaterialInventoryService.warehouseGravel(BizType.oemReturn, rawmaterialId, quantity, new BigDecimal(0), weight, remark, user);
+            rawmaterialInventoryService.warehouseGravel(MzfEnum.BizType.oemReturn, rawmaterialId, quantity, new BigDecimal(0), weight, remark, user);
         }else if(type == RawmaterialType.parts){
             String partsType = MapUtils.getString(rawmaterial, "partsType");
             String partsStandard = MapUtils.getString(rawmaterial, "partsStandard");
@@ -132,7 +133,7 @@ public class RegisterRawmaterialService {
             }
 
             quantity = new BigDecimal(MapUtils.getString(rawmaterial, "dosingQuantity"));
-            rawmaterialInventoryService.warehouseParts(BizType.oemReturn, rawmaterialId, quantity, new BigDecimal(0), remark, user);
+            rawmaterialInventoryService.warehouseParts(MzfEnum.BizType.oemReturn, rawmaterialId, quantity, new BigDecimal(0), remark, user);
         }
         //更新配料记录
         Map<String,Object> val = new HashMap<String,Object>();
@@ -174,10 +175,10 @@ public class RegisterRawmaterialService {
         String remark;
         BizType bizType;
         if(StringUtils.equalsIgnoreCase(orderType,"splitRawmaterial")){
-            bizType = BizType.warehouseOnSplit;
+            bizType = MzfEnum.BizType.warehouseOnSplit;
             remark = "拆旧单号：[" + MapUtils.getString(dbOrder, "num")+"]";
         }else{
-            bizType = BizType.register;
+            bizType = MzfEnum.BizType.register;
             remark = "采购订单号：[" + MapUtils.getString(dbOrder, "num")+"]";
         }
 //		String remark = "原料入库， 原料采购订单编号：" + MapUtils.getString(dbOrder, "num");

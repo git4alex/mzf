@@ -8,8 +8,7 @@ import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.service.InventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -54,7 +53,7 @@ public class VendorSaleService {
             }
 
             //商品出库
-            productInventoryService.deliveryByProductId(InventoryService.BizType.vendorSell,
+            productInventoryService.deliveryByProductId(MzfEnum.BizType.vendorSell,
                     Integer.parseInt(id),"销售单号：["+num+"]", MzfEnum.InventoryStatus.onStorage,user);
 
             //保存销售单明细
@@ -82,7 +81,7 @@ public class VendorSaleService {
             }
 
             //裸石
-            rawmaterialInventoryService.deliveryDiamondByRawmaterialId(InventoryService.BizType.vendorSell,
+            rawmaterialInventoryService.deliveryDiamondByRawmaterialId(MzfEnum.BizType.vendorSell,
                     Integer.parseInt(id),"销售单号：["+num+"]",user);
 
             //保存销售单明细
@@ -225,10 +224,10 @@ public class VendorSaleService {
 
         //创建出库记录
         values.clear();
-        values.put("bizType", InventoryService.BizType.vendorSell);
+        values.put("bizType", MzfEnum.BizType.vendorSell);
         values.put("orgId", MapUtils.getShortValue(inventory,"orgId"));
         values.put("storageType", MzfEnum.StorageType.rawmaterial_gold);
-        values.put("type", InventoryService.InventoryType.delivery);
+        values.put("type", MzfEnum.InventoryType.delivery);
         values.put("targetType", MzfEnum.TargetType.rawmaterial);
         values.put("targetId", MapUtils.getString(inventory,"id"));
         values.put("remark", "销售单号："+num);
@@ -268,10 +267,10 @@ public class VendorSaleService {
 
         //创建出库记录
         values.clear();
-        values.put("bizType", InventoryService.BizType.vendorSell);
+        values.put("bizType", MzfEnum.BizType.vendorSell);
         values.put("orgId", MapUtils.getShortValue(inventory,"orgId"));
         values.put("storageType", MzfEnum.StorageType.rawmaterial_gold);
-        values.put("type", InventoryService.InventoryType.delivery);
+        values.put("type", MzfEnum.InventoryType.delivery);
         values.put("targetType", MzfEnum.TargetType.rawmaterial);
         values.put("targetId", MapUtils.getString(inventory,"id"));
         values.put("remark", "销售单号："+num);

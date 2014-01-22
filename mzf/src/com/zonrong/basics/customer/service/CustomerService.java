@@ -10,7 +10,7 @@ import com.zonrong.core.log.BusinessLogService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.treasury.service.TreasuryService.BizType;
+import com.zonrong.inventory.service.TreasuryService.BizType;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;

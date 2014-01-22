@@ -2,6 +2,7 @@ package com.zonrong.basics.material.service;
 
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.core.dao.Dao;
 import com.zonrong.core.dao.QueryParam;
 import com.zonrong.core.dao.filter.Filter;
@@ -9,7 +10,6 @@ import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.log.BusinessLogService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.InventoryService.BizType;
 import com.zonrong.inventory.service.MaterialInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -53,7 +53,7 @@ public class MaterialService {
 	public int addMaterial(Map<String, Object> material, IUser user) throws BusinessException {
 		int materialId = createMaterial(material, user);
 		//入库数量为0
-		materialInventoryService.warehouse(BizType.addMaterial, materialId, new BigDecimal(0), new BigDecimal(0), "价格", null, user);
+		materialInventoryService.warehouse(MzfEnum.BizType.addMaterial, materialId, new BigDecimal(0), new BigDecimal(0), "价格", null, user);
 		return materialId;
 	}
 

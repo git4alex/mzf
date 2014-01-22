@@ -1,4 +1,4 @@
-package com.zonrong.inventory.treasury.service;
+package com.zonrong.inventory.service;
 
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.entity.service.EntityService;

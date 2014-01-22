@@ -4,6 +4,7 @@ import com.zonrong.basics.StatusCarrier;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.common.utils.MzfUtils;
 import com.zonrong.common.utils.MzfUtils.BillPrefix;
@@ -14,9 +15,8 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.core.templete.SaveTemplete;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.product.service.SecondProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.ProductInventoryService;
+import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -161,7 +161,7 @@ public class SplitService extends BillStatusService<SplitStatus> {
 
 		String remark = "拆旧单号：["+MapUtils.getString(split, "num")+"]";
 	 	if (splitProductSource == SplitProductSource.product || splitProductSource == SplitProductSource.maintainProduct) {
-	 		productInventoryService.deliveryByProductId(BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
+	 		productInventoryService.deliveryByProductId(MzfEnum.BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
 	 	} else if (splitProductSource == SplitProductSource.secondProduct) {
 	 		Map<String, Object> inventory = secondProductInventoryService.getInventoryForSecondProduct(productId, null);
 	 		Integer sourceOrgId = MapUtils.getInteger(inventory, "sourceOrgId");
@@ -176,7 +176,7 @@ public class SplitService extends BillStatusService<SplitStatus> {
 	 			throw new BusinessException("来源部门为空，不能生成结算单");
 	 		}
 
-	 		secondProductInventoryService.deliveryBySecondProductId(BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
+	 		secondProductInventoryService.deliveryBySecondProductId(MzfEnum.BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
 	 	}
 
 	 	//记录操作日志

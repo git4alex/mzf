@@ -1,6 +1,7 @@
 package com.zonrong.inventory.service;
 
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.InventoryStatus;
 import com.zonrong.common.utils.MzfEnum.StorageType;
 import com.zonrong.common.utils.MzfEnum.TargetType;
@@ -27,119 +28,49 @@ import java.util.Map;
 
 /**
  * date: 2010-11-3
- *
+ * <p/>
  * version: 1.0
  * commonts: ......
  */
 @Service
 public class InventoryService {
-	@Resource
-	private MetadataProvider metadataProvider;
-	@Resource
-	private EntityService entityService;
-
-	public enum InventoryType {
-		warehouse,		//入库
-		delivery		//出库
-	}
-
-	public enum BizType {
-		addMaterial,	//新增物料信息
-		register,		//收货登记
-        oemReturn,      //委外原料退库
-		send,			//发货
-		receive,		//从其它部门收货
-		returned,		//退货
-		renovate,		//翻新
-		transferToTemporary,		//调拨如临时库
-		transferToProductStorage,	//调入商品库
-		dropProduct,				//返厂
-		deliveryFromTemporary,		//临时出库
-		deliveryFromMaintain,		//委外维修出库
-		warehouseToTemporary,		//临时库入库
-		warehouseToMaintain,		//维修库入库
-		warehouseOnSplit,			//拆旧入库
-		maintainOver,				//维修完成
-		OEM,
-		sell,						//销售
-		maintailSell,				//维修销售入库
-		buySecondGold,				//旧金回收
-		buySecondProduct,			//旧饰回收
-		maintain,					//维修
-		translateToProduct,			//原料裸石转化为商品
-		translateToRawmaterial,		//商品裸钻转化为原料裸石
-		delivery,                    //强制出库
-        vendorSell                  //供应商销售
-	}
+    @Resource
+    private MetadataProvider metadataProvider;
+    @Resource
+    private EntityService entityService;
 
     /**
      * 查询指定部门，指定商品的库存记录
      *
      * @param productId 商品ID
-     * @param orgId 部门ID
+     * @param orgId     部门ID
      * @return 库存记录
      * @throws BusinessException
      */
-	public Map<String, Object> findProductInventory(int productId, int orgId, IUser user) throws BusinessException {
-		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("orgId", orgId);
-		where.put("targetType", TargetType.product);
-		where.put("targetId", productId);
-		return getInventory(where, user);
-	}
+    public Map<String, Object> findProductInventory(int productId, int orgId, IUser user) throws BusinessException {
+        Map<String, Object> where = new HashMap<String, Object>();
+        where.put("orgId", orgId);
+        where.put("targetType", TargetType.product);
+        where.put("targetId", productId);
+        return getInventory(where, user);
+    }
 
     /**
      * 查找指定部门，指定类型的原料库存记录
      * 同一种原料在同一个部门只能存在于一个仓库中
      *
      * @param rawmaterialId 原料ID
-     * @param orgId 部门ID
+     * @param orgId         部门ID
      * @return 库存记录
      * @throws BusinessException
      */
-	public Map<String, Object> findRawmaterialInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
-		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("orgId", orgId);
-		where.put("targetType", TargetType.rawmaterial);
-		where.put("targetId", rawmaterialId);
-		return getInventory(where, user);
-	}
-
-    /**
-     * 查找指定部门，指定类型的旧金库存记录
-     * 同一种旧金在同一个部门只能存在于一个仓库中
-     *
-     * @param secondGoldId 旧金ID
-     * @param orgId 部门ID
-     * @return 库存记录
-     * @throws BusinessException
-     */
-	public Map<String, Object> findSecondGoldInventory(int secondGoldId, int orgId,IUser user) throws BusinessException {
-		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("orgId", orgId);
-        where.put("storageType", StorageType.second_secondGold);
-		where.put("targetType", TargetType.secondGold);
-		where.put("targetId", secondGoldId);
-		return getInventory(where, user);
-	}
-
-    /**
-     * 查找指定部门，指定类型的物料库存记录
-     * 同一种旧金在同一个部门只能存在于一个仓库中
-     *
-     * @param materialId 物料ID
-     * @param orgId 部门ID
-     * @return 库存记录
-     * @throws BusinessException
-     */
-	public Map<String, Object> findMaterialInventory(int materialId, int orgId, IUser user) throws BusinessException {
-		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("orgId", orgId);
-		where.put("storageType", StorageType.material);
-		where.put("targetType", TargetType.material);
-		where.put("targetId", materialId);
-		return getInventory(where, user);
-	}
+    public Map<String, Object> findRawmaterialInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
+        Map<String, Object> where = new HashMap<String, Object>();
+        where.put("orgId", orgId);
+        where.put("targetType", TargetType.rawmaterial);
+        where.put("targetId", rawmaterialId);
+        return getInventory(where, user);
+    }
 
     private Map<String, Object> getInventory(Map<String, Object> where, IUser user) throws BusinessException {
         EntityMetadata metadata = getEntityMetadataOfInventory();
@@ -153,321 +84,312 @@ public class InventoryService {
         return dbInventoryList.get(0);
     }
 
-	public int createRawmaterialInventory(int rawmaterialId, int orgId, StorageType storageType, String remark, IUser user) throws BusinessException {
-		Map<String, Object> inventory = new HashMap<String, Object>();
-		inventory.put("targetType", TargetType.rawmaterial);
-		inventory.put("targetId", rawmaterialId);
-		return createInventory(inventory, orgId, new BigDecimal(0), storageType, orgId, remark, user);
-	}
-
-	public int createSecondGoldInventory(int secondGoldId, int orgId, String remark, IUser user) throws BusinessException {
-		Map<String, Object> inventory = new HashMap<String, Object>();
-		inventory.put("targetType", TargetType.secondGold);
-		inventory.put("targetId", secondGoldId);
-		return createInventory(inventory, orgId, new BigDecimal(0), StorageType.second_secondGold, orgId, remark, user);
-	}
-
-	public int createMaterialInventory(int materialId, int orgId, String remark, IUser user) throws BusinessException {
-		Map<String, Object> inventory = new HashMap<String, Object>();
-		inventory.put("targetType", TargetType.material);
-		inventory.put("targetId", materialId);
-		return createInventory(inventory, orgId, new BigDecimal(0), StorageType.material, orgId, remark, user);
-	}
+    public int createRawmaterialInventory(int rawmaterialId, int orgId, StorageType storageType, String remark, IUser user) throws BusinessException {
+        Map<String, Object> inventory = new HashMap<String, Object>();
+        inventory.put("targetType", TargetType.rawmaterial);
+        inventory.put("targetId", rawmaterialId);
+        return createInventory(inventory, orgId, new BigDecimal(0), storageType, orgId, remark, user);
+    }
 
 
 
-	public int createInventory(Map<String, Object> inventory, int orgId,
-			BigDecimal quantity, StorageType storageType, int sourceOrgId, String remark,
-			IUser user) throws BusinessException {
-		inventory.put("orgId", orgId);
-		inventory.put("storageType", storageType);
-		inventory.put("quantity", quantity);
-//		inventory.put("ownerId", user.getId());
-		inventory.put("remark", remark);
-		inventory.put("status", InventoryStatus.onStorage);
-		inventory.put("sourceOrgId", sourceOrgId);
-		inventory.put("cuserId", user.getId());
-		inventory.put("cdate", null);
+    public int createMaterialInventory(int materialId, int orgId, String remark, IUser user) throws BusinessException {
+        Map<String, Object> inventory = new HashMap<String, Object>();
+        inventory.put("targetType", TargetType.material);
+        inventory.put("targetId", materialId);
+        return createInventory(inventory, orgId, new BigDecimal(0), StorageType.material, orgId, remark, user);
+    }
 
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		String id = entityService.create(metadata, inventory, user);
-		return Integer.parseInt(id);
-	}
+    public int createInventory(Map<String, Object> inventory, int orgId,
+                               BigDecimal quantity, StorageType storageType, int sourceOrgId, String remark,
+                               IUser user) throws BusinessException {
+        inventory.put("orgId", orgId);
+        inventory.put("storageType", storageType);
+        inventory.put("quantity", quantity);
+        inventory.put("remark", remark);
+        inventory.put("status", InventoryStatus.onStorage);
+        inventory.put("sourceOrgId", sourceOrgId);
+        inventory.put("cuserId", user.getId());
+        inventory.put("cdate", null);
+
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        String id = entityService.create(metadata, inventory, user);
+        return Integer.parseInt(id);
+    }
 
     /**
      * 创建出入库记录
      *
-     * @param bizType       业务类型
-     * @param orgId         部门ID
-     * @param quantity      数量
-     * @param type          出入库类型
-     * @param storageType   库存类型
-     * @param targetType    对象类型
-     * @param targetId      对象ID
+     * @param bizType        业务类型
+     * @param orgId          部门ID
+     * @param quantity       数量
+     * @param type           出入库类型
+     * @param storageType    库存类型
+     * @param targetType     对象类型
+     * @param targetId       对象ID
      * @param deliveryReason 出入库原因
-     * @param remark        备注
-     * @param user          操作员
+     * @param remark         备注
+     * @param user           操作员
      * @throws BusinessException
      */
-	public void createFlow(BizType bizType, int orgId,
-			BigDecimal quantity, InventoryType type, StorageType storageType,
-			TargetType targetType, String targetId,
-			String deliveryReason, String remark, IUser user) throws BusinessException {
-		if (quantity == null || quantity.floatValue() == 0) {
-			return;
-		}
+    public void createFlow(MzfEnum.BizType bizType, int orgId,
+                           BigDecimal quantity, MzfEnum.InventoryType type, StorageType storageType,
+                           TargetType targetType, String targetId,
+                           String deliveryReason, String remark, IUser user) throws BusinessException {
+        if (quantity == null || quantity.floatValue() == 0) {
+            return;
+        }
 
-		Map<String, Object> flow = new HashMap<String, Object>();
+        Map<String, Object> flow = new HashMap<String, Object>();
 
-		flow.put("bizType", bizType);
-		flow.put("orgId", orgId);
-		flow.put("storageType", storageType);
-		flow.put("type", type);
-		flow.put("targetType", targetType);
-		flow.put("targetId", targetId);
-		flow.put("deliveryReason", deliveryReason);
-		flow.put("remark", remark);
-		flow.put("quantity", quantity);
-		flow.put("cuserId", user.getId());
-		flow.put("cdate", null);
+        flow.put("bizType", bizType);
+        flow.put("orgId", orgId);
+        flow.put("storageType", storageType);
+        flow.put("type", type);
+        flow.put("targetType", targetType);
+        flow.put("targetId", targetId);
+        flow.put("deliveryReason", deliveryReason);
+        flow.put("remark", remark);
+        flow.put("quantity", quantity);
+        flow.put("cuserId", user.getId());
+        flow.put("cdate", null);
 
-        if(targetType == TargetType.product){//商品出入库
-            Map<String,Object> target = entityService.getById(MzfEntity.PRODUCT,targetId,user);
-            flow.put("cost",MapUtils.getFloat(target,"costPrice"));
-            flow.put("price",MapUtils.getFloat(target,"retailBasePrice"));
-            flow.put("wholesalePrice",MapUtils.getFloat(target,"wholesalePrice"));
+        if (targetType == TargetType.product) {//商品出入库
+            Map<String, Object> target = entityService.getById(MzfEntity.PRODUCT, targetId, user);
+            flow.put("cost", MapUtils.getFloat(target, "costPrice"));
+            flow.put("price", MapUtils.getFloat(target, "retailBasePrice"));
+            flow.put("wholesalePrice", MapUtils.getFloat(target, "wholesalePrice"));
             //发生金额为商品成本
-        }else if(targetType == TargetType.rawmaterial){//原料出入库
+        } else if (targetType == TargetType.rawmaterial) {//原料出入库
             //发生金额为原料成本
-            if(storageType == StorageType.rawmaterial_gold || storageType == StorageType.rawmaterial_gravel){
+            if (storageType == StorageType.rawmaterial_gold || storageType == StorageType.rawmaterial_gravel) {
                 //金料的发生金额为本次入库的成本，参见：createFlowOnQuantity
-                flow.put("cost",Float.valueOf(deliveryReason));
+                flow.put("cost", Float.valueOf(deliveryReason));
 
-                if(storageType == StorageType.rawmaterial_gravel){
+                if (storageType == StorageType.rawmaterial_gravel) {
                     int idx = remark.lastIndexOf('|');
-                    String wStr = remark.substring(idx+1);
-                    remark = remark.substring(0,idx);
-                    flow.put("remark",remark);
-                    flow.put("weight",new BigDecimal(wStr).round(new MathContext(3)).toString());
-                }else{
-                    flow.put("weight",quantity);
+                    String wStr = remark.substring(idx + 1);
+                    remark = remark.substring(0, idx);
+                    flow.put("remark", remark);
+                    flow.put("weight", new BigDecimal(wStr).round(new MathContext(3)).toString());
+                } else {
+                    flow.put("weight", quantity);
                 }
-            }else{
-                Map<String,Object> target = entityService.getById(MzfEntity.RAWMATERIAL,targetId,user);
-                flow.put("cost",MapUtils.getFloat(target,"cost"));
-                if(storageType == StorageType.rawmaterial_nakedDiamond){
-                    flow.put("weight",MapUtils.getFloat(target, "spec"));
+            } else {
+                Map<String, Object> target = entityService.getById(MzfEntity.RAWMATERIAL, targetId, user);
+                flow.put("cost", MapUtils.getFloat(target, "cost"));
+                if (storageType == StorageType.rawmaterial_nakedDiamond) {
+                    flow.put("weight", MapUtils.getFloat(target, "spec"));
                 }
             }
-        }else if(targetType == TargetType.secondProduct){//旧饰出入库
+        } else if (targetType == TargetType.secondProduct) {//旧饰出入库
             //发生金额为旧饰回收价格
-            Map<String,Object> target = entityService.getById(MzfEntity.SECOND_PRODUCT,targetId,user);
-            flow.put("cost",MapUtils.getFloat(target,"buyPrice"));
-        }else if(targetType == TargetType.secondGold){//旧金出入库
+            Map<String, Object> target = entityService.getById(MzfEntity.SECOND_PRODUCT, targetId, user);
+            flow.put("cost", MapUtils.getFloat(target, "buyPrice"));
+        } else if (targetType == TargetType.secondGold) {//旧金出入库
             //发生金额为旧金回收价格*数量
-        }else{
+        } else {
             //TODO:其他类型的发生金额
         }
-        entityService.create(MzfEntity.INVENTORY_FLOW,flow,user);
-//		EntityMetadata metadata = getEntityMetadataOfFlow();
-//		String id = entityService.create(metadata, flow, user);
-//		return Integer.parseInt(id);
-	}
+        entityService.create(MzfEntity.INVENTORY_FLOW, flow, user);
+    }
 
-	public void addLockedQuantity(int inventoryId, BigDecimal lockedQuantity, IUser user) throws BusinessException {
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		Map<String, Object> dbInventory = entityService.getById(metadata, inventoryId, user.asSystem());
+    /**
+     * 锁定库存
+     *
+     * @param inventoryId 库存记录ID
+     * @param lockedQuantity 锁定数量
+     *
+     * @throws BusinessException
+     */
+    public void lock(int inventoryId, double lockedQuantity, IUser user) throws BusinessException {
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        Map<String, Object> dbInventory = entityService.getById(metadata, inventoryId, user.asSystem());
 
-		BigDecimal q = new BigDecimal(MapUtils.getString(dbInventory, "quantity"));
-		BigDecimal lq = new BigDecimal(MapUtils.getString(dbInventory, "lockedQuantity", "0"));
-		lq = lq.add(lockedQuantity);
-		if (lockedQuantity.doubleValue() > q.doubleValue()) {
-			throw new BusinessException("库存量不足");
-		}
+        double q = MapUtils.getDoubleValue(dbInventory, "quantity", 0);
+        double lq = MapUtils.getDoubleValue(dbInventory, "lockedQuantity", 0);
+        //锁定时仅增加 锁定数量；出库时要同时减 库存数量 和 锁定数量
+        lq = lq+lockedQuantity;
+        if (lockedQuantity > q) {
+            throw new BusinessException("库存量不足");
+        }
 
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put("lockedQuantity", lq);
-		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
-	}
+        Map<String, Object> field = new HashMap<String, Object>();
+        field.put("lockedQuantity", lq);
+        entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
+    }
 
-//	public void warehouseByQuantity(int inventoryId, BigDecimal quantity, IUser user) throws BusinessException {
-//		EntityMetadata metadata = getEntityMetadataOfInventory();
-//		Map<String, Object> dbInventory = entityService.getById(metadata, inventoryId, user.asSystem());
-//
-//		BigDecimal dbQuantity = new BigDecimal(MapUtils.getString(dbInventory, "quantity"));
-//		dbQuantity = dbQuantity.add(quantity);
-//
-//		Map<String, Object> field = new HashMap<String, Object>();
-//		field.put("quantity", dbQuantity);
-//		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
-//
-//		//TODO 记录入库流水
-//	}
+    public void lock(int inventoryId,IUser user) throws BusinessException {
+        lock(inventoryId,1,user);
+    }
 
+    /**
+     * 单品入库
+     *
+     * @param bizType 业务类型
+     * @param orgId 部门Id
+     * @param targetId 目标ID
+     * @param storageType 仓库类型
+     * @param cost 发生成本
+     * @param costDesc 成本描述
+     * @param remark 备注
+     */
+    public void warehouse(MzfEnum.BizType bizType,int orgId,int targetId,StorageType storageType, BigDecimal cost,String costDesc,String remark,IUser user){
 
-	public void addQuantity(BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String costDesc, String remark, IUser user) throws BusinessException {
-		if (quantity == null || quantity.doubleValue() == 0) return;
+    }
 
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
+    /**
+     * 按数量入库
+     *
+     * @param bizType 业务类型
+     * @param inventoryId 库存记录ID
+     * @param quantity 入库数量
+     * @param cost 发生金额
+     * @param remark 备注
+     *
+     * @throws BusinessException
+     */
+    public void warehouse(MzfEnum.BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
+        if (quantity == null || quantity.doubleValue() == 0) return;
 
-        if(inventory == null){
-            throw new BusinessException("无库存记录，ID:["+inventoryId+"]");
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
+
+        if (inventory == null) {
+            throw new BusinessException("无库存记录，ID:[" + inventoryId + "]");
         }
 
         //当前库存
-		BigDecimal dbQuantity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
-        BigDecimal dbCost = new BigDecimal(MapUtils.getFloatValue(inventory,"cost"));
-		dbQuantity = dbQuantity.add(quantity);
+        BigDecimal dbQuantity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
+        BigDecimal dbCost = new BigDecimal(MapUtils.getFloatValue(inventory, "cost"));
+        dbQuantity = dbQuantity.add(quantity);
         dbCost = dbCost.add(cost);
-		if (dbQuantity.doubleValue() < 0) {
-			throw new BusinessException("库存不足");
-		}
 
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put("quantity", dbQuantity);
-        field.put("cost",dbCost);
-		field.put("lastQuantity", quantity);
-		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
+        Map<String, Object> field = new HashMap<String, Object>();
+        field.put("quantity", dbQuantity);
+        field.put("cost", dbCost);
+        field.put("lastQuantity", quantity);
+        entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
 
-		InventoryType type;
-		if (quantity.doubleValue() > 0) {
-			type = InventoryType.warehouse;
-		} else {
-			type = InventoryType.delivery;
-		}
-
-        if(cost == null){
+        if (cost == null) {
             cost = new BigDecimal(0);
         }
 
-		createFlowOnQuantity(bizType, inventoryId, quantity, type, cost.doubleValue(), costDesc, remark, user);
-	}
+        createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.warehouse, cost.doubleValue(), remark, user);
+    }
 
-	public void deliveryByQuantityIgnoreFlow(BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String costDesc, boolean isUpdateLockedQuantity, String remark, IUser user) throws BusinessException {
-		deliveryByQuantity(bizType, inventoryId, quantity, cost, costDesc, isUpdateLockedQuantity, remark, false, user);
-	}
+    public void delivery(MzfEnum.BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
+        if (quantity == null || quantity.doubleValue() == 0) return;
 
-	public void deliveryByQuantityFlow(BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String costDesc, boolean isUpdateLockedQuantity, String remark, IUser user) throws BusinessException {
-		deliveryByQuantity(bizType, inventoryId, quantity, cost, costDesc, isUpdateLockedQuantity, remark, true, user);
-	}
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
 
-	private void deliveryByQuantity(BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String costDesc, boolean isUpdateLockedQuantity, String remark, boolean isFlow, IUser user) throws BusinessException {
-		if (quantity == null || quantity.doubleValue() == 0) return;
+        BigDecimal dbQuentity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
+        Map<String, Object> field = new HashMap<String, Object>();
 
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
+        dbQuentity = dbQuentity.subtract(quantity);
+        if (dbQuentity.doubleValue() >= 0) {
+            field.put("quantity", dbQuentity);
+        } else {
+            throw new BusinessException("库存量不足");
+        }
 
-		BigDecimal q = new BigDecimal(MapUtils.getString(inventory, "quantity"));
-		Map<String, Object> field = new HashMap<String, Object>();
+        entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
 
-		q = q.subtract(quantity);
-		if (q.doubleValue() >= 0) {
-			field.put("quantity", q);
-		} else {
-			throw new BusinessException("库存量不足");
-		}
-		if (isUpdateLockedQuantity) {
-			BigDecimal lq = new BigDecimal(MapUtils.getString(inventory, "lockedQuantity", Integer.toString(0)));
-			lq = lq.subtract(quantity);
-			if (lq.doubleValue() >= 0) {
-				field.put("lockedQuantity", lq);
-			} else {
-				field.put("lockedQuantity", 0);
-//				throw new BusinessException("库存锁定量不足");
-			}
-		}
-		entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
-
-        if(cost == null){
+        if (cost == null) {
             cost = new BigDecimal(0);
         }
-		//记录出库流水
-		if (isFlow) {
-			createFlowOnQuantity(bizType, inventoryId, quantity, InventoryType.delivery, cost.doubleValue(), costDesc, remark, user);
-		}
-	}
+        //记录出库流水
+        createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.delivery, cost.doubleValue(), remark, user);
+    }
 
-	public void createFlowOnQuantity(BizType bizType, int inventoryId, BigDecimal quantity, InventoryType type, Double cost, String costDesc, String remark, IUser user) throws BusinessException {
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
-		Integer orgId = MapUtils.getInteger(inventory, "orgId");
-		StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
-		TargetType targetType = TargetType.valueOf(MapUtils.getString(inventory, "targetType"));
-		String targetId = MapUtils.getString(inventory, "targetId");
+    public void deliveryLocked(MzfEnum.BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
+        if (quantity == null || quantity.doubleValue() == 0) return;
 
-//		remark = remark == null? "":remark;
-//		costDesc = costDesc == null? "":costDesc;
+        delivery(bizType,inventoryId,quantity,cost,remark,user);
 
-//		if (StringUtils.isBlank(remark)) {
-//			remark = costDesc;
-//		} else {
-//			remark += "；" + costDesc;
-//		}
-//		remark += " 总成本：" + cost;
-		createFlow(bizType, orgId, quantity, type, storageType, targetType, targetId, ObjectUtils.toString(cost), remark, user);
-	}
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
 
-	public void updateStatus(Integer[] inventoryId, InventoryStatus priorStatus, InventoryStatus nextStatus, String message, String remark, IUser user) throws BusinessException {
-		if (ArrayUtils.isEmpty(inventoryId)) return;
+        Map<String, Object> field = new HashMap<String, Object>();
+        BigDecimal lockedQuantity = new BigDecimal(MapUtils.getString(inventory, "lockedQuantity", Integer.toString(0)));
+        lockedQuantity = lockedQuantity.subtract(quantity);
+        if (lockedQuantity.doubleValue() >= 0) {
+            field.put("lockedQuantity", lockedQuantity);
+        } else {
+            field.put("lockedQuantity", 0);
+            throw new BusinessException("库存锁定量不足");
+        }
+        entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
+    }
 
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		Map<String, Object> where = new HashMap<String, Object>();
-		where.put(metadata.getPkCode(), inventoryId);
-		List<Map<String, Object>> dbInventoryList = entityService.list(metadata, where, null, user.asSystem());
-		for (Map<String, Object> dbInventory : dbInventoryList) {
-			InventoryStatus dbStatus = InventoryStatus.valueOf(MapUtils.getString(dbInventory, "status"));
-			if (priorStatus != dbStatus) {
-				String s = "当前状态不允许此操作";
-				if (StringUtils.isNotBlank(message)) {
-					s = message;
-				}
-				throw new BusinessException(s);
-			}
-		}
+    public void createFlowOnQuantity(MzfEnum.BizType bizType, int inventoryId, BigDecimal quantity, MzfEnum.InventoryType type, Double cost, String remark, IUser user) throws BusinessException {
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
+        Integer orgId = MapUtils.getInteger(inventory, "orgId");
+        StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
+        TargetType targetType = TargetType.valueOf(MapUtils.getString(inventory, "targetType"));
+        String targetId = MapUtils.getString(inventory, "targetId");
 
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put("status", nextStatus);
-		field.put("remark", remark);
-		field.put("muserId", null);
-		field.put("muserName", null);
-		field.put("mdate", null);
-		int row = entityService.update(metadata, field, where, user);
-		if (row != inventoryId.length) {
-			throw new BusinessException("更新库存状态失败。原因：未找到相应库存[" + Arrays.toString(inventoryId) + "]");
-		}
-	}
+        createFlow(bizType, orgId, quantity, type, storageType, targetType, targetId, ObjectUtils.toString(cost), remark, user);
+    }
 
-	public void updateOwnerId(int inventoryId, int ownerId, IUser user) throws BusinessException {
-		Map<String, Object> field = new HashMap<String, Object>();
-		field.put("ownerId", ownerId);
+    public void updateStatus(Integer[] inventoryId, InventoryStatus priorStatus, InventoryStatus nextStatus, String message, String remark, IUser user) throws BusinessException {
+        if (ArrayUtils.isEmpty(inventoryId)) return;
 
-		entityService.updateById(getEntityMetadataOfInventory(), Integer.toString(inventoryId), field, user);
-	}
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        Map<String, Object> where = new HashMap<String, Object>();
+        where.put(metadata.getPkCode(), inventoryId);
+        List<Map<String, Object>> dbInventoryList = entityService.list(metadata, where, null, user.asSystem());
+        for (Map<String, Object> dbInventory : dbInventoryList) {
+            InventoryStatus dbStatus = InventoryStatus.valueOf(MapUtils.getString(dbInventory, "status"));
+            if (priorStatus != dbStatus) {
+                String s = "当前状态不允许此操作";
+                if (StringUtils.isNotBlank(message)) {
+                    s = message;
+                }
+                throw new BusinessException(s);
+            }
+        }
 
-	public int getInventoryId(int targetId, TargetType type, int orgId) throws BusinessException {
-		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("orgId", orgId);
-		where.put("targetType", type);
-		where.put("targetId", targetId);
-		EntityMetadata metadata = getEntityMetadataOfInventory();
-		List<Map<String, Object>> list = entityService.list(metadata, where, null, User.getSystemUser());
-		if (CollectionUtils.isEmpty(list)) {
-			throw new BusinessException("未找到库存记录");
-		} else if (list.size() > 1) {
-			throw new BusinessException("找到多条库存记录");
-		} else {
-			return MapUtils.getInteger(list.get(0), "id");
-		}
-	}
+        Map<String, Object> field = new HashMap<String, Object>();
+        field.put("status", nextStatus);
+        field.put("remark", remark);
+        field.put("muserId", null);
+        field.put("muserName", null);
+        field.put("mdate", null);
+        int row = entityService.update(metadata, field, where, user);
+        if (row != inventoryId.length) {
+            throw new BusinessException("更新库存状态失败。原因：未找到相应库存[" + Arrays.toString(inventoryId) + "]");
+        }
+    }
 
-	public EntityMetadata getEntityMetadataOfInventory() throws BusinessException {
-		return metadataProvider.getEntityMetadata(MzfEntity.INVENTORY);
-	}
+    public void updateOwnerId(int inventoryId, int ownerId, IUser user) throws BusinessException {
+        Map<String, Object> field = new HashMap<String, Object>();
+        field.put("ownerId", ownerId);
 
-//	public EntityMetadata getEntityMetadataOfFlow() throws BusinessException {
-//		return metadataProvider.getEntityMetadata(MzfEntity.INVENTORY_FLOW);
-//	}
+        entityService.updateById(getEntityMetadataOfInventory(), Integer.toString(inventoryId), field, user);
+    }
+
+    public int getInventoryId(int targetId, TargetType type, int orgId) throws BusinessException {
+        Map<String, Object> where = new HashMap<String, Object>();
+        where.put("orgId", orgId);
+        where.put("targetType", type);
+        where.put("targetId", targetId);
+        EntityMetadata metadata = getEntityMetadataOfInventory();
+        List<Map<String, Object>> list = entityService.list(metadata, where, null, User.getSystemUser());
+        if (CollectionUtils.isEmpty(list)) {
+            throw new BusinessException("未找到库存记录");
+        } else if (list.size() > 1) {
+            throw new BusinessException("找到多条库存记录");
+        } else {
+            return MapUtils.getInteger(list.get(0), "id");
+        }
+    }
+
+    public EntityMetadata getEntityMetadataOfInventory() throws BusinessException {
+        return metadataProvider.getEntityMetadata(MzfEntity.INVENTORY);
+    }
 }
 
 

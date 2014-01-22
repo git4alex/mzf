@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import com.zonrong.common.utils.MzfEnum;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -22,7 +23,6 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.MaterialInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
 import com.zonrong.metadata.service.MetadataProvider;
 
 /**
@@ -34,7 +34,7 @@ import com.zonrong.metadata.service.MetadataProvider;
 @Service
 public class RegisterMaterialService {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private EntityService entityService;
 	@Resource
@@ -47,22 +47,22 @@ public class RegisterMaterialService {
 	private RegisterService registerService;
 	@Resource
 	private BusinessLogService businessLogService;
-	
+
 	public int register(int orderDetailId, Map<String, Object> material, Map<String, Object> register, IUser user) throws BusinessException {
 		Map<String, Object> dbDetail = entityService.getById(MzfEntity.VENDOR_ORDER_MATERIAL_ORDER_DETAIL, orderDetailId, user.asSystem());
-		
+
 		//物料登记
 		Integer materialId = MapUtils.getInteger(material, "materialId");
 		if (materialId == null) {
 			material.put("wholesalePrice", 0);
-			material.put("retailPrice", 0);			
-			materialId = materialService.createMaterial(material, user);			
+			material.put("retailPrice", 0);
+			materialId = materialService.createMaterial(material, user);
 		}
-		
+
 		//核销订单明细
 		cancelMaterialOrderDetail(dbDetail, materialId, user);
-		
-		//入库	
+
+		//入库
 		BigDecimal quantity = new BigDecimal(MapUtils.getString(material, "quantity"));
 		BigDecimal unitPrice = new BigDecimal(MapUtils.getString(material, "unitPrice", "0"));
 		String costStr = MapUtils.getString(material, "cost");
@@ -74,17 +74,17 @@ public class RegisterMaterialService {
 			throw new BusinessException("未指定物料成本");
 		}
 		int orderId = MapUtils.getInteger(dbDetail, "orderId");
-		Map<String, Object> dbOrder = entityService.getById(MzfEntity.VENDOR_ORDER, orderId, user.asSystem());		
+		Map<String, Object> dbOrder = entityService.getById(MzfEntity.VENDOR_ORDER, orderId, user.asSystem());
 		String remark = "物料入库， 物料采购订单号：" + MapUtils.getString(dbOrder, "num");
-		materialInventoryService.warehouse(BizType.register, materialId, quantity, cost, null, remark, user);
+		materialInventoryService.warehouse(MzfEnum.BizType.register, materialId, quantity, cost, null, remark, user);
 		materialService.addCost(materialId, cost, user.getOrgId(), user);
-    
+
 		 //记录操作日志
-		businessLogService.log("物料收货登记", "物料编号：" + materialId, user); 
+		businessLogService.log("物料收货登记", "物料编号：" + materialId, user);
 		register.put("cost", cost);
 		register.put("unitPrice", unitPrice);
 		return registerService.createRegister(register, TargetType.material, orderId, orderDetailId, materialId, quantity, user);
-	}	
+	}
 	public Map<String, Object> getPrintData(Integer[] ids, IUser user)throws BusinessException{
 		Map<String, Object> data = new HashMap<String, Object>();
 		Map<String, Object> where = new HashMap<String, Object>();
@@ -99,14 +99,14 @@ public class RegisterMaterialService {
 		for (Map<String, Object> map : dataList) {
 			Map<String, Object> materail = entityService.getById(MzfEntity.MATERIAL, MapUtils.getIntValue(map, "targetId", 0), user);
 			map.put("materialName", MapUtils.getString(materail, "name"));
-			
+
 		}
 		data.put("vendorNum", vendorNum);
 		data.put("vendorName", vendorName);
 		data.put("dataList", dataList);
 		return data;
 	}
-	
+
 	private void cancelMaterialOrderDetail(Map<String, Object> detail, final int materialId, IUser user) throws BusinessException {
 		CancelDetailTemplete templete = new CancelDetailTemplete(metadataProvider, entityService){
 			public IEntityCode getDetailEntityCode(){

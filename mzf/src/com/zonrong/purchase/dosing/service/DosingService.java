@@ -14,7 +14,6 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.DosingBom;
-import com.zonrong.inventory.service.InventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -476,7 +475,7 @@ public class DosingService {
                     dosingBom.setWeight(new BigDecimal(MapUtils.getString(dosing, "dosingWeight","0")));
                     rawmaterialQuantityMap.put(rawmaterialId, dosingBom);
                 } else {
-                    rawmaterialInventoryService.deliveryDiamondByRawmaterialId(InventoryService.BizType.OEM, rawmaterialId, remark, user);
+                    rawmaterialInventoryService.deliveryDiamondByRawmaterialId(MzfEnum.BizType.OEM, rawmaterialId, remark, user);
                     int transId = transactionService.findTransId(MzfEntity.RAWMATERIAL, rawmaterialId+"", user);
                     flowLogService.createLog(transId, MzfEntity.RAWMATERIAL, rawmaterialId+"", "配料出库", MzfEnum.TargetType.rawmaterial, rawmaterialId, "委外订单号："+orderNum, user);
                 }
@@ -484,7 +483,7 @@ public class DosingService {
         }
 
         if (MapUtils.isNotEmpty(rawmaterialQuantityMap)) {
-            rawmaterialInventoryService.deliveryByQuantityOnOEM(InventoryService.BizType.OEM, rawmaterialQuantityMap, user.getOrgId(), remark, user);
+            rawmaterialInventoryService.deliveryOnOem(MzfEnum.BizType.OEM, rawmaterialQuantityMap, user.getOrgId(), remark, user);
         }
     }
 

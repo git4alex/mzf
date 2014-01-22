@@ -3,6 +3,7 @@ package com.zonrong.inventory.service;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.StorageType;
 import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.common.utils.MzfUtils;
@@ -11,8 +12,7 @@ import com.zonrong.core.log.BusinessLogService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.DosingBom;
-import com.zonrong.inventory.service.InventoryService.BizType;
-import com.zonrong.inventory.service.InventoryService.InventoryType;
+import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;
@@ -33,6 +33,10 @@ import java.util.Map.Entry;
  *
  * version: 1.0
  * commonts: ......
+ */
+
+/**
+ * 原料库存
  */
 @Service
 public class RawmaterialInventoryService {
@@ -73,7 +77,7 @@ public class RawmaterialInventoryService {
 		int id = inventoryService.createInventory(inventory, user.getOrgId(), new BigDecimal(1), storageType, sourceOrgId, remark, user);
 
 		inventoryService.createFlow(bizType, user.getOrgId(),
-				new BigDecimal(1), InventoryType.warehouse, storageType,
+				new BigDecimal(1), MzfEnum.InventoryType.warehouse, storageType,
 				TargetType.rawmaterial, Integer.toString(rawmaterialId), null,
 				remark, user);
 
@@ -86,12 +90,6 @@ public class RawmaterialInventoryService {
 		StorageType storageType = StorageType.rawmaterial_gold;
 		warehouseByQuantity(bizType, storageType, rawmaterialId, quantity, cost, remark, user);
 	}
-
-//	public void warehouseSecondGold(BizType bizType, int rawmaterialId,
-//			BigDecimal quantity, BigDecimal cost, String remark, IUser user)
-//			throws BusinessException {
-//		warehouseSecondGoldByQuantity(bizType, StorageType.second_secondGold, rawmaterialId, quantity, cost, remark, user);
-//	}
 
 	public void warehouseGravel(BizType bizType, int rawmaterialId,
 			BigDecimal quantity, BigDecimal cost, BigDecimal weight, String remark, IUser user)
@@ -125,24 +123,7 @@ public class RawmaterialInventoryService {
 			inventoryId = MapUtils.getInteger(inventory, "id");
 		}
 
-		inventoryService.addQuantity(bizType, inventoryId, quantity, cost, "成本", remark, user);
-
-		rawmaterialService.addCost(rawmaterialId, cost, user);
-	}
-
-	public void warehouseSecondGoldByQuantity(BizType bizType,
-			int rawmaterialId, BigDecimal quantity, BigDecimal cost, String remark, IUser user)
-			throws BusinessException {
-        //查找当前用户所在部门的旧金库存
-		Map<String, Object> inventory = inventoryService.findSecondGoldInventory(rawmaterialId, user.getOrgId(), user);
-		Integer inventoryId;
-		if (inventory == null) {
-			inventoryId = inventoryService.createSecondGoldInventory(rawmaterialId, user.getOrgId(), null, user);
-		} else {
-			inventoryId = MapUtils.getInteger(inventory, "id");
-		}
-
-		inventoryService.addQuantity(bizType, inventoryId, quantity, cost, null, remark, user);
+		inventoryService.warehouse(bizType, inventoryId, quantity, cost, remark, user);
 
 		rawmaterialService.addCost(rawmaterialId, cost, user);
 	}
@@ -164,7 +145,7 @@ public class RawmaterialInventoryService {
 		}
 
 		inventoryService.createFlow(bizType, user.getOrgId(),
-				new BigDecimal(1), InventoryType.delivery, storageType,
+				new BigDecimal(1), MzfEnum.InventoryType.delivery, storageType,
 				TargetType.rawmaterial, Integer.toString(rawmaterialId), null,
 				remark, user);
 	}
@@ -174,7 +155,7 @@ public class RawmaterialInventoryService {
 	 *
 	 * @throws BusinessException
 	 */
-	public void deliveryByQuantityOnOEM(BizType bizType, Map<Integer, DosingBom> rawmaterialQuantityMap, int orgId, String remark, IUser user) throws BusinessException {
+	public void deliveryOnOem(BizType bizType, Map<Integer, DosingBom> rawmaterialQuantityMap, int orgId, String remark, IUser user) throws BusinessException {
         Set<Integer> rids = rawmaterialQuantityMap.keySet();
         Integer[] rawmaterialIds = rids.toArray(new Integer[rids.size()]);
 		List<Map<String, Object>> list = listRawmaterialInventory(rawmaterialIds, orgId, user);
@@ -215,7 +196,7 @@ public class RawmaterialInventoryService {
 			}
 
 			Integer inventoryId = MapUtils.getInteger(map, "inventoryId");
-			inventoryService.deliveryByQuantityFlow(bizType, inventoryId, quantity, null, "成本", true, remark, user);
+			inventoryService.deliveryLocked(bizType, inventoryId, quantity, null, remark, user);
 		}
 
 		//将原料成本记在商品上（待定）
@@ -290,7 +271,7 @@ public class RawmaterialInventoryService {
 
         //记录出库
 
-        inventoryService.createFlowOnQuantity(bizType, inventoryId, quantity, InventoryType.delivery, outCost, remark, fRemark, user);
+        inventoryService.createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.delivery, outCost, remark, fRemark, user);
 
 		//记录操作日志
 		businessLogService.log("原料库强制出库", "库存编号为：" + inventoryId, user);
@@ -313,7 +294,7 @@ public class RawmaterialInventoryService {
         for (Entry<Integer, BigDecimal> en : inventoryQuantityMap.entrySet()) {
             int inventoryId = en.getKey();
             BigDecimal lockedQuantity = en.getValue();
-            inventoryService.addLockedQuantity(inventoryId, lockedQuantity, user);
+            inventoryService.lock(inventoryId, lockedQuantity, user);
         }
 	}
 
@@ -327,7 +308,7 @@ public class RawmaterialInventoryService {
             int inventoryId = en.getKey();
             BigDecimal lockedQuantity = en.getValue();
             lockedQuantity = lockedQuantity.multiply(new BigDecimal(-1));
-            inventoryService.addLockedQuantity(inventoryId, lockedQuantity, user);
+            inventoryService.lock(inventoryId, lockedQuantity, user);
         }
 	}
 

@@ -1,4 +1,4 @@
-package com.zonrong.inventory.treasury.service;
+package com.zonrong.inventory.service;
 
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import com.zonrong.metadata.service.MetadataProvider;
 @Service
 public class TreasurySaleService extends TreasuryService {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private MetadataProvider metadataProvider;
 	@Resource
@@ -41,7 +41,7 @@ public class TreasurySaleService extends TreasuryService {
 				class1 == MoneyStorageClass1.valueCard ||
 				class1 == MoneyStorageClass1.coBrandedCard ||
 				class1 == MoneyStorageClass1.foreignCard) {
-			
+
 			if (StringUtils.isBlank(class2)) {
 				throw new BusinessException("操作" + getStorageName() + "时，付款方式为" + class1.getName() + "时必须指定银行");
 			}

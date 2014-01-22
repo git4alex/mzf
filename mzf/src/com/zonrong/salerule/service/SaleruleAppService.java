@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import com.zonrong.common.utils.MzfEnum.SaleDetailType;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
-import com.zonrong.inventory.product.service.ProductInventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.salerule.service.expression.ExpressionProcessor;
 import com.zonrong.salerule.service.expression.RuleEvaluationContext;
 import com.zonrong.salerule.service.mapper.PresentMapper;
@@ -36,9 +36,9 @@ import com.zonrong.salerule.service.result.ProductResultService;
 
 @Service
 public class SaleruleAppService {
-	private Logger logger = Logger.getLogger(this.getClass());	
-	
-	private static String SALERULE_RESULTIDS = "saleruleResultIds"; 
+	private Logger logger = Logger.getLogger(this.getClass());
+
+	private static String SALERULE_RESULTIDS = "saleruleResultIds";
 	private static String SALERULE_PRICE = "salerulePrice";
 	@Resource
 	private PointsResultService pointsResultService;
@@ -52,7 +52,7 @@ public class SaleruleAppService {
 	private ProductInventoryService productInventoryService;
 	@Resource
 	private GrantChitResultService grantChitResultService;
-	
+
 	@Resource
 	private PointsruleService pointsruleService;
 	@Resource
@@ -61,30 +61,30 @@ public class SaleruleAppService {
 	private SaleruleMatchService saleruleMatchService;
 	@Resource(name = "saleService1")
 	private SaleService saleService;
-	
-	public void init(Map<String, Object> bill) throws BusinessException {	
+
+	public void init(Map<String, Object> bill) throws BusinessException {
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		for (Map<String, Object> detail : details) {
 			detail.put(SALERULE_PRICE, MapUtils.getObject(detail, "price"));
-		}	
-		
+		}
+
 		calcAndPoints(bill);
-	}	
-	
+	}
+
 	public boolean isNext(Map<String, Object> bill) throws BusinessException {
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		for (Map<String, Object> detail : details) {
 			if (MapUtils.getFloat(detail, "authorithDiscount", 0f) != 0) {
 				return false;
 			}
-		}	
-		
+		}
+
 		return true;
-	}	
-	
+	}
+
 	/**
 	 * 匹配整单的单品促销规则
-	 * 
+	 *
 	 * @param bill
 	 * @param user
 	 * @return
@@ -92,9 +92,9 @@ public class SaleruleAppService {
 	 */
 	public Map<String, List<Map<String, Object>>> matchSaleruleForSingle(Map<String, Object> bill, IUser user) throws BusinessException {
 		Map<String, List<Map<String, Object>>> productIdRules = new HashMap<String, List<Map<String,Object>>>();
-		
+
 		List<Integer> productIds = new ArrayList<Integer>();
-		Integer customerId = MapUtils.getInteger(bill, "cusId");		
+		Integer customerId = MapUtils.getInteger(bill, "cusId");
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
@@ -103,27 +103,27 @@ public class SaleruleAppService {
 				Integer productId = MapUtils.getInteger(detail, "targetId");
 				productIds.add(productId);
 			}
-		}	
-		
+		}
+
 		if (CollectionUtils.isEmpty(productIds)) {
 			return productIdRules;
 		}
-		
+
 		List<Map<String, Object>> productInventorys = productInventoryService.listProductInventory(productIds.toArray(new Integer[]{}), user.getOrgId());
 		for (Map<String, Object> productInventory : productInventorys) {
 //			Integer productId = MapUtils.getInteger(productInventory, "id");
 			String num = MapUtils.getString(productInventory, "num");
-			
+
 			List<Map<String, Object>> rules = saleruleMatchService.matchSaleruleForSingle(productInventory, customerId, new Date());
 			if(CollectionUtils.isNotEmpty(rules)){
 //				productIdRules.put(productId, rules);
-				productIdRules.put(num, rules);	
+				productIdRules.put(num, rules);
 			}
 		}
-		
+
 		return productIdRules;
 	}
-	
+
 	/**
 	 * 应用单品促销规则，只处理折扣和积分
 	 * @param bill
@@ -134,7 +134,7 @@ public class SaleruleAppService {
 	 */
 	public Map<String, Object> appSingleRulesOfDiscountAndPoints(Map<String, Object> bill, Map<String, List<Integer>> productIdRuleResults, IUser user) throws BusinessException {
 		Map<Integer, Map<String, Object>> productIdDiscountAndPoints = getSingleRulesOfDiscountAndPoints(productIdRuleResults, user);
-		
+
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		float amount = 0;
 		for (Map<String, Object> detail : details) {
@@ -143,7 +143,7 @@ public class SaleruleAppService {
 				Integer productId = MapUtils.getInteger(detail, "targetId");
 				Map<String, Object> discountAndPoints = productIdDiscountAndPoints.get(productId);
 				detail.putAll(discountAndPoints);
-				
+
 				//处理折扣
 				BigDecimal price = new BigDecimal(MapUtils.getString(detail, "price"));
 				BigDecimal salerulePrice = (BigDecimal) MapUtils.getObject(discountAndPoints, SALERULE_PRICE);
@@ -157,13 +157,13 @@ public class SaleruleAppService {
 
 	/**
 	 * 匹配整单规则
-	 * 
+	 *
 	 * @param bill
 	 * @param user
 	 * @return	规则列表
 	 * @throws BusinessException
 	 */
-	public List<Map<String, Object>> matchSaleruleForBill(Map<String, Object> bill, IUser user) throws BusinessException {	
+	public List<Map<String, Object>> matchSaleruleForBill(Map<String, Object> bill, IUser user) throws BusinessException {
 		//bill.put("xxx", 2);
 		List<Map<String, Object>> products = new ArrayList<Map<String,Object>>();
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
@@ -176,10 +176,10 @@ public class SaleruleAppService {
 		List<Map<String, Object>> rules = saleruleMatchService.matchSaleruleForBill(bill, products, new Date());
 		return rules;
 	}
-	
+
 	/**
 	 * 应用整单促销规则，只处理折扣和积分
-	 * 
+	 *
 	 * @param bill
 	 * @param saleruleResultIds
 	 * @param user
@@ -189,38 +189,38 @@ public class SaleruleAppService {
 	public Map<String, Object> appBillRulesOfDiscountAndPoints(Map<String, Object> bill, List<Integer> saleruleResultIds, IUser user) throws BusinessException {
 		int orgId = user.getOrgId();
 		Integer[] resultIds = saleruleResultIds.toArray(new Integer[]{});
-		
+
 		List<Map<String, Object>> results = saleruleService.listResult(resultIds);
 		//积分
 		pointsResultService.setContext(null, bill);
-		int presentPoints = pointsResultService.getResult(results, orgId);		
+		int presentPoints = pointsResultService.getResult(results, orgId);
 		//折扣
 		discountResultService.setContext(null, bill);
 		BigDecimal price = discountResultService.getResult(results, orgId);
-		if (price == null) {			
+		if (price == null) {
 			price = new BigDecimal(0);
 		}
 		BigDecimal totalAmount = new BigDecimal(MapUtils.getString(bill, "totalAmount"));
 		//往每件商品上 分摊整单折扣
 		int shareBillDiscount = 0;
-		if (price.floatValue() > 0) {			
+		if (price.floatValue() > 0) {
 			shareBillDiscount = totalAmount.subtract(price).intValue();
 			shareBillDiscount(bill, shareBillDiscount);
 		}
-		
+
 		bill.put("points", presentPoints);
 		bill.put("shareBillDiscount", shareBillDiscount);
 		bill.put(SALERULE_RESULTIDS, StringUtils.join(resultIds, ","));
-		
+
 		return bill;
-	}	
-		
+	}
+
 	/**
 	 * 赠品列表
 	 * 1.可选择的商品
 	 * 2.可选择的物料
 	 * 3.代金券有用户自行录入
-	 * 
+	 *
 	 * @param bill
 	 * @param orgId
 	 * @return
@@ -231,16 +231,16 @@ public class SaleruleAppService {
 		List<Integer> saleruleResultIds = findSaleruleResultIdsFromBill(bill, orgId);
 		Map<String, Object> present = new HashMap<String, Object>();
 		List<Map<String, Object>> results = saleruleService.listResult(saleruleResultIds.toArray(new Integer[]{}));
-		
+
 		//物料
 		List<Map<String, Object>> materials = materialResultService.getResult(results, orgId);
 		//商品
 		List<Map<String, Object>> products = productResultService.getResult(results, orgId);
-        
+
 		grantChitResultService.setContext(bill);
 		//赠送代金券
 		List<Map<String, Object>> grantChits = grantChitResultService.getResult(results, orgId);
-		
+
 		if (CollectionUtils.isNotEmpty(materials)) {
 			present.put("materials", materials);
 		}
@@ -250,13 +250,13 @@ public class SaleruleAppService {
 		if(CollectionUtils.isNotEmpty(grantChits)){
 			present.put("chits", grantChits);
 		}
-		
+
 		return present;
 	}
-	
+
 	/**
 	 * 将选择的赠品加入销售明细
-	 * 
+	 *
 	 * @param bill
 	 * @param present
 	 * @return
@@ -266,9 +266,9 @@ public class SaleruleAppService {
 		checkGrantChit(null, null);
 		//checkChitPay(null, null);
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
-		
+
 		//物料
-		List<Map<String, Object>> materials = (List<Map<String, Object>>) MapUtils.getObject(present, "materials");	
+		List<Map<String, Object>> materials = (List<Map<String, Object>>) MapUtils.getObject(present, "materials");
 		if (CollectionUtils.isNotEmpty(materials)) {
 			for (Map<String, Object> material : materials) {
 				if (MapUtils.getBoolean(material, "checked")) {
@@ -280,15 +280,15 @@ public class SaleruleAppService {
 					material.put("price", MapUtils.getFloatValue(material, "price"));
 					material.put(SALERULE_PRICE, MapUtils.getFloatValue(material, SALERULE_PRICE));
 					details.add(material);
-					 
+
 				}
 			}
 		}
 		 if(!validatePresent(materials, SaleDetailType.present_material)){
 			 throw new BusinessException("选择的物料不符合赠送条件");
 		 }
-		
-		//商品		
+
+		//商品
 		List<Map<String, Object>> products = (List<Map<String, Object>>) MapUtils.getObject(present, "products");
 		if (CollectionUtils.isNotEmpty(products)) {
 			for (Map<String, Object> product : products) {
@@ -297,9 +297,9 @@ public class SaleruleAppService {
 					product.put("quantity", 1);
 					product.put("targetId", MapUtils.getString(product, "id"));
 					product.put("targetNum", MapUtils.getString(product, "num"));
-					product.put("targetName", MapUtils.getString(product, "name"));					
+					product.put("targetName", MapUtils.getString(product, "name"));
 					product.put("price", 0);
-					product.put(SALERULE_PRICE, 0); 
+					product.put(SALERULE_PRICE, 0);
 					details.add(product);
 				}
 			}
@@ -316,7 +316,7 @@ public class SaleruleAppService {
 					chit.put("quantity", 1);
 					chit.put("targetId", MapUtils.getString(chit, "id"));
 					chit.put("targetNum", MapUtils.getString(chit, "num"));
-					chit.put("targetName", MapUtils.getString(chit, "name"));					
+					chit.put("targetName", MapUtils.getString(chit, "name"));
 					chit.put("price", 0);
 					chit.put(SALERULE_PRICE, 0);
 					details.add(chit);
@@ -327,11 +327,11 @@ public class SaleruleAppService {
 	    	throw new BusinessException("选择的代金券不符合赠送条件");
 	    }
 		return bill;
-	}	
-	
+	}
+
 	/**
 	 * 销售开单确认
-	 * 
+	 *
 	 * @param bill
 	 * @param user
 	 * @return
@@ -339,14 +339,14 @@ public class SaleruleAppService {
 	 */
 	public int sale(Map<String, Object> bill, IUser user) throws BusinessException {
 		List<Map<String, Object>> detailList = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
-		
+
 		return saleService.createSale(bill, detailList, user);
 	}
-	 
+
 	/**
 	 * 合并支付代金券
 	 */
-	public Map<String, Object> mergePayChit(Map<String, Object> bill, List<Map<String, Object>> chits, IUser user) throws BusinessException{ 
+	public Map<String, Object> mergePayChit(Map<String, Object> bill, List<Map<String, Object>> chits, IUser user) throws BusinessException{
 		int orgId = user.getOrgId();
 		List<Integer> resultsId = findSaleruleResultIdsFromBill(bill, orgId);
 		float chit = 0;
@@ -370,10 +370,10 @@ public class SaleruleAppService {
 		     }else{
 		    	 map.put("checkedTotalCount", 1);
 		    	 newChits.put(name, map);
-		     }    
-		     
+		     }
+
 		}
-		
+
 		chits = new ArrayList<Map<String,Object>>();
 		Set<String> keys = newChits.keySet();
 		int totalPoints = 0;
@@ -396,14 +396,14 @@ public class SaleruleAppService {
 			throw new BusinessException("代金券支付不符合促销规则");
 		}
 		newDetailList.addAll(chits);
-		bill.put("detailList", newDetailList); 
+		bill.put("detailList", newDetailList);
 		bill.put("chit", chit);
 		bill.put("points", MapUtils.getInteger(bill, "points") + totalPoints);
 		return bill;
-	}  
+	}
 	/**
 	 * 获取打印数据
-	 * 
+	 *
 	 * @param saleId
 	 * @param user
 	 * @return
@@ -423,7 +423,7 @@ public class SaleruleAppService {
 		Map<String, Object> validateCondition = new HashMap<String, Object>();
 		//组合赠品验证条件
 		if(type.equals(SaleDetailType.present_product)){
-			for (Map<String, Object> product : presents) { 
+			for (Map<String, Object> product : presents) {
 				String groupFlag = MapUtils.getString(product, "groupFlag");
 				if (MapUtils.getBoolean(product, "checked")) {
 					if(validateCondition.containsKey(groupFlag)){
@@ -434,7 +434,7 @@ public class SaleruleAppService {
 						Map<String, Object> groupCondition = new HashMap<String, Object>();
 						groupCondition.put("checkedTotalCount", 1);
 						groupCondition.put("checkedTotalPrice", MapUtils.getIntValue(product, "retailBasePrice"));
-						groupCondition.put("totalCountCon", MapUtils.getIntValue(product, "ruleCount")); 
+						groupCondition.put("totalCountCon", MapUtils.getIntValue(product, "ruleCount"));
 						groupCondition.put("totalPriceCon", MapUtils.getIntValue(product, "rulePrice"));
 						groupCondition.put("countOpt", MapUtils.getString(product, "ruleCountOpt"));
 						groupCondition.put("priceOpt", MapUtils.getString(product, "rulePriceOpt"));
@@ -443,7 +443,7 @@ public class SaleruleAppService {
 				}
 			}
 		}else if(type.equals(SaleDetailType.present_material)){
-              for (Map<String, Object> material : presents) { 
+              for (Map<String, Object> material : presents) {
 					String groupFlag = MapUtils.getString(material, "groupFlag");
 					if (MapUtils.getBoolean(material, "checked")) {
 						if(validateCondition.containsKey(groupFlag)){
@@ -454,7 +454,7 @@ public class SaleruleAppService {
 							Map<String, Object> groupCondition = new HashMap<String, Object>();
 							groupCondition.put("checkedTotalCount", MapUtils.getIntValue(material, "checkedQuantity"));
 							groupCondition.put("checkedTotalPrice", MapUtils.getIntValue(material, "retailPrice") * MapUtils.getIntValue(material, "checkedQuantity"));
-							groupCondition.put("totalCountCon", MapUtils.getIntValue(material, "ruleCount")); 
+							groupCondition.put("totalCountCon", MapUtils.getIntValue(material, "ruleCount"));
 							groupCondition.put("totalPriceCon", MapUtils.getIntValue(material, "rulePrice"));
 							groupCondition.put("countOpt", MapUtils.getString(material, "ruleCountOpt"));
 							groupCondition.put("priceOpt", MapUtils.getString(material, "rulePriceOpt"));
@@ -474,8 +474,8 @@ public class SaleruleAppService {
 			boolean isValidateCount = getPresentExp(countExp, condition);
 			if(!isValidatePrice || !isValidateCount){
 				return false;
-			} 
-			
+			}
+
 	  }
 		return true;
 	}
@@ -488,7 +488,7 @@ public class SaleruleAppService {
 	  */
 	private boolean validateChit(List<Map<String, Object>> chits, float amount){
 		Map<String, Object> validateCondition = new HashMap<String, Object>();
-		 for (Map<String, Object> chit : chits) { 
+		 for (Map<String, Object> chit : chits) {
 				String groupFlag = MapUtils.getString(chit, "groupFlag");
 				if (MapUtils.getBoolean(chit, "checked")) {
 					if(validateCondition.containsKey(groupFlag)){
@@ -499,7 +499,7 @@ public class SaleruleAppService {
 						Map<String, Object> groupCondition = new HashMap<String, Object>();
 						groupCondition.put("checkedTotalCount", 1);
 						groupCondition.put("checkedTotalPrice", MapUtils.getIntValue(chit, "faceValue"));
-						groupCondition.put("totalCountCon", MapUtils.getIntValue(chit, "totalCount")); 
+						groupCondition.put("totalCountCon", MapUtils.getIntValue(chit, "totalCount"));
 						groupCondition.put("totalPriceCon", MapUtils.getIntValue(chit, "totalFaceValue"));
 						groupCondition.put("countOpt", MapUtils.getString(chit, "totalCountOpt"));
 						groupCondition.put("priceOpt", MapUtils.getString(chit, "totalFaceValueOpt"));
@@ -509,14 +509,14 @@ public class SaleruleAppService {
 					}
 				}
 		}
-		 
+
 		 Set<String> keys = validateCondition.keySet();
 			for (String key : keys) {
 				Map<String, Object> condition = (Map<String, Object>)validateCondition.get(key);
 				BigDecimal checkedTotalPrice = new BigDecimal(MapUtils.getFloatValue(condition,"checkedTotalPrice"));
 				BigDecimal rate = checkedTotalPrice.divide(new BigDecimal(amount),3,BigDecimal.ROUND_CEILING);
 				condition.put("rate", rate);
-				
+
 				String countOpt = MapUtils.getString(condition, "countOpt");
 				String priceOpt = MapUtils.getString(condition, "priceOpt");
 				String rateOpt = MapUtils.getString(condition, "rateOpt");
@@ -528,58 +528,58 @@ public class SaleruleAppService {
 				boolean isValidateRate = getPresentExp(rateExp, condition);
 				if(!isValidatePrice || !isValidateCount || !isValidateRate){
 					return false;
-				} 
-				
+				}
+
 		  }
 			return true;
-		
+
 	}
-	
+
 	private void shareBillDiscount(Map<String, Object> bill, int discount) throws BusinessException {
 		BigDecimal totalSalerulePrice = new BigDecimal(0);
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		List<Map<String, Object>> products = new ArrayList<Map<String,Object>>();
 		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
-			if (type == SaleDetailType.product) {				
+			if (type == SaleDetailType.product) {
 				BigDecimal salerulePrice = new BigDecimal(MapUtils.getString(detail, SALERULE_PRICE));
 				totalSalerulePrice = totalSalerulePrice.add(salerulePrice);
 				products.add(detail);
 			}
-		}	
-		
+		}
+
 		int sharedBillDiscount = 0;
 		for (int i = 0; i < products.size(); i++) {
 			int shareBillDiscount = 0;
 			Map<String, Object> detail = products.get(i);
-			
+
 			if (i < products.size() - 1) {
 				BigDecimal salerulePrice = new BigDecimal(MapUtils.getString(detail, SALERULE_PRICE));
 				BigDecimal percent = salerulePrice.divide(totalSalerulePrice, 2, BigDecimal.ROUND_HALF_EVEN);
 				shareBillDiscount = percent.multiply(new BigDecimal(discount)).intValue();
 				sharedBillDiscount += shareBillDiscount;
 			} else {
-				shareBillDiscount = discount - sharedBillDiscount; 			
-			}			
-			
+				shareBillDiscount = discount - sharedBillDiscount;
+			}
+
 			detail.put("shareBillDiscount", shareBillDiscount);
-		}			
+		}
 	}
-	
+
 	private boolean getPresentExp(String exp, Map<String, Object> condition){
 		PresentMapper<String, String> presentMapper = new PresentMapper<String, String>(condition);
 
 		RuleEvaluationContext context = new RuleEvaluationContext();
 		context.set(presentMapper);
-		ExpressionProcessor processor = new ExpressionProcessor(exp);		
-		exp = processor.replace(presentMapper).getExpression(); 
+		ExpressionProcessor processor = new ExpressionProcessor(exp);
+		exp = processor.replace(presentMapper).getExpression();
 		ExpressionParser p = new SpelExpressionParser();
 		return p.parseExpression(exp).getValue(context,Boolean.class);
 	}
 	private void checkGrantChit(Integer[] resultIds, List<Map<String, Object>> chits) throws BusinessException {
-		
+
 	}
-	
+
 	private boolean checkChitPay(Integer[] resultIds, List<Map<String, Object>> chits, float amount) throws BusinessException {
 		List<Map<String, Object>> results = saleruleService.listResult(resultIds);
 		//验证代金券类型
@@ -590,7 +590,7 @@ public class SaleruleAppService {
 		if(!isChitCountInRule(results, chits)){
 			return false;
 		}
-		
+
 		try {
 			//验证代金券总数量，总金额，使用比率
 			int countFlag = 0;
@@ -604,7 +604,7 @@ public class SaleruleAppService {
 				}
 				String json = MapUtils.getString(rule, "resultChitPayJson");
 				Map<String, Object> result = new ObjectMapper().readValue(json, Map.class);
-				
+
 				//组合验证条件
 				condition.put("rateCon", MapUtils.getString(result, "rate"));
 				condition.put("totalCountCon", MapUtils.getString(result, "totalCount"));
@@ -615,7 +615,7 @@ public class SaleruleAppService {
 				BigDecimal checkedTotalPrice_o = new BigDecimal(checkedTotalPrice);
 				BigDecimal rate = checkedTotalPrice_o.divide(new BigDecimal(amount),3,BigDecimal.ROUND_CEILING);
 				condition.put("rate", rate);
-				
+
 				String countOpt = MapUtils.getString(result, "totalCountOpt");
 				String priceOpt = MapUtils.getString(result, "totalFaceValueOpt");
 				String rateOpt = MapUtils.getString(result, "rateOpt");
@@ -628,7 +628,7 @@ public class SaleruleAppService {
 				if(isValidatePrice && isValidateCount && isValidateRate){
 					countFlag ++;
 				}
-				
+
 			}
 			if(countFlag > 0){
 				return true;
@@ -636,10 +636,10 @@ public class SaleruleAppService {
 				return false;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block           
+			// TODO Auto-generated catch block
 			return false;
 		}
-		
+
 	}
 	/**
 	 * 判断代金券类型是否符合促销规则
@@ -668,15 +668,15 @@ public class SaleruleAppService {
 			}else{
 				return true;
 			}
-		
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			new BusinessException("代金券的类型不符合促销规则");
 			return false;
 		}
-		
+
    }
-   
+
    /**
     * 判断代金券的数量是否符合促销规则
     * @param saleRules
@@ -710,18 +710,18 @@ public class SaleruleAppService {
 			}else{
 				return true;
 			}
-		
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			new BusinessException("代金券的数量不符合促销规则");
 			return false;
 		}
-		
+
   }
-	
+
 	private List<Integer> findSaleruleResultIdsFromBill(Map<String, Object> bill, int orgId) throws BusinessException {
 		List<String> resultIdStrs = new ArrayList<String>();
-		
+
 		List<Integer> ruleResultIds = new ArrayList<Integer>();
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		for (Map<String, Object> detail : details) {
@@ -732,24 +732,24 @@ public class SaleruleAppService {
 					resultIdStrs.add(saleruleResultIds);
 				}
 			}
-		}	
-		
-		String saleruleResultIds = MapUtils.getString(bill, SALERULE_RESULTIDS);			
+		}
+
+		String saleruleResultIds = MapUtils.getString(bill, SALERULE_RESULTIDS);
 		if (StringUtils.isNotBlank(saleruleResultIds)) {
-			resultIdStrs.add(saleruleResultIds);			
+			resultIdStrs.add(saleruleResultIds);
 		}
 
 		for (String str : resultIdStrs) {
 			String[] resultIds = StringUtils.split(str, ",");
-			for (String resultId : resultIds) {						
+			for (String resultId : resultIds) {
 				ruleResultIds.add(Integer.parseInt(StringUtils.trim(resultId)));
 			}
 		}
-		
+
 		return ruleResultIds;
 	}
 
-	private Map<Integer, Map<String, Object>> getSingleRulesOfDiscountAndPoints(Map<String, List<Integer>> productIdRuleResultIds, IUser user) throws BusinessException { 
+	private Map<Integer, Map<String, Object>> getSingleRulesOfDiscountAndPoints(Map<String, List<Integer>> productIdRuleResultIds, IUser user) throws BusinessException {
 		int orgId = user.getOrgId();
 		Map<String, Map<String, Object>> productMap = new HashMap<String, Map<String,Object>>();
 		String[] nums = productIdRuleResultIds.keySet().toArray(new String[]{});
@@ -758,35 +758,35 @@ public class SaleruleAppService {
 			String productNum = MapUtils.getString(product, "num");
 			productMap.put(productNum, product);
 		}
-		
+
 		Map<Integer, Map<String, Object>> map = new HashMap<Integer, Map<String,Object>>();
-		
+
 		Iterator<String> it = productIdRuleResultIds.keySet().iterator();
 		while (it.hasNext()) {
 			String productNum = it.next();
 			Integer[] resultIds = productIdRuleResultIds.get(productNum).toArray(new Integer[]{});
-			
+
 			List<Map<String, Object>> results = saleruleService.listResult(resultIds);
 			Map<String, Object> product = productMap.get(productNum);
 			int productId = MapUtils.getInteger(product, "id");
 			//积分
 			pointsResultService.setContext(product, null);
-			int points = pointsResultService.getResult(results, orgId);		
+			int points = pointsResultService.getResult(results, orgId);
 			//折扣
 			discountResultService.setContext(product, null);
 			BigDecimal price = discountResultService.getResult(results, orgId);
-			
+
 			Map<String, Object> result = new HashMap<String, Object>();
 			result.put("points", points);
 			result.put(SALERULE_PRICE, price);
 			result.put(SALERULE_RESULTIDS, StringUtils.join(resultIds, ","));
-			
+
 			map.put(productId, result);
 		}
-		
+
 		return map;
 	}
-	
+
 	/**
 	 * 将抹零折扣分摊到第一件商品上
 	 * @param bill
@@ -801,76 +801,76 @@ public class SaleruleAppService {
 		if (subtract == 0) {
 			return;
 		}
-		bill.put("clearDiscount", clearDiscount);  
+		bill.put("clearDiscount", clearDiscount);
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
-		for (Map<String, Object> detail : details) {			
+		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			if (type == SaleDetailType.product) {
-				BigDecimal saleDiscount = new BigDecimal(MapUtils.getString(detail, "saleDiscount", Integer.toString(0)));	
+				BigDecimal saleDiscount = new BigDecimal(MapUtils.getString(detail, "saleDiscount", Integer.toString(0)));
 				detail.put("saleDiscount", saleDiscount.add(new BigDecimal(subtract)));
 				break;
 			}
 		}
-		
+
 		calcAndPoints(bill);
 	}
-	
+
 	public void calcAndPoints(Map<String, Object> bill) throws BusinessException {
 		calc(bill);
 		//points(bill);
 	}
-	
-	private void calc(Map<String, Object> bill) {		
+
+	private void calc(Map<String, Object> bill) {
 		BigDecimal totalAmount = new BigDecimal(0);
 		BigDecimal discount = new BigDecimal(0);
 		BigDecimal frontMoney = new BigDecimal(0);
 		BigDecimal goldPay = new BigDecimal(0);
 		BigDecimal productPay = new BigDecimal(0);
-		
+
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
-			
+
 			//应收金额
 			if (type == SaleDetailType.product) {
 				BigDecimal price = new BigDecimal(MapUtils.getString(detail, "price", Integer.toString(0)));
 				totalAmount = totalAmount.add(price);
 			}
-			
+
 			//折扣金额
 			if (type == SaleDetailType.product || type == SaleDetailType.material) {
 				System.out.println(detail);
 				BigDecimal authorithDiscount = new BigDecimal(MapUtils.getString(detail, "authorithDiscount", Integer.toString(0)));
 				BigDecimal saleDiscount = new BigDecimal(MapUtils.getString(detail, "saleDiscount", Integer.toString(0)));
 				BigDecimal shareBillDiscount = new BigDecimal(MapUtils.getString(detail, "shareBillDiscount", Integer.toString(0)));
-				
+
 				BigDecimal totalDiscount = authorithDiscount.add(saleDiscount).add(shareBillDiscount);
 				totalDiscount = new BigDecimal(Math.ceil(totalDiscount.doubleValue()));
-				detail.put("totalDiscount", totalDiscount);		
+				detail.put("totalDiscount", totalDiscount);
 				discount = discount.add(totalDiscount);
 			}
-			
+
 			//预售定金
-			if (type == SaleDetailType.product) {				
+			if (type == SaleDetailType.product) {
 				String str = MapUtils.getString(detail, "frontMoney", Integer.toString(0));
 				frontMoney = frontMoney.add(new BigDecimal(str));
 			}
-			
+
 			//旧金支付
-			if (type == SaleDetailType.secondGold) {				
+			if (type == SaleDetailType.secondGold) {
 				String str = MapUtils.getString(detail, "price", Integer.toString(0));
 				goldPay = goldPay.add(new BigDecimal(str));
 			}
 			//旧饰支付
-			if (type == SaleDetailType.secondJewel) {				
+			if (type == SaleDetailType.secondJewel) {
 				String str = MapUtils.getString(detail, "price", Integer.toString(0));
 				productPay = productPay.add(new BigDecimal(str));
 			}
 		}
-		
+
 		totalAmount = new BigDecimal(Math.floor(totalAmount.doubleValue()));
 		discount = new BigDecimal(Math.ceil(discount.doubleValue()));
-		
+
 		bill.put("totalAmount", totalAmount);
 		bill.put("discount", discount);
 		bill.put("frontMoney", frontMoney);
@@ -878,15 +878,15 @@ public class SaleruleAppService {
 		bill.put("productPay", productPay);
 		BigDecimal amount = frontMoney.add(goldPay).add(productPay);
 		amount = new BigDecimal(Math.ceil(amount.doubleValue()));
-		bill.put("amount", amount);		
+		bill.put("amount", amount);
 	}
-	
+
 	private void points(Map<String, Object> bill) throws BusinessException {
 		int orgId = MapUtils.getInteger(bill, "orgId");
 		List<Map<String, Object>> details = (List<Map<String, Object>>) MapUtils.getObject(bill, "detailList");
 
 		int totalPoints = 0;
-		for (Map<String, Object> detail : details) {			
+		for (Map<String, Object> detail : details) {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			if (type == SaleDetailType.product) {
 				Integer productId = MapUtils.getInteger(detail, "targetId");
@@ -898,31 +898,31 @@ public class SaleruleAppService {
 				//int points = pointsruleService.getPoints(productId, salerulePrice, otherCharges, totalDiscount, orgId);
 				int points = MapUtils.getIntValue(detail, "points");
 				detail.put("points", points);
-				
+
 				totalPoints += points;
 			}
-			
+
 			//旧金支付
-			if (type == SaleDetailType.secondGold) {				
+			if (type == SaleDetailType.secondGold) {
 				BigDecimal goldPay = new BigDecimal(MapUtils.getString(detail, "price", Integer.toString(0)));
 				int points = getLostPoints(goldPay, null);
 				detail.put("points", points);
-				
+
 				totalPoints += points;
 			}
 			//旧饰支付
-			if (type == SaleDetailType.secondJewel) {				
+			if (type == SaleDetailType.secondJewel) {
 				BigDecimal productPay = new BigDecimal(MapUtils.getString(detail, "price", Integer.toString(0)));
 				int points = getLostPoints(productPay, null);
 				detail.put("points", points);
-				
+
 				totalPoints += points;
 			}
 		}
 		int presentPoints = MapUtils.getInteger(bill, "presentPoints", 0);
 		bill.put("points", totalPoints);
 	}
-	
+
 	private int getLostPoints(BigDecimal price, String config) throws BusinessException {
 		if (price != null) {
 			BigDecimal lostPoints = price.divide(new BigDecimal(500), 0, BigDecimal.ROUND_FLOOR);

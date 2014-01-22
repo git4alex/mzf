@@ -3,6 +3,7 @@ package com.zonrong.register.service;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.StorageType;
 import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.core.exception.BusinessException;
@@ -12,8 +13,7 @@ import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.metadata.service.MetadataProvider;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
@@ -84,7 +84,7 @@ public class RegisterProductService {
         int orderId = MapUtils.getInteger(dbDetail,"orderId");
         Map<String,Object> order = entityService.getById(MzfEntity.VENDOR_ORDER,orderId,user);
         String orderNum=MapUtils.getString(order,"num");
-		productInventoryService.warehouse(BizType.register, productId,
+		productInventoryService.warehouse(MzfEnum.BizType.register, productId,
                 user.getOrgId(), storageType, user.getId(), "订单编号：["+orderNum+"]", user);
 
 		//收货记录

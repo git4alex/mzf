@@ -18,7 +18,6 @@ import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.InventoryService;
 import com.zonrong.inventory.service.MaterialInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -59,14 +58,13 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 	private FlowLogService logService;
 	@Resource
     private BusinessLogService businessLogService;
-	@Resource
-	private InventoryService inventoryService;
+
 
 	public int create(Map<String, Object> demand, IUser user) throws BusinessException {
 		//获取申请物料在当前门店的库存
 		int materialId = MapUtils.getIntValue(demand, "materialId");
 		int orgId = MapUtils.getIntValue(demand, "orgId");
-		Map<String, Object> inventory = inventoryService.findMaterialInventory(materialId, orgId, user);
+		Map<String, Object> inventory = materialInventoryService.getInventory(materialId, orgId, user);
 
 		String num = MzfUtils.getBillNum(BillPrefix.WLYH, user);
 		demand.put("status", MaterialDemandStatus.New);
@@ -78,7 +76,6 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 		}else{
 			demand.put("orgInventoryQuantity", 0);
 		}
-
 
 		String materialDemandId = entityService.create(getBillMetadata(), demand, user);
 
@@ -95,7 +92,7 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 		}
 		int materialId = MapUtils.getIntValue(demand, "materialId");
 		int orgId = MapUtils.getIntValue(demand, "orgId");
-		Map<String, Object> inventory = inventoryService.findMaterialInventory(materialId, orgId, user);
+		Map<String, Object> inventory = materialInventoryService.getInventory(materialId, orgId, user);
 		if(inventory != null){
 			demand.put("orgInventoryQuantity", MapUtils.getFloat(inventory, "quantity"));
 		}else{
@@ -297,11 +294,11 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 			int transferId = transferMaterialService.createTransfer(TransferTargetType.material, materialId, user.getOrgId(), targetOrgId, TransferStatus.waitSend, transfer, Integer.toString(i + 1), transId, user);
 			transferIds.add(transferId);
 			//锁定物料
-			Map<String, Object> materialInventory = inventoryService.findMaterialInventory(materialId, 1, user);
+			Map<String, Object> materialInventory = materialInventoryService.getInventory(materialId, 1, user);
 			if(MapUtils.isNotEmpty(materialInventory)){
 				int inventoryId = MapUtils.getIntValue(materialInventory, "id");
-				BigDecimal lockedQuantity = new BigDecimal(MapUtils.getIntValue(demand, "allocatedQuantity"));
-				inventoryService.addLockedQuantity(inventoryId, lockedQuantity, user);
+				double lockedQuantity = MapUtils.getDoubleValue(demand, "allocatedQuantity");
+				materialInventoryService.lock(inventoryId, lockedQuantity, user);
 
 			}
 			//记录操作日志

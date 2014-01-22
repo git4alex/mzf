@@ -1,7 +1,8 @@
-package com.zonrong.inventory.product.service;
+package com.zonrong.inventory.service;
 
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.log.BusinessLogService;
@@ -10,9 +11,6 @@ import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.demand.product.service.ProductDemandService;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.InventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
-import com.zonrong.inventory.service.InventoryService.InventoryType;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.purchase.dosing.service.DosingService.DosingStatus;
@@ -248,12 +246,12 @@ public class TemporaryInventoryService extends ProductInventoryService {
 		StorageType storageType = StorageType.valueOf(MapUtils.getString(productInventory, "storageType"));
 		Integer orgId = MapUtils.getInteger(productInventory, "orgId");
 		//出临时库流水
-		inventoryService.createFlow(BizType.transferToProductStorage, orgId,
-                new BigDecimal(1), InventoryType.delivery,
+		inventoryService.createFlow(MzfEnum.BizType.transferToProductStorage, orgId,
+                new BigDecimal(1), MzfEnum.InventoryType.delivery,
                 storageType, TargetType.product, Integer.toString(productId), null, remark, user);
 		//入商品库流水
-		inventoryService.createFlow(BizType.transferToProductStorage, orgId,
-                new BigDecimal(1), InventoryType.warehouse,
+		inventoryService.createFlow(MzfEnum.BizType.transferToProductStorage, orgId,
+                new BigDecimal(1), MzfEnum.InventoryType.warehouse,
                 target, TargetType.product, Integer.toString(productId), null, remark, user);
 
 		EntityMetadata metadata = inventoryService.getEntityMetadataOfInventory();
@@ -279,8 +277,8 @@ public class TemporaryInventoryService extends ProductInventoryService {
 			Integer porductId = MapUtils.getInteger(inventory, "targetId");
 
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
-			inventoryService.createFlow(BizType.deliveryFromTemporary, orgId,new BigDecimal(1),
-                    InventoryType.delivery, storageType,TargetType.product, Integer.toString(porductId),
+			inventoryService.createFlow(MzfEnum.BizType.deliveryFromTemporary, orgId,new BigDecimal(1),
+                    MzfEnum.InventoryType.delivery, storageType,TargetType.product, Integer.toString(porductId),
                     deliveryReasonText, deliveryReasonText, user);
 
 			//记录流程
@@ -331,8 +329,8 @@ public class TemporaryInventoryService extends ProductInventoryService {
 
 		StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
 		Integer orgId = MapUtils.getInteger(inventory, "orgId");
-		inventoryService.createFlow(BizType.warehouseToTemporary, orgId,
-                new BigDecimal(1), InventoryType.warehouse, storageType, TargetType.product, Integer.toString(productId), null, remark, user);
+		inventoryService.createFlow(MzfEnum.BizType.warehouseToTemporary, orgId,
+                new BigDecimal(1), MzfEnum.InventoryType.warehouse, storageType, TargetType.product, Integer.toString(productId), null, remark, user);
 
 		//记录流程
 		int transId = transactionService.findTransId(MzfEntity.PRODUCT, Integer.toString(productId), user);
@@ -418,7 +416,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 		updateProductOrderDetail(detailId, orderId, status, user);
 
 		//出库
-		deliveryByProductId(BizType.dropProduct, productId, "返厂出库", InventoryStatus.onStorage, user);
+		deliveryByProductId(MzfEnum.BizType.dropProduct, productId, "返厂出库", InventoryStatus.onStorage, user);
 
 		//删除商品相关信息
 		productService.deleteById(productId, user);

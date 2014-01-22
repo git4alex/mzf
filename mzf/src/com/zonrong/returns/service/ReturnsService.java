@@ -6,6 +6,7 @@ import com.zonrong.basics.material.service.MaterialService;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.common.utils.MzfUtils;
 import com.zonrong.common.utils.MzfUtils.BillPrefix;
@@ -15,12 +16,12 @@ import com.zonrong.core.log.FlowLogService;
 import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.product.service.SecondProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.ProductInventoryService;
+import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.inventory.service.MaterialInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
 import com.zonrong.inventory.service.SecondGoldInventoryService;
+import com.zonrong.inventory.service.TreasuryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.sale.service.SaleService;
@@ -99,20 +100,20 @@ public class ReturnsService{
 				//更新商品状态
 				productService.updateStatus(targetId, ProductStatus.free, remark, null, user);
 				//商品入库
-				productInventoryService.warehouse(BizType.returned, targetId, orgId, storageType, orgId, remark, user);
+				productInventoryService.warehouse(MzfEnum.BizType.returned, targetId, orgId, storageType, orgId, remark, user);
 
 				//记录流程
 				logService.createLog(transId, MzfEntity.SALE, Integer.toString(returnsId), "新建退货单", TargetType.product, targetId, remark, user);
 			} else if (type == SaleDetailType.material) {
 				BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "quantity"));
 				BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
-				materialInventoryService.warehouse(BizType.returned,orgId, targetId, quantity, cost, "价格", remark, user);
+				materialInventoryService.warehouse(MzfEnum.BizType.returned,orgId, targetId, quantity, cost, "价格", remark, user);
 				materialService.addCost(targetId, cost, orgId, user);
 			} else if (type == SaleDetailType.secondGold) {
 				GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 				BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "goldWeight"));
 				BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
-				secondGoldInventoryService.delivery(BizType.returned, goldClass, orgId, quantity, cost, "价格", false, remark, user);
+				secondGoldInventoryService.delivery(MzfEnum.BizType.returned, goldClass, orgId, quantity, cost, "价格", remark, user);
 			} else if (type == SaleDetailType.secondJewel) {
 				//商品标记为未回收
 				Map<String, Object> field = new HashMap<String, Object>();
@@ -121,7 +122,7 @@ public class ReturnsService{
 				where.put("num", MapUtils.getString(detail, "targetNum"));
 				entityService.update(MzfEntity.PRODUCT, field, where, user);
 				//旧饰出库
-				secondProductInventoryService.deliveryBySecondProductId(BizType.returned, targetId, remark, InventoryStatus.onStorage, user);
+				secondProductInventoryService.deliveryBySecondProductId(MzfEnum.BizType.returned, targetId, remark, InventoryStatus.onStorage, user);
 			}else if(type == SaleDetailType.returnsChit){
 				//退还回收的代金券
 				chitService.returnBackChit(targetId, user);
@@ -134,7 +135,7 @@ public class ReturnsService{
 		}
 
 		//货款入库
-		saleService.warehouseMoney(com.zonrong.inventory.treasury.service.TreasuryService.BizType.returns, returnsId, returns, true, user);
+		saleService.warehouseMoney(TreasuryService.BizType.returns, returnsId, returns, true, user);
 
 		//更新客户积分
 		Integer cusId = MapUtils.getInteger(returns, "cusId");
@@ -157,7 +158,7 @@ public class ReturnsService{
 		}
 
 		//建立客户与该机构业务关联关系
-		customerService.createOrgRel(cusId, com.zonrong.inventory.treasury.service.TreasuryService.BizType.returns, returnsId, user);
+		customerService.createOrgRel(cusId, TreasuryService.BizType.returns, returnsId, user);
 		//记录操作日志
 		businessLogService.log("新增退货单", "退货单号为:" + num, user);
 		return returnsId;

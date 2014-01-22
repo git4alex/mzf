@@ -15,8 +15,8 @@ import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.treasury.service.TreasuryEarnestService;
-import com.zonrong.inventory.treasury.service.TreasurySaleService;
+import com.zonrong.inventory.service.TreasuryEarnestService;
+import com.zonrong.inventory.service.TreasurySaleService;
 import com.zonrong.shiftwork.service.ShiftWorkService;
 
 /**
@@ -28,7 +28,7 @@ import com.zonrong.shiftwork.service.ShiftWorkService;
 @Service
 public class SummaryService {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private EntityService entityService;
 	@Resource
@@ -37,38 +37,38 @@ public class SummaryService {
 	private TreasuryEarnestService treasuryEarnestService;
 	@Resource
 	private ShiftWorkService shiftWorkService;
-	
+
 	public int doSummary(Map<String, Object> summary, IUser user) throws BusinessException {
 		String remark = MapUtils.getString(summary, "remark");
 		int id = createSummary(remark, user);
-		
+
 		int orgId = user.getOrgId();
 		treasurySaleService.doSummary(orgId, MzfEntity.SUMMARY, id, remark, user);
 		treasuryEarnestService.doSummary(orgId, MzfEntity.SUMMARY, id, remark, user);
-		
+
 		return id;
 	}
-	
+
 	private int createSummary(String remark, IUser user) throws BusinessException {
 		Map<String, Object> store = shiftWorkService.getStoreByOrgId(user);
 		Integer storeId = MapUtils.getInteger(store, "id");
-		
+
 		Map<String, Object> summary = new HashMap<String, Object>();
 		summary.put("storeId", storeId);
 		summary.put("remark", remark);
 		summary.put("cuserId", user.getId());
 		summary.put("cuserName", user.getName());
 		summary.put("cdate", null);
-		
+
 		String id = entityService.create(MzfEntity.SUMMARY, summary, user);
-		
+
 		return Integer.parseInt(id);
 	}
-	
+
 	public boolean isNeedSummary(IUser user) throws BusinessException {
 		try {
 			Map<String, Object> store = shiftWorkService.getStoreByOrgId(user);
-			
+
 			int orgId = user.getOrgId();
 			Map<String, Object> where = new HashMap<String, Object>();
 			where.put("orgId", orgId);
@@ -82,7 +82,7 @@ public class SummaryService {
 			}
 		}
 
-		return false;		
+		return false;
 	}
 }
 

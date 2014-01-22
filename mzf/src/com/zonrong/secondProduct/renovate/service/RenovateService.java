@@ -12,9 +12,8 @@ import com.zonrong.core.dao.filter.Filter;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.product.service.SecondProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.ProductInventoryService;
+import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.secondProduct.split.service.SplitService.SplitProductSource;
@@ -101,12 +100,12 @@ public class RenovateService {
 
         //旧饰出库
         product = entityService.getById(MzfEntity.PRODUCT,newProductId,user);
-        secondProductInventoryService.deliveryBySecondProductId(BizType.renovate, secondProductId,
+        secondProductInventoryService.deliveryBySecondProductId(MzfEnum.BizType.renovate, secondProductId,
                 "新商品条码：["+MapUtils.getString(product,"num")+"]", MzfEnum.InventoryStatus.onStorage, user);
 
 		//商品入库
 		StorageType storageType = StorageType.product_temporary;
-		productInventoryService.warehouse(BizType.renovate, newProductId, user.getOrgId(), storageType, user.getOrgId(), "旧饰条码：[" + num + "]", user);
+		productInventoryService.warehouse(MzfEnum.BizType.renovate, newProductId, user.getOrgId(), storageType, user.getOrgId(), "旧饰条码：[" + num + "]", user);
 
 		//记录翻新操作
 		int renvoteId = createRenovate(renovate, secondProductId, newProductId, user);

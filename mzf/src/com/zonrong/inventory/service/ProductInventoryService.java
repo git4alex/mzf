@@ -1,10 +1,11 @@
-package com.zonrong.inventory.product.service;
+package com.zonrong.inventory.service;
 
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.InventoryStatus;
 import com.zonrong.common.utils.MzfEnum.ProductType;
 import com.zonrong.common.utils.MzfEnum.StorageType;
@@ -17,10 +18,7 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.core.util.Carrier;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.InventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
-import com.zonrong.inventory.service.InventoryService.InventoryType;
-import com.zonrong.inventory.service.RawmaterialInventoryService;
+import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.showcase.service.ShowcaseCheckService;
@@ -113,7 +111,7 @@ public class ProductInventoryService {
 
 		int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType, sourceOrgId, remark, user);
 
-		inventoryService.createFlow(bizType, targetOrgId, new BigDecimal(1), InventoryType.warehouse,
+		inventoryService.createFlow(bizType, targetOrgId, new BigDecimal(1), MzfEnum.InventoryType.warehouse,
                 storageType, TargetType.product, Integer.toString(productId), null, remark, user);
 
 		boolean isStore = mzfOrgService.isStore(targetOrgId);
@@ -135,7 +133,7 @@ public class ProductInventoryService {
 		inventoryService.updateStatus(new Integer[]{inventoryId}, InventoryStatus.onStorage, InventoryStatus.onPassage, "发货失败", remark, user);
 
 		StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
-		inventoryService.createFlow(BizType.send, orgId, new BigDecimal(1), InventoryType.delivery,
+		inventoryService.createFlow(MzfEnum.BizType.send, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
                 storageType, TargetType.product, Integer.toString(productId), null, remark, user);
 	}
 
@@ -197,13 +195,13 @@ public class ProductInventoryService {
 		}
 //		deliveryByProductId(BizType.receive, productId, remark, InventoryStatus.onPassage, false, user);
         //发货仓库出库，业务类型为调拨出库
-        deliveryByProductId(BizType.send, productId, remark, InventoryStatus.onPassage, false, user);
+        deliveryByProductId(MzfEnum.BizType.send, productId, remark, InventoryStatus.onPassage, false, user);
 		if (isCusNakedDiamond) {
 			int rawmaterialId = rawmaterialService.createNakedDiamondFromProduct(productId, user);
-			rawmaterialInventoryService.warehouseDiamond(BizType.receive, rawmaterialId, user.getOrgId(), remark, user);
+			rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.receive, rawmaterialId, user.getOrgId(), remark, user);
 		} else {
             //收货入库
-			warehouse(BizType.receive, productId, targetOrgId, storageType, sourceOrgId, remark, user);
+			warehouse(MzfEnum.BizType.receive, productId, targetOrgId, storageType, sourceOrgId, remark, user);
 		}
 	}
 
@@ -223,7 +221,7 @@ public class ProductInventoryService {
 		//记录库存流水
 		if (isFlow) {
 			StorageType storageType  = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
-			inventoryService.createFlow(bizType, orgId, new BigDecimal(1), InventoryType.delivery,
+			inventoryService.createFlow(bizType, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
                     storageType, TargetType.product, Integer.toString(productId), null, remark, user);
 		}
 		remark ="商品强制出库备注：" +remark;
@@ -235,7 +233,7 @@ public class ProductInventoryService {
 
 	public void deliveryByProductId(BizType bizType, int productId, String remark, InventoryStatus priorStatus, IUser user) throws BusinessException {
 		deliveryByProductId(bizType, productId, remark, priorStatus, true, user);
-		if(bizType.equals(BizType.delivery)){
+		if(bizType.equals(MzfEnum.BizType.delivery)){
 			//记录操作日志
 			businessLogService.log("商品强制出库(商品库存)", "商品编号：" + productId, user);
 		}
@@ -318,9 +316,9 @@ public class ProductInventoryService {
 			StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
 
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
-			inventoryService.createFlow(BizType.transferToTemporary, orgId, new BigDecimal(1), InventoryType.delivery, storageType, TargetType.product, productId, null, remark1, user);
+			inventoryService.createFlow(MzfEnum.BizType.transferToTemporary, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery, storageType, TargetType.product, productId, null, remark1, user);
 
-			inventoryService.createFlow(BizType.transferToTemporary, orgId, new BigDecimal(1), InventoryType.warehouse, target, TargetType.product, productId, null, remark1, user);
+			inventoryService.createFlow(MzfEnum.BizType.transferToTemporary, orgId, new BigDecimal(1), MzfEnum.InventoryType.warehouse, target, TargetType.product, productId, null, remark1, user);
 		}
 
 		EntityMetadata metadata = inventoryService.getEntityMetadataOfInventory();

@@ -486,6 +486,39 @@ public interface MzfEnum {
 		}
 	}
 
+    enum InventoryType {
+        warehouse,        //入库
+        delivery        //出库
+    }
+
+    enum BizType {
+        addMaterial,    //新增物料信息
+        register,        //收货登记
+        oemReturn,      //委外原料退库
+        send,            //发货
+        receive,        //从其它部门收货
+        returned,        //退货
+        renovate,        //翻新
+        transferToTemporary,        //调拨如临时库
+        transferToProductStorage,    //调入商品库
+        dropProduct,                //返厂
+        deliveryFromTemporary,        //临时出库
+        deliveryFromMaintain,        //委外维修出库
+        warehouseToTemporary,        //临时库入库
+        warehouseToMaintain,        //维修库入库
+        warehouseOnSplit,            //拆旧入库
+        maintainOver,                //维修完成
+        OEM,
+        sell,                        //销售
+        maintailSell,                //维修销售入库
+        buySecondGold,                //旧金回收
+        buySecondProduct,            //旧饰回收
+        maintain,                    //维修
+        translateToProduct,            //原料裸石转化为商品
+        translateToRawmaterial,        //商品裸钻转化为原料裸石
+        delivery,                    //强制出库
+        vendorSell                  //供应商销售
+    }
 }
 
 

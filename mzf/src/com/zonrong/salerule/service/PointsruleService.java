@@ -20,7 +20,7 @@ import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.User;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.salerule.service.expression.ExpressionProcessor;
 import com.zonrong.salerule.service.expression.RuleEvaluationContext;
 import com.zonrong.salerule.service.mapper.ProductMapper;
@@ -34,14 +34,14 @@ import com.zonrong.salerule.service.mapper.ProductMapper;
 @Service
 public class PointsruleService {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private EntityService entityService;
 	@Resource
 	public ProductInventoryService productInventoryService;
-	
+
 	private List<Map<String, Object>> rules = new ArrayList<Map<String,Object>>();
-	
+
 	@PostConstruct
 	public void load() {
 		try {
@@ -51,7 +51,7 @@ public class PointsruleService {
 			logger.error(e.getMessage(), e);
 		}
 	}
-		
+
 	public int getPoints(int productId, BigDecimal pointsPrice, BigDecimal otherCharges, BigDecimal totalDiscount, int orgId) throws BusinessException {
 		Map<String, Object> product = productInventoryService.getProductInventory(productId, orgId);
 		BigDecimal price = new BigDecimal(MapUtils.getString(product, "fixedPrice"));
@@ -61,15 +61,15 @@ public class PointsruleService {
 		if (otherCharges != null) {
 			price = price.add(otherCharges);
 		}
-		if (totalDiscount != null) {			
-			price = price.subtract(totalDiscount); 
+		if (totalDiscount != null) {
+			price = price.subtract(totalDiscount);
 		}
-		
+
 		ProductMapper<String, String> productMapper = new ProductMapper<String, String>(product);
 
 		RuleEvaluationContext context = new RuleEvaluationContext();
 		context.set(productMapper);
-		
+
 		boolean flag = false;
 		List<Integer> points = new ArrayList<Integer>();
 		for (Map<String, Object> rule : rules) {
@@ -77,12 +77,12 @@ public class PointsruleService {
 			if (StringUtils.isBlank(expression)) {
 				throw new BusinessException("积分规则表达式为空");
 			}
-			ExpressionProcessor processor = new ExpressionProcessor(expression);		
+			ExpressionProcessor processor = new ExpressionProcessor(expression);
 			expression = processor.replace(productMapper).getExpression();
 			System.out.println(expression);
 			ExpressionParser p = new SpelExpressionParser();
-			try {				
-				flag = p.parseExpression(expression).getValue(context,Boolean.class);				
+			try {
+				flag = p.parseExpression(expression).getValue(context,Boolean.class);
 			} catch (Exception e) {
 				throw new BusinessException("积分规则表达式[" + MapUtils.getString(rule, "expression") + "]有误");
 			}
@@ -91,7 +91,7 @@ public class PointsruleService {
 				points.add(price.divide(r).intValue());
 			}
 		}
-		
+
 		if (CollectionUtils.isEmpty(points)) {
 			return 0;
 		} else if (points.size() == 1) {

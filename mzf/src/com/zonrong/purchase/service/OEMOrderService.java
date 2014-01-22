@@ -14,7 +14,7 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.core.sql.service.SimpleSqlService;
 import com.zonrong.demand.product.service.ProductDemandProcessService.DemandProcessType;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.MaintainInventoryService;
+import com.zonrong.inventory.service.MaintainInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -194,7 +194,7 @@ public class OEMOrderService {
 //		}
 //
 //		if (MapUtils.isNotEmpty(rawmaterialQuantityMap)) {
-//			rawmaterialInventoryService.deliveryByQuantityOnOEM(BizType.OEM, rawmaterialQuantityMap, user.getOrgId(), remark, user);
+//			rawmaterialInventoryService.deliveryOnOem(BizType.OEM, rawmaterialQuantityMap, user.getOrgId(), remark, user);
 //		}
 
 		//提交委外维修订单时将商品出库

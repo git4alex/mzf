@@ -16,7 +16,7 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.core.util.Interceptor;
 import com.zonrong.cusorder.service.CusOrderService;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.transfer.product.service.TransferProductService;

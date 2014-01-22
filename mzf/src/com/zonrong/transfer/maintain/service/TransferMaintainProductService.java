@@ -1,22 +1,18 @@
 package com.zonrong.transfer.maintain.service;
 
 import com.zonrong.basics.StatusCarrier;
-import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.log.BusinessLogService;
-import com.zonrong.core.log.FlowLogService;
 import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.service.InventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.maintain.service.MaintainService;
 import com.zonrong.maintain.service.MaintainService.ProductSource;
-import com.zonrong.showcase.service.ShowcaseCheckService;
 import com.zonrong.transfer.common.service.TransferService;
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
@@ -48,15 +44,7 @@ public class TransferMaintainProductService extends TransferService {
 	@Resource
 	private MaintainService maintainService;
 	@Resource
-	private ProductService productService;
-	@Resource
-	private ShowcaseCheckService showcaseCheckService;
-	@Resource
-	private InventoryService inventoryService;
-	@Resource
 	private MzfOrgService mzfOrgService;
-	@Resource
-	private FlowLogService logService;
 	@Resource
 	private BusinessLogService businessLogService;
 
@@ -104,10 +92,10 @@ public class TransferMaintainProductService extends TransferService {
 				transferIdList.add(transferId);
 			}
 
-			Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-			if (suserId != null) {
-				inventoryService.updateOwnerId(inventoryId, suserId, user);
-			}
+//			Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
+//			if (suserId != null) {
+//				inventoryService.updateOwnerId(inventoryId, suserId, user);
+//			}
 			//记录操作日志
 			businessLogService.log("维修库出库", "商品编号为：" + productId, user);
 		}

@@ -5,6 +5,7 @@ import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.basics.style.service.StyleService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.InventoryStatus;
 import com.zonrong.common.utils.MzfEnum.ProductType;
 import com.zonrong.common.utils.MzfEnum.SaleDetailType;
@@ -22,8 +23,8 @@ import com.zonrong.core.templete.SaveTemplete;
 import com.zonrong.core.util.Carrier;
 import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.ProductInventoryService;
+import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -599,12 +600,12 @@ public class ProductService {
 
 		//货品信息转化信息
 		target.remove("id");
-		target.put("sourceType", BizType.translateToRawmaterial);
+		target.put("sourceType", MzfEnum.BizType.translateToRawmaterial);
 		target.put("sourceId", productId);
 		target.put("type", RawmaterialType.nakedDiamond);
 		Integer rawmaterialId = rawmaterialService.createRawmaterial(target, user);
 
-		BizType bizType = BizType.translateToRawmaterial;
+		BizType bizType = MzfEnum.BizType.translateToRawmaterial;
 		//String remark = "商品裸钻转化为原料裸石";
         Map<String,Object> rawmaterial = entityService.getById(MzfEntity.RAWMATERIAL,rawmaterialId,user);
         String remark = "原料条码：["+MapUtils.getString(rawmaterial,"num")+"]";
@@ -618,7 +619,7 @@ public class ProductService {
 
 		//原料入库
         remark = "商品条码：["+MapUtils.getString(source,"num")+"]";
-		rawmaterialInventoryService.warehouseDiamond(BizType.translateToRawmaterial, rawmaterialId, user.getOrgId(), remark, user);
+		rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.translateToRawmaterial, rawmaterialId, user.getOrgId(), remark, user);
 	}
 	public HSSFWorkbook exportExcel(Integer[] ids,String[] filedCodes,IEntityCode entity,OutputStream stream) throws BusinessException{
 		    Map<String,String> filedNameMap = getFiled(filedCodes,entity);

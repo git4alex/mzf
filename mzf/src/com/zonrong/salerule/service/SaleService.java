@@ -5,6 +5,7 @@ import com.zonrong.basics.customer.service.CustomerService;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.common.utils.MzfUtils;
 import com.zonrong.common.utils.MzfUtils.BillPrefix;
@@ -19,15 +20,15 @@ import com.zonrong.core.security.User;
 import com.zonrong.cusorder.service.CusOrderService;
 import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.product.service.SecondProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
+import com.zonrong.inventory.service.ProductInventoryService;
+import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.inventory.service.MaterialInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
 import com.zonrong.inventory.service.SecondGoldInventoryService;
-import com.zonrong.inventory.treasury.service.TreasuryEarnestService;
-import com.zonrong.inventory.treasury.service.TreasurySaleService;
-import com.zonrong.inventory.treasury.service.TreasuryService.MoneyStorageClass1;
+import com.zonrong.inventory.service.TreasuryEarnestService;
+import com.zonrong.inventory.service.TreasuryService;
+import com.zonrong.inventory.service.TreasurySaleService;
+import com.zonrong.inventory.service.TreasuryService.MoneyStorageClass1;
 import com.zonrong.maintain.service.MaintainService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -217,7 +218,7 @@ public class SaleService {
 		}
 
 		//货款入库
-		warehouseMoney(com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, saleId, sale, false, user);
+		warehouseMoney(TreasuryService.BizType.sell, saleId, sale, false, user);
 
 		//更新客户积分
 		//String points = MapUtils.getString(sale, "points","0");
@@ -230,14 +231,14 @@ public class SaleService {
 		//BigDecimal exchangePoints = new BigDecimal(exchangePointsStr);
 
 		//建立客户与该机构业务关联关系
-		customerService.createOrgRel(cusId, com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, saleId, user);
+		customerService.createOrgRel(cusId, TreasuryService.BizType.sell, saleId, user);
 		//记录操作日志
 		businessLogService.log("新开销售单", "销售单号为:" + num, user);
 		return saleId;
 	}
 
 	private void sellProduct(Integer productId, Map<String, Object> detail, int saleId, int transId, String saleNum,IUser user) throws BusinessException {
-		productInventoryService.deliveryByProductId(BizType.sell, productId, "商品销售", InventoryStatus.onStorage, user);
+		productInventoryService.deliveryByProductId(MzfEnum.BizType.sell, productId, "商品销售", InventoryStatus.onStorage, user);
 		productService.updateStatus(productId, ProductStatus.selled, "商品销售", null, user);
 
 		//记录商品最终一口价和最终销售价
@@ -261,7 +262,7 @@ public class SaleService {
 		BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "quantity"));
 		String remark = "商品销售， 销售单号：" + saleNum;
 		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
-		materialInventoryService.deliveryByQuantity(BizType.sell, materialId, quantity, cost, "价格", user.getOrgId(), false, remark, user);
+		materialInventoryService.delivery(MzfEnum.BizType.sell, materialId, quantity, cost, "价格", user.getOrgId(), remark, user);
 	}
 	private void sellSecondGold(String saleNum, Integer targetId, Map<String, Object> detail, IUser user) throws BusinessException {
 		GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
@@ -269,11 +270,11 @@ public class SaleService {
 		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
 		String goldPrice = MapUtils.getString(detail, "goldPrice");
 		String remark = "旧金回收，金价：" + goldPrice + "， 销售单号：" + saleNum;
-		secondGoldInventoryService.warehouse(BizType.buySecondGold, goldClass, quantity, cost, remark, user);
+		secondGoldInventoryService.warehouse(MzfEnum.BizType.buySecondGold, goldClass, quantity, cost, remark, user);
 	}
 	private void sellSecondProduct(Integer secondProductId, Map<String, Object> detail, IUser user) throws BusinessException {
 		int orgId = user.getOrgId();
-		secondProductInventoryService.warehouse(BizType.buySecondProduct, secondProductId, orgId, null, orgId, "旧饰回收", user);
+		secondProductInventoryService.warehouse(MzfEnum.BizType.buySecondProduct, secondProductId, orgId, null, orgId, "旧饰回收", user);
 	}
 
 	private void sellChit(Integer chitId, Map<String, Object> detail, IUser user) throws BusinessException {
@@ -356,7 +357,7 @@ public class SaleService {
 		return saleId;
 	}
 
-	public void warehouseMoney(com.zonrong.inventory.treasury.service.TreasuryService.BizType bizType, int targetId, Map<String, Object> sale, boolean isReturns, IUser user) throws BusinessException {
+	public void warehouseMoney(TreasuryService.BizType bizType, int targetId, Map<String, Object> sale, boolean isReturns, IUser user) throws BusinessException {
 		IEntityCode targetCode = MzfEntity.SALE;
 
 		String remark = bizType.getName() + " 单号:" + MapUtils.getString(sale, "num");
@@ -414,7 +415,7 @@ public class SaleService {
 	}
 
 	private void warehouseMoneyForDetail(
-			com.zonrong.inventory.treasury.service.TreasuryService.BizType bizType, Map<String, Object> sale,
+			TreasuryService.BizType bizType, Map<String, Object> sale,
 			MoneyStorageClass1 class1,
 			String amountKey, String amountDesc,
 			String typekey, String typeDesc,

@@ -30,7 +30,7 @@ import com.zonrong.core.sql.service.SimpleSqlService;
 import com.zonrong.demand.product.service.ProductDemandProcessService.DemandProcessType;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.DosingBom;
-import com.zonrong.inventory.product.service.MaintainInventoryService;
+import com.zonrong.inventory.service.MaintainInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.inventory.service.InventoryService.BizType;
 import com.zonrong.metadata.EntityMetadata;

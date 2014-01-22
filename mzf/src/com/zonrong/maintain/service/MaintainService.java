@@ -7,6 +7,7 @@ import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.*;
 import com.zonrong.core.dao.OrderBy;
 import com.zonrong.core.dao.OrderBy.OrderByDir;
@@ -19,11 +20,11 @@ import com.zonrong.core.security.User;
 import com.zonrong.cusorder.service.EarnestFlowService;
 import com.zonrong.cusorder.service.EarnestFlowService.OrderType;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
-import com.zonrong.inventory.treasury.service.TreasuryEarnestService;
-import com.zonrong.inventory.treasury.service.TreasurySaleService;
-import com.zonrong.inventory.treasury.service.TreasuryService.MoneyStorageClass1;
+import com.zonrong.inventory.service.ProductInventoryService;
+import com.zonrong.inventory.service.TreasuryEarnestService;
+import com.zonrong.inventory.service.TreasuryService;
+import com.zonrong.inventory.service.TreasurySaleService;
+import com.zonrong.inventory.service.TreasuryService.MoneyStorageClass1;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.settlement.service.SettlementService;
@@ -165,7 +166,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
                 //nothing
             } else if (InventoryStatus.onStorage.toString().equals(productSource)) {
                 //商品出库
-                productInventoryService.deliveryByProductId(BizType.maintain, productId, "维修出库", InventoryStatus.onStorage, user);
+                productInventoryService.deliveryByProductId(MzfEnum.BizType.maintain, productId, "维修出库", InventoryStatus.onStorage, user);
             } else {
                 throw new BusinessException("未知商品，无法继续");
             }
@@ -178,7 +179,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
         //String num = MzfUtils.getBillNum(BillPrefix.WX, user);
 
-        productInventoryService.warehouse(BizType.maintain, productId, targetOrgId, storageType, user.getOrgId(), "维修单号：["+ maintainCode +"]", user);
+        productInventoryService.warehouse(MzfEnum.BizType.maintain, productId, targetOrgId, storageType, user.getOrgId(), "维修单号：["+ maintainCode +"]", user);
 
         Map<String, Object> earnestFlow = new HashMap<String, Object>(maintain);
 
@@ -196,7 +197,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
         Object payType = MapUtils.getObject(earnestFlow, "payType");
         if (payType != null) {
-            earnestFlowService.appendEarnest(com.zonrong.inventory.treasury.service.TreasuryService.BizType.earnest, OrderType.maintain, maintainId, maintainCode, earnestFlow, "新建维修单", user);
+            earnestFlowService.appendEarnest(TreasuryService.BizType.earnest, OrderType.maintain, maintainId, maintainCode, earnestFlow, "新建维修单", user);
         }
 
         int transId = transactionService.createTransId();
@@ -207,7 +208,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
         //建立客户与该机构业务关联关系
         Integer cusId = MapUtils.getInteger(maintain, "cusId");
         if(cusId != null){
-            customerService.createOrgRel(cusId, com.zonrong.inventory.treasury.service.TreasuryService.BizType.maintain, maintainId, user);
+            customerService.createOrgRel(cusId, TreasuryService.BizType.maintain, maintainId, user);
         }
 
         return maintainId;
@@ -270,11 +271,11 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
             //如果是在库商品，直接入商品库
             if (productSource == ProductSource.onStorage) {
                 //出维修库
-                productInventoryService.deliveryByProductId(BizType.maintainOver, productId, "修复出库", InventoryStatus.onStorage, user);
+                productInventoryService.deliveryByProductId(MzfEnum.BizType.maintainOver, productId, "修复出库", InventoryStatus.onStorage, user);
 
                 //入商品库
                 StorageType storageType = productInventoryService.getDefaultStorageType(productId);
-                productInventoryService.warehouse(BizType.maintainOver, productId, maintainOrgId, storageType, sourceOrgId, "修复入库", user);
+                productInventoryService.warehouse(MzfEnum.BizType.maintainOver, productId, maintainOrgId, storageType, sourceOrgId, "修复入库", user);
 
                 //如果是在库商品，目标状态为完成
                 targetStatus = MaintainStatus.over;
@@ -339,19 +340,19 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
         if (money.doubleValue() != 0) {
             MoneyStorageClass1 class1 = MoneyStorageClass1.valueOf(MapUtils.getString(refund, "payType"));
             String bank = MapUtils.getString(refund, "bank");
-            treasuryEarnestService.delivery(com.zonrong.inventory.treasury.service.TreasuryService.BizType.refund, orgId, money, class1, bank, false, MzfEntity.MAINTAIN, maintainId, remark, user);
+            treasuryEarnestService.delivery(TreasuryService.BizType.refund, orgId, money, class1, bank, false, MzfEntity.MAINTAIN, maintainId, remark, user);
         }
 
 
         Map<String, Object> inventory = productInventoryService.getInventoryForProduct(productId, null);
         //商品出维修库
-        productInventoryService.deliveryByProductId(BizType.maintainOver, productId, remark, InventoryStatus.onStorage, user);
+        productInventoryService.deliveryByProductId(MzfEnum.BizType.maintainOver, productId, remark, InventoryStatus.onStorage, user);
         ProductSource productSource = ProductSource.valueOf(MapUtils.getString(maintain, "productSource"));
         if (productSource == ProductSource.onStorage) {
             //入商品库
             Integer sourceOrgId = MapUtils.getInteger(inventory, "sourceOrgId");
             StorageType storageType = productInventoryService.getDefaultStorageType(productId);
-            productInventoryService.warehouse(BizType.maintainOver, productId, orgId, storageType,sourceOrgId, remark, user);
+            productInventoryService.warehouse(MzfEnum.BizType.maintainOver, productId, orgId, storageType,sourceOrgId, remark, user);
         }
 
         //记录流程
@@ -386,7 +387,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
         if (money.doubleValue() != 0) {
             MoneyStorageClass1 class1 = MoneyStorageClass1.valueOf(MapUtils.getString(sale, "payType"));
             String bank = MapUtils.getString(sale, "bank");
-            treaaurySaleService.warehouse(com.zonrong.inventory.treasury.service.TreasuryService.BizType.sell, orgId, money, class1, bank, false, MzfEntity.MAINTAIN, maintainId, remark, user);
+            treaaurySaleService.warehouse(TreasuryService.BizType.sell, orgId, money, class1, bank, false, MzfEntity.MAINTAIN, maintainId, remark, user);
         }
         //销售后修改维修单属性
         Map<String,Object> field = new HashMap<String,Object>();
@@ -398,7 +399,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
         entityService.updateById(MzfEntity.MAINTAIN, maintainId+"", field, user);
 
         //商品出库
-        productInventoryService.deliveryByProductId(BizType.maintailSell, productId, "维修单号：["+MapUtils.getString(maintain,"num")+"]", InventoryStatus.onStorage, user);
+        productInventoryService.deliveryByProductId(MzfEnum.BizType.maintailSell, productId, "维修单号：["+MapUtils.getString(maintain,"num")+"]", InventoryStatus.onStorage, user);
 
         //记录流程
         int transId = transactionService.findTransId(MzfEntity.MAINTAIN, Integer.toString(maintainId), user);

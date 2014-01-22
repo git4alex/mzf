@@ -16,7 +16,6 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import org.apache.commons.collections.CollectionUtils;
@@ -47,15 +46,12 @@ public abstract class TransferService extends BillStatusService<TransferStatus> 
 	@Resource
 	private EntityService entityService;
 	@Resource
-	private ProductInventoryService productInventoryService;
-	@Resource
 	private TransactionService transactionService;
 	@Resource
 	private FlowLogService logService;
 
 	protected abstract TransferTargetType getTargetType();
 
-//	protected abstract void send(int targetId, int targetOrgId, IUser user) throws BusinessException;
 	protected abstract void send(Map<String, Object> transfer, int targetOrgId, IUser user) throws BusinessException;
 
 	protected void checkTransferProductBySelf(Integer targetOrgId, List<Map<String, Object>> inventoryList, IUser user)  throws BusinessException {

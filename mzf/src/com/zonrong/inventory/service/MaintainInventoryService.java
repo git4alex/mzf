@@ -1,6 +1,7 @@
-package com.zonrong.inventory.product.service;
+package com.zonrong.inventory.service;
 
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.InventoryStatus;
 import com.zonrong.common.utils.MzfEnum.StorageType;
 import com.zonrong.common.utils.MzfEnum.TargetType;
@@ -9,9 +10,6 @@ import com.zonrong.core.log.FlowLogService;
 import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.InventoryService;
-import com.zonrong.inventory.service.InventoryService.BizType;
-import com.zonrong.inventory.service.InventoryService.InventoryType;
 import com.zonrong.metadata.EntityMetadata;
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
@@ -63,11 +61,11 @@ public class MaintainInventoryService extends ProductInventoryService {
 
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
             //维修库出库记录
-			inventoryService.createFlow(BizType.deliveryFromMaintain, orgId,
-                    new BigDecimal(1), InventoryType.delivery, storageType, TargetType.product, productId, null, remark, user);
+			inventoryService.createFlow(MzfEnum.BizType.deliveryFromMaintain, orgId,
+                    new BigDecimal(1), MzfEnum.InventoryType.delivery, storageType, TargetType.product, productId, null, remark, user);
             //临时库入库记录
-			inventoryService.createFlow(BizType.deliveryFromMaintain, orgId,
-                    new BigDecimal(1), InventoryType.warehouse, target, TargetType.product, productId, null, remark, user);
+			inventoryService.createFlow(MzfEnum.BizType.deliveryFromMaintain, orgId,
+                    new BigDecimal(1), MzfEnum.InventoryType.warehouse, target, TargetType.product, productId, null, remark, user);
 
 			//记录流程
 			Integer transId = transId = transactionService.findTransId(MzfEntity.PRODUCT, productId, user);;
@@ -127,11 +125,11 @@ public class MaintainInventoryService extends ProductInventoryService {
 		StorageType target = StorageType.product_maintain;
 		Integer orgId = MapUtils.getInteger(inventory, "orgId");
         //临时库出库记录
-		inventoryService.createFlow(BizType.deliveryFromMaintain, orgId,
-                new BigDecimal(1), InventoryType.delivery, storageType, TargetType.product, Integer.toString(productId), null, remark, user);
+		inventoryService.createFlow(MzfEnum.BizType.deliveryFromMaintain, orgId,
+                new BigDecimal(1), MzfEnum.InventoryType.delivery, storageType, TargetType.product, Integer.toString(productId), null, remark, user);
         //维修库入库记录
-		inventoryService.createFlow(BizType.deliveryFromMaintain, orgId,
-                new BigDecimal(1), InventoryType.warehouse, target, TargetType.product, Integer.toString(productId), null, remark, user);
+		inventoryService.createFlow(MzfEnum.BizType.deliveryFromMaintain, orgId,
+                new BigDecimal(1), MzfEnum.InventoryType.warehouse, target, TargetType.product, Integer.toString(productId), null, remark, user);
 
 		Integer inventoryId = MapUtils.getInteger(inventory, "id");
 		Integer[] inventoryIds = new Integer[]{inventoryId};

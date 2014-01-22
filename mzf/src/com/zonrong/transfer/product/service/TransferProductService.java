@@ -19,12 +19,10 @@ import com.zonrong.cusorder.service.CusOrderService;
 import com.zonrong.demand.product.service.ProductDemandService;
 import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.product.service.ProductInventoryService;
-import com.zonrong.inventory.service.InventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.settlement.service.SettlementService;
-import com.zonrong.showcase.service.ShowcaseCheckService;
 import com.zonrong.system.service.BizCodeService;
 import com.zonrong.system.service.OrgService;
 import com.zonrong.transfer.common.service.TransferService;
@@ -61,15 +59,11 @@ public class TransferProductService extends TransferService {
 	@Resource
 	private CusOrderService cusOrderService;
 	@Resource
-	private ShowcaseCheckService showcaseCheckService;
-	@Resource
 	private SettlementService settlementService;
 	@Resource
 	private OrgRelService orgRelService;
 	@Resource
 	private TransactionService transactionService;
-	@Resource
-	private InventoryService inventoryService;
 	@Resource
 	private OrgService orgService;
 	@Resource
@@ -201,7 +195,7 @@ public class TransferProductService extends TransferService {
 				}
 
 				//更改库存持有人
-				inventoryService.updateOwnerId(inventoryId, suserId, user);
+//				inventoryService.updateOwnerId(inventoryId, suserId, user);
 			}
 
 			int transferId = createProductTransfer(productId, targetOrgId, status, transfer, Integer.toString(i + i), new Interceptor(){

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.templete.HttpTemplete;
 import com.zonrong.core.templete.OperateTemplete;
-import com.zonrong.inventory.product.service.ProductInventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.sale.service.SaleService;
 import com.zonrong.salerule.service.PointsruleService;
 
