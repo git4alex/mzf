@@ -1,9 +1,10 @@
 package com.zonrong.inventory.service;
 
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
-import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
+import com.zonrong.common.utils.MzfEnum.BizType;
+import com.zonrong.common.utils.MzfEnum.RawmaterialType;
 import com.zonrong.common.utils.MzfEnum.StorageType;
 import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.common.utils.MzfUtils;
@@ -12,10 +13,8 @@ import com.zonrong.core.log.BusinessLogService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.DosingBom;
-import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
-import com.zonrong.system.service.BizCodeService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.log4j.Logger;
@@ -53,20 +52,7 @@ public class RawmaterialInventoryService {
 	@Resource
 	private BusinessLogService businessLogService;
 
-	public enum GoldClass {
-		pt900,			//铂900
-		pt950,			//铂950
-		k750,			//金750
-		pd950,			//钯
-		silver,			//银
-		gold;			//黄金
-
-		public String getText() {
-			return BizCodeService.getBizName("goldClass", this.toString());
-		}
-	}
-
-	public int warehouseDiamond(BizType bizType, int rawmaterialId, int sourceOrgId, String remark, IUser user) throws BusinessException {
+    public int warehouseDiamond(BizType bizType, int rawmaterialId, int sourceOrgId, String remark, IUser user) throws BusinessException {
 		StorageType storageType = StorageType.rawmaterial_nakedDiamond;
 
 		//入库
@@ -115,7 +101,7 @@ public class RawmaterialInventoryService {
 		if (storageType == null) {
 			throw new BusinessException("未指定仓库类型");
 		}
-		Map<String, Object> inventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), user);
+		Map<String, Object> inventory = getInventory(rawmaterialId, user.getOrgId(), user);
 		Integer inventoryId;
 		if (inventory == null) {
 			inventoryId = inventoryService.createRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, "原料采购收货入库", user);
@@ -135,7 +121,7 @@ public class RawmaterialInventoryService {
 	 */
 	public void deliveryDiamondByRawmaterialId(BizType bizType, int rawmaterialId, String remark, IUser user) throws BusinessException {
 		StorageType storageType = StorageType.rawmaterial_nakedDiamond;
-		Map<String, Object> dbInventory = inventoryService.findRawmaterialInventory(rawmaterialId, user.getOrgId(), user);
+		Map<String, Object> dbInventory = getInventory(rawmaterialId, user.getOrgId(), user);
 		Integer inventoryId = MapUtils.getInteger(dbInventory, "id");
 
 		EntityMetadata metadata = inventoryService.getEntityMetadataOfInventory();
@@ -184,8 +170,8 @@ public class RawmaterialInventoryService {
 			outCost = outCost.multiply(new BigDecimal(-1));
 			rawmaterialService.addCost(rawmaterialId, outCost, user);
 
-			RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(map, "type"));
-			if (type == RawmaterialType.gravel) {
+			RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(map, "type"));
+			if (type == MzfEnum.RawmaterialType.gravel) {
 				BigDecimal weight = dosingBom.getWeight();
 				if (weight == null) {
 					throw new BusinessException("未指定碎石出库重量");
@@ -251,8 +237,8 @@ public class RawmaterialInventoryService {
 
         value.clear();
         String fRemark = "剩余数量：["+(new DecimalFormat(".###").format(dbQuantity - quantity.doubleValue()))+"]";
-		RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(map,"type"));
-		if (type == RawmaterialType.gravel) {
+		RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(map,"type"));
+		if (type == MzfEnum.RawmaterialType.gravel) {
 			if (weight == null) {
 				throw new BusinessException("未指定碎石出库重量");
 			}
@@ -271,7 +257,7 @@ public class RawmaterialInventoryService {
 
         //记录出库
 
-        inventoryService.createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.delivery, outCost, remark, fRemark, user);
+        inventoryService.createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.delivery, outCost, remark, user);
 
 		//记录操作日志
 		businessLogService.log("原料库强制出库", "库存编号为：" + inventoryId, user);
@@ -294,7 +280,7 @@ public class RawmaterialInventoryService {
         for (Entry<Integer, BigDecimal> en : inventoryQuantityMap.entrySet()) {
             int inventoryId = en.getKey();
             BigDecimal lockedQuantity = en.getValue();
-            inventoryService.lock(inventoryId, lockedQuantity, user);
+            inventoryService.lock(inventoryId, lockedQuantity.doubleValue(), user);
         }
 	}
 
@@ -308,7 +294,7 @@ public class RawmaterialInventoryService {
             int inventoryId = en.getKey();
             BigDecimal lockedQuantity = en.getValue();
             lockedQuantity = lockedQuantity.multiply(new BigDecimal(-1));
-            inventoryService.lock(inventoryId, lockedQuantity, user);
+            inventoryService.lock(inventoryId, lockedQuantity.doubleValue(), user);
         }
 	}
 
@@ -320,7 +306,7 @@ public class RawmaterialInventoryService {
         return entityService.list(metadata, where, null, user.asSystem());
 	}
 
-	public Map<String, Object> getRawmaterialInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
+	public Map<String, Object> getInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
 		List<Map<String, Object>> rawmaterialInventoryList = listRawmaterialInventory(new Integer[]{rawmaterialId}, orgId, user);
 		if (CollectionUtils.isEmpty(rawmaterialInventoryList)) {
 			throw new BusinessException("库存中未找到该原料[" + rawmaterialId + "]");

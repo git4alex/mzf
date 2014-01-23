@@ -4,6 +4,7 @@ import com.zonrong.basics.StatusCarrier;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.DemandStatus;
 import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.common.utils.MzfEnum.TransferStatus;
@@ -60,18 +61,7 @@ public class ProductDemandProcessService {
 	@Resource
 	private BusinessLogService businessLogService;
 
-	/**
-	 * 要货单处理方式
-	 */
-	public enum DemandProcessType {
-		allocate,	//库存调拨
-		replaceAllocate,  //替代调拨
-		purchase,	//采购
-		OEM,		//委外
-		reject		//驳回
-	}
-
-	public Map<String, Object> getDemandProcess(int demandId, IUser user) throws BusinessException {
+    public Map<String, Object> getById(int demandId, IUser user) throws BusinessException {
 		Map<String, Object> demandProcess = entityService.getById(MzfEntity.DEMAND_PROCESS_VIEW, demandId, user);
 		Integer styleId = MapUtils.getInteger(demandProcess, "styleId");
 		checkProcess(demandProcess, user);
@@ -103,8 +93,7 @@ public class ProductDemandProcessService {
 
 	/**
 	 * 检查要货申请是否可以重新处理
-	 * @param demandProcess
-	 * @param user
+     *
 	 * @throws BusinessException
 	 */
 	private void checkProcess(Map<String, Object> demandProcess, IUser user)throws BusinessException{
@@ -141,7 +130,7 @@ public class ProductDemandProcessService {
 		preProcess(demandId, user);
 
 		String message = "当前不允许库存调拨";
-		process(demandId, process, DemandStatus.waitSend, DemandProcessType.allocate, message, user);
+		process(demandId, process, DemandStatus.waitSend, MzfEnum.DemandProcessType.allocate, message, user);
 
 		//锁定商品
 		Map<String, Object> demand = entityService.getById(MzfEntity.DEMAND, Integer.toString(demandId), user);
@@ -151,11 +140,12 @@ public class ProductDemandProcessService {
 		//记录操作日志
 		businessLogService.log("处理要货申请(库存调拨)", "要货单号：" + demandId, user);
 	}
+
 	public void replaceAllocate(int demandId, Map<String, Object> process, IUser user) throws BusinessException {
 		preProcess(demandId, user);
 
 		String message = "当前不允许库存调拨";
-		process(demandId, process, DemandStatus.waitSend, DemandProcessType.replaceAllocate, message, user);
+		process(demandId, process, DemandStatus.waitSend, MzfEnum.DemandProcessType.replaceAllocate, message, user);
 
 		//修改要货申请(增加配货款式)
 		Map<String, Object> field = new HashMap<String, Object>();
@@ -176,7 +166,7 @@ public class ProductDemandProcessService {
 		preProcess(demandId, user);
 
 		String message = "当前不允许商品采购";
-		process(demandId, demand, DemandStatus.waitPurchase, DemandProcessType.purchase, message, user);
+		process(demandId, demand, DemandStatus.waitPurchase, MzfEnum.DemandProcessType.purchase, message, user);
 		//记录操作日志
 		businessLogService.log("处理要货申请(商品采购)", "要货单号：" + demandId, user);
 	}
@@ -185,7 +175,7 @@ public class ProductDemandProcessService {
 		preProcess(demandId, user);
 
 		String message = "当前不允许委外加工";
-		process(demandId, demand, DemandStatus.waitOEM, DemandProcessType.OEM, message, user);
+		process(demandId, demand, DemandStatus.waitOEM, MzfEnum.DemandProcessType.OEM, message, user);
 		//记录操作日志
 		businessLogService.log("处理要货申请(委外加工)", "要货单号：" + demandId, user);
 	}
@@ -225,11 +215,9 @@ public class ProductDemandProcessService {
 				productService.free(productId, "要货申请重新处理，解锁商品", user);
 			}
 		}
-
-
 	}
 
-	private void process(int demandId, Map<String, Object> process, DemandStatus status, DemandProcessType type, final String message, IUser user) throws BusinessException {
+	private void process(int demandId, Map<String, Object> process, DemandStatus status, MzfEnum.DemandProcessType type, final String message, IUser user) throws BusinessException {
 		DemandStatus[] fromStatus = new DemandStatus[]{
 				DemandStatus.waitProcess,
 				DemandStatus.waitSend,
@@ -250,7 +238,6 @@ public class ProductDemandProcessService {
 
 		//记录流程
 		createLog(demandId, type, null, user);
-
 	}
 
 	public void reject(int demandId, Map<String, Object> process, IUser user) throws BusinessException {
@@ -271,29 +258,29 @@ public class ProductDemandProcessService {
 
 		//记录处理结果
 		process.remove("id");
-		createDemandProcess(demandId, DemandProcessType.reject, process, user);
+		createDemandProcess(demandId, MzfEnum.DemandProcessType.reject, process, user);
 
 		//记录流程
 		String rejectRemark = MapUtils.getString(process, "rejectRemark");
 		rejectRemark = "驳回原因：" + rejectRemark;
-		createLog(demandId, DemandProcessType.reject, rejectRemark, user);
+		createLog(demandId, MzfEnum.DemandProcessType.reject, rejectRemark, user);
 	}
 
 	//记录流程
-	private void createLog(int demandId, DemandProcessType type, String remark, IUser user) throws BusinessException {
+	private void createLog(int demandId, MzfEnum.DemandProcessType type, String remark, IUser user) throws BusinessException {
 		int transId = transactionService.findTransId(MzfEntity.DEMAND, Integer.toString(demandId), user);
 
 		String operate = "处理要货申请";
 		StringBuffer remark1 = new StringBuffer("处理方式：");
-		if (type == DemandProcessType.allocate) {
+		if (type == MzfEnum.DemandProcessType.allocate) {
 			remark1.append("库存调拨");
-		}else if(type == DemandProcessType.replaceAllocate){
+		}else if(type == MzfEnum.DemandProcessType.replaceAllocate){
 			remark1.append("替代调拨");
-		} else if (type == DemandProcessType.purchase) {
+		} else if (type == MzfEnum.DemandProcessType.purchase) {
 			remark1.append("商品采购");
-		} else if (type == DemandProcessType.OEM) {
+		} else if (type == MzfEnum.DemandProcessType.OEM) {
 			remark1.append("委外加工");
-		} else if (type == DemandProcessType.reject) {
+		} else if (type == MzfEnum.DemandProcessType.reject) {
 			remark1.append("驳回");
 		}
 
@@ -303,7 +290,7 @@ public class ProductDemandProcessService {
 		logService.createLog(transId, MzfEntity.DEMAND, Integer.toString(demandId), operate, null, null, remark1.toString(), user);
 	}
 
-	public void cancelDemand(int demandId, IUser user) throws BusinessException {
+	public void cancel(int demandId, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.DEMAND);
 		Map<String, Object> dbDemand = entityService.getById(metadata, demandId, user.asSystem());
 
@@ -396,7 +383,7 @@ public class ProductDemandProcessService {
 		Map<String, Object> transfer = new HashMap<String, Object>();
 		transfer.put("orderId", MapUtils.getInteger(demand, "orderId"));
 		transfer.put("demandId", MapUtils.getString(demand, "id"));
-		int transferId = transferProductService.createProductTransfer(productId, targetOrgId, TransferStatus.waitReceive, transfer, transferNumSufix, null, user);
+		int transferId = transferProductService.create(productId, targetOrgId, TransferStatus.waitReceive, transfer, transferNumSufix, null, user);
 
 		//从仓库发货
         transfer = entityService.getById(MzfEntity.TRANSFER,transferId,user);
@@ -430,7 +417,7 @@ public class ProductDemandProcessService {
 		}
 	}
 
-	private int createDemandProcess(int demandId, DemandProcessType type, Map<String, Object> process, IUser user) throws BusinessException {
+	private int createDemandProcess(int demandId, MzfEnum.DemandProcessType type, Map<String, Object> process, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.DEMAND_PROCESS);
 
 		//删除上一次的处理记录（删除的记录行数有可能为0）

@@ -2,7 +2,6 @@ package com.zonrong.basics.product.service;
 
 import com.zonrong.basics.StatusCarrier;
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
-import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
 import com.zonrong.basics.style.service.StyleService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
@@ -602,7 +601,7 @@ public class ProductService {
 		target.remove("id");
 		target.put("sourceType", MzfEnum.BizType.translateToRawmaterial);
 		target.put("sourceId", productId);
-		target.put("type", RawmaterialType.nakedDiamond);
+		target.put("type", MzfEnum.RawmaterialType.nakedDiamond);
 		Integer rawmaterialId = rawmaterialService.createRawmaterial(target, user);
 
 		BizType bizType = MzfEnum.BizType.translateToRawmaterial;

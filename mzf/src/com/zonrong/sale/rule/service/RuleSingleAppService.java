@@ -1,19 +1,6 @@
 
 package com.zonrong.sale.rule.service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.MapUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.basics.chit.service.ChitService;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.common.utils.MzfEntity;
@@ -22,8 +9,14 @@ import com.zonrong.common.utils.MzfEnum.ProductType;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
 import com.zonrong.entity.service.EntityService;
-import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.MaterialInventoryService;
+import com.zonrong.inventory.service.ProductInventoryService;
+import org.apache.commons.collections.MapUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.util.*;
 
 @Service
 public class RuleSingleAppService {
@@ -69,7 +62,7 @@ public class RuleSingleAppService {
 			if (rd.nextBoolean()) {
 				return appRule(productId, 1, user);
 			} else {
-				return productInventoryService.getProductInventory(productId, user.getOrgId());
+				return productInventoryService.getInventory(productId, user.getOrgId());
 			}
 		}
 
@@ -205,7 +198,7 @@ public class RuleSingleAppService {
 
 	public Map<String, Object> appRule(int productId, int ruleId, IUser user) throws BusinessException {
 		boolean flag = new Random(10).nextBoolean();
-		Map<String, Object> dataBox = productInventoryService.getProductInventory(productId, user.getOrgId());
+		Map<String, Object> dataBox = productInventoryService.getInventory(productId, user.getOrgId());
 		//TODO 处理价格折扣
 		dataBox.put("saleDiscount", 1);
 
@@ -246,7 +239,7 @@ public class RuleSingleAppService {
 		return dataBox;
 	}
 	public List<Map<String,Object>> getGiveProduct(int ruleId,int productId,boolean isGroup,IUser user)throws BusinessException{
-		Map<String, Object> dataBox = productInventoryService.getProductInventory(productId, user.getOrgId());
+		Map<String, Object> dataBox = productInventoryService.getInventory(productId, user.getOrgId());
 		if(isGroup){
 			return listGiveProductGroup(dataBox, user);
 		}else{
@@ -254,7 +247,7 @@ public class RuleSingleAppService {
 		}
 	}
 	public List<Map<String,Object>> getGiveMaterial(int ruleId,int productId,boolean isGroup,IUser user)throws BusinessException{
-		Map<String, Object> dataBox = productInventoryService.getProductInventory(productId, user.getOrgId());
+		Map<String, Object> dataBox = productInventoryService.getInventory(productId, user.getOrgId());
 		if(isGroup){
 			return listGiveMaterialGroup(dataBox, user);
 		}else{
@@ -263,7 +256,7 @@ public class RuleSingleAppService {
 	}
 	public Map<String,Object> getPointAndDiscount(int ruleId,int productId,IUser user)throws BusinessException{
 		 Map<String,Object> map = new HashMap<String,Object>();
-		 Map<String, Object> dataBox = productInventoryService.getProductInventory(productId, user.getOrgId());
+		 Map<String, Object> dataBox = productInventoryService.getInventory(productId, user.getOrgId());
 		 Float fixedPrice = MapUtils.getFloat(dataBox, "fixedPrice");
 			int points = 0;
 			if (fixedPrice != null) {
@@ -275,7 +268,7 @@ public class RuleSingleAppService {
 	}
 
 	public List<Map<String,Object>> getGiveChit(int ruleId,int productId,IUser user)throws BusinessException{
-		Map<String, Object> dataBox = productInventoryService.getProductInventory(productId, user.getOrgId());
+		Map<String, Object> dataBox = productInventoryService.getInventory(productId, user.getOrgId());
 		return listGetGiveChit(dataBox, user);
 	}
 

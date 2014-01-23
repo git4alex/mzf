@@ -1,5 +1,6 @@
 package com.zonrong.transfer.secondGold.service;
 
+import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.SettlementType;
@@ -53,6 +54,8 @@ public class TransferSecondGoldService extends TransferService {
 	private SettlementService settlementService;
 	@Resource
 	private BusinessLogService businessLogService;
+    @Resource
+    private RawmaterialService rawmaterialService;
 
 	protected TransferTargetType getTargetType() {
 		return TransferTargetType.secondGold;
@@ -75,8 +78,8 @@ public class TransferSecondGoldService extends TransferService {
 	 * @throws BusinessException
 	 */
 	@Override
-	public void cancelTransfer(Map<String, Object> transfer, IUser user) throws BusinessException {
-		super.cancelTransfer(transfer, user);
+	public void cancel(Map<String, Object> transfer, IUser user) throws BusinessException {
+		super.cancel(transfer, user);
 
 		//解锁原料
 		int secondGoldId = MapUtils.getIntValue(transfer, "targetId");
@@ -88,7 +91,7 @@ public class TransferSecondGoldService extends TransferService {
 		businessLogService.log("取消调拨(旧金调拨)", "调拨单号：" + MapUtils.getInteger(transfer, "id") , user);
 	}
 
-	public void transfer(Integer secondGoldId, double quantity, Map<String, Object> transfer, IUser user) throws BusinessException {
+	public void transfer(Integer secondGoldId, Map<String, Object> transfer, IUser user) throws BusinessException {
 		Integer sourceOrgId = MapUtils.getInteger(transfer, "sourceOrgId");
 		Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
 		Integer inventoryId = MapUtils.getInteger(transfer, "inventoryId");
@@ -108,23 +111,23 @@ public class TransferSecondGoldService extends TransferService {
 
 		int transferId = createSecondGoldTransfer(secondGoldId, sourceOrgId, targetOrgId, TransferStatus.waitSend, transfer, user);
 
-		secondGoldInventoryService.lock(user.getOrgId(),secondGoldId, quantity, user);
-
 		//系统自动发货
 		Map<String, Object> dispatch = new HashMap<String, Object>();
 		dispatch.put("targetOrgId", targetOrgId);
 		this.send(new Integer[]{transferId}, dispatch, user);
 	}
 
-	protected void send(Map<String, Object> transfer, int targetOrgId, IUser user) throws BusinessException{
+	protected void send(Map<String, Object> transfer,int targetOrgId, IUser user) throws BusinessException{
 		Integer secondGoldId = MapUtils.getInteger(transfer, "targetId");
-		BigDecimal quantity = new BigDecimal(MapUtils.getFloatValue(transfer, "quantity", 0));
+		Double quantity = MapUtils.getDouble(transfer, "quantity", 0d);
 		Integer sourceOrgId = MapUtils.getInteger(transfer, "sourceOrgId");
 
-		secondGoldInventoryService.send(secondGoldId, quantity, sourceOrgId, null, user);
+		secondGoldInventoryService.lock(sourceOrgId,secondGoldId,quantity,user);
+
 		//记录操作日志
-		businessLogService.log("发货(旧金调拨)", "调拨单号：" + MapUtils.getInteger(transfer, "id") , user);
+		businessLogService.log("发货(旧金调拨)", "调拨单号：" + MapUtils.getString(transfer, "num") , user);
 	}
+
 	  //旧金收货打印
 	 public Map<String,Object> getPrintData(String startDate, String endDate, IUser user)throws BusinessException{
 
@@ -177,59 +180,21 @@ public class TransferSecondGoldService extends TransferService {
 
 		String diffRemark = MapUtils.getString(receive, "diffRemark");
 		Map<String, Object> transfer = entityService.getById(MzfEntity.TRANSFER_VIEW, transferId, user.asSystem());
-		this.receive(transfer, actualQuantity, diffRemark, user);
+		super.receive(transfer, actualQuantity, diffRemark, user);
 
 		Integer targetId = MapUtils.getInteger(transfer, "targetId");
-		BigDecimal quantity = new BigDecimal(MapUtils.getString(transfer, "quantity"));
+		Double quantity = MapUtils.getDouble(transfer, "quantity");
 		Integer sourceOrgId = MapUtils.getInteger(transfer, "sourceOrgId");
 		Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
-		secondGoldInventoryService.receive(targetId, quantity, actualQuantity, sourceOrgId, targetOrgId, "旧金调拨", user);
+        String transNum = MapUtils.getString(transfer,"num");
+
+        String remark = "调拨单号：["+transNum+"]";
+        secondGoldInventoryService.deliveryLocked(MzfEnum.BizType.send,targetId,sourceOrgId,quantity,remark,user);
+        secondGoldInventoryService.warehouse(MzfEnum.BizType.receive,rawmaterialService.getGoldClassByTargetId(targetId,user),new BigDecimal(quantity),new BigDecimal(price),remark,user);
 
 		//生成结算单
 		settlementService.createForTransfer(SettlementType.transferSecondGold, sourceOrgId, targetOrgId, transferId, new BigDecimal(price), null, user);
 		//记录操作日志
 		businessLogService.log("收货(旧金调拨)", "调拨单号：" + transferId, user);
 	}
-
-
-    public void send(int secondGoldId, BigDecimal quantity, int sourceOrgId, String remark, IUser user) throws BusinessException {
-        Map<String, Object> inventory =  getInventory(secondGoldId, sourceOrgId, user);
-        Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-
-        inventoryService.createFlowOnQuantity(MzfEnum.BizType.send, inventoryId, quantity, MzfEnum.InventoryType.delivery, null, remark, user);
-    }
-
-    public void receive(int secondGoldId, BigDecimal quantity, BigDecimal actualQuantity, int sourceOrgId, int targetOrgId, String remark, IUser user) throws BusinessException {
-        if (targetOrgId != user.getOrgId()) {
-            throw new BusinessException("操作员所在部门非调入部门，不允许收货");
-        }
-
-        Map<String, Object> srcInventory =  getInventory(secondGoldId, sourceOrgId, user);
-        Integer srcInventoryId = MapUtils.getInteger(srcInventory, "inventoryId");
-
-        //计算发生成本
-        BigDecimal cost=new BigDecimal(0);
-
-        //调出部门出库
-        inventoryService.delivery(MzfEnum.BizType.receive, srcInventoryId, quantity, null, remark, user);
-
-        //记录损耗
-//		if (quantity.doubleValue() != actualQuantity.doubleValue()) {
-//			BigDecimal lossQuantity = quantity.subtract(actualQuantity);
-//			delivery(BizType.receive, inventoryId, lossQuantity, null, null, false, "旧金调拨损耗", user);
-//		}
-
-        //调入部门入库
-        warehouse(MzfEnum.BizType.receive, secondGoldId, actualQuantity, user);
-//
-//        Map<String, Object> tgtInventory = getSecondGoldInventory(secondGoldId,user.getOrgId(),user);
-//        Integer tgtInventoryId;
-//        if (tgtInventory == null) {
-//            tgtInventoryId = createInventory(secondGoldId, user.getOrgId(), user);
-//        } else {
-//            tgtInventoryId = MapUtils.getInteger(tgtInventory, "id");
-//        }
-//
-//        inventoryService.warehouse(MzfEnum.BizType.receive, tgtInventoryId, actualQuantity, cost, remark, user);
-    }
 }

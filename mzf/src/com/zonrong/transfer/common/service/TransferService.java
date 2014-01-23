@@ -230,7 +230,7 @@ public abstract class TransferService extends BillStatusService<TransferStatus> 
 		return transId;
 	}
 
-	public void cancelTransfer(Map<String, Object> transfer, IUser user) throws BusinessException {
+	public void cancel(Map<String, Object> transfer, IUser user) throws BusinessException {
 		int transferId = MapUtils.getInteger(transfer, "id");
 		Integer sourceOrgId = MapUtils.getInteger(transfer, "sourceOrgId");
 		if (sourceOrgId != user.getOrgId()) {

@@ -96,7 +96,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
                 product.put("customer", customer);
             }
         } else {
-            Map<String, Object> inventory = productInventoryService.getInventoryForProduct(productId, user.getOrgId());
+            Map<String, Object> inventory = productInventoryService.getInventory(productId, user.getOrgId());
             InventoryStatus iStatus = InventoryStatus.valueOf(MapUtils.getString(inventory, "status"));
             if (iStatus == InventoryStatus.onStorage) {
                 product.put("productSource", ProductSource.onStorage);
@@ -239,7 +239,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
 
         //查找库存
         Integer productId = MapUtils.getInteger(maintain, "productId");
-        Map<String, Object> inventory = productInventoryService.getProductInventory(productId, null);
+        Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
         Integer detailId = MapUtils.getInteger(inventory, "detailId");
         if (detailId != null) {
             throw new BusinessException("尚未核销原料");
@@ -344,7 +344,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
         }
 
 
-        Map<String, Object> inventory = productInventoryService.getInventoryForProduct(productId, null);
+        Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
         //商品出维修库
         productInventoryService.deliveryByProductId(MzfEnum.BizType.maintainOver, productId, remark, InventoryStatus.onStorage, user);
         ProductSource productSource = ProductSource.valueOf(MapUtils.getString(maintain, "productSource"));

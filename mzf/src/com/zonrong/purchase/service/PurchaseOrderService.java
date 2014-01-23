@@ -1,6 +1,7 @@
 package com.zonrong.purchase.service;
 
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.DemandStatus;
 import com.zonrong.common.utils.MzfEnum.ProductType;
 import com.zonrong.common.utils.MzfEnum.VendorOrderType;
@@ -11,7 +12,7 @@ import com.zonrong.core.log.BusinessLogService;
 import com.zonrong.core.log.FlowLogService;
 import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
-import com.zonrong.demand.product.service.ProductDemandProcessService.DemandProcessType;
+import com.zonrong.common.utils.MzfEnum.DemandProcessType;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
@@ -164,7 +165,7 @@ public class PurchaseOrderService extends VendorOrderService{
 		List<Integer> invalid3 = new ArrayList<Integer>();
 		for (Map dbDemand : detailList) {
 			Integer demandVendorId = MapUtils.getInteger(dbDemand, "vendorId");
-			DemandProcessType demandType = DemandProcessType.valueOf(MapUtils.getString(dbDemand, "type"));
+			DemandProcessType demandType = MzfEnum.DemandProcessType.valueOf(MapUtils.getString(dbDemand, "type"));
 			if (vendorId.intValue() != demandVendorId) {
 				invalid1.add(demandVendorId);
 			}

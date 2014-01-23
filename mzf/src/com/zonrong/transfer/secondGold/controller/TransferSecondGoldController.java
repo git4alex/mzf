@@ -38,7 +38,7 @@ public class TransferSecondGoldController {
 				if (quantity <= 0) {
 					throw new BusinessException("未指定调拨量");
 				}
-				transferSecondGoldService.transfer(secondGoldId, quantity, transfer, this.getUser());
+				transferSecondGoldService.transfer(secondGoldId, transfer, this.getUser());
 			}
 		};
 		return templete.operate();

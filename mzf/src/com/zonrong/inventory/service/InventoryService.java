@@ -14,7 +14,6 @@ import com.zonrong.metadata.service.MetadataProvider;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -39,39 +38,6 @@ public class InventoryService {
     @Resource
     private EntityService entityService;
 
-    /**
-     * 查询指定部门，指定商品的库存记录
-     *
-     * @param productId 商品ID
-     * @param orgId     部门ID
-     * @return 库存记录
-     * @throws BusinessException
-     */
-    public Map<String, Object> findProductInventory(int productId, int orgId, IUser user) throws BusinessException {
-        Map<String, Object> where = new HashMap<String, Object>();
-        where.put("orgId", orgId);
-        where.put("targetType", TargetType.product);
-        where.put("targetId", productId);
-        return getInventory(where, user);
-    }
-
-    /**
-     * 查找指定部门，指定类型的原料库存记录
-     * 同一种原料在同一个部门只能存在于一个仓库中
-     *
-     * @param rawmaterialId 原料ID
-     * @param orgId         部门ID
-     * @return 库存记录
-     * @throws BusinessException
-     */
-    public Map<String, Object> findRawmaterialInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
-        Map<String, Object> where = new HashMap<String, Object>();
-        where.put("orgId", orgId);
-        where.put("targetType", TargetType.rawmaterial);
-        where.put("targetId", rawmaterialId);
-        return getInventory(where, user);
-    }
-
     private Map<String, Object> getInventory(Map<String, Object> where, IUser user) throws BusinessException {
         EntityMetadata metadata = getEntityMetadataOfInventory();
         List<Map<String, Object>> dbInventoryList = entityService.list(metadata, where, null, user.asSystem());
@@ -90,8 +56,6 @@ public class InventoryService {
         inventory.put("targetId", rawmaterialId);
         return createInventory(inventory, orgId, new BigDecimal(0), storageType, orgId, remark, user);
     }
-
-
 
     public int createMaterialInventory(int materialId, int orgId, String remark, IUser user) throws BusinessException {
         Map<String, Object> inventory = new HashMap<String, Object>();
@@ -127,7 +91,6 @@ public class InventoryService {
      * @param storageType    库存类型
      * @param targetType     对象类型
      * @param targetId       对象ID
-     * @param deliveryReason 出入库原因
      * @param remark         备注
      * @param user           操作员
      * @throws BusinessException
@@ -135,7 +98,7 @@ public class InventoryService {
     public void createFlow(MzfEnum.BizType bizType, int orgId,
                            BigDecimal quantity, MzfEnum.InventoryType type, StorageType storageType,
                            TargetType targetType, String targetId,
-                           String deliveryReason, String remark, IUser user) throws BusinessException {
+                           Double cost, String remark, IUser user) throws BusinessException {
         if (quantity == null || quantity.floatValue() == 0) {
             return;
         }
@@ -148,12 +111,10 @@ public class InventoryService {
         flow.put("type", type);
         flow.put("targetType", targetType);
         flow.put("targetId", targetId);
-        flow.put("deliveryReason", deliveryReason);
         flow.put("remark", remark);
         flow.put("quantity", quantity);
         flow.put("cuserId", user.getId());
         flow.put("cdate", null);
-
         if (targetType == TargetType.product) {//商品出入库
             Map<String, Object> target = entityService.getById(MzfEntity.PRODUCT, targetId, user);
             flow.put("cost", MapUtils.getFloat(target, "costPrice"));
@@ -164,7 +125,7 @@ public class InventoryService {
             //发生金额为原料成本
             if (storageType == StorageType.rawmaterial_gold || storageType == StorageType.rawmaterial_gravel) {
                 //金料的发生金额为本次入库的成本，参见：createFlowOnQuantity
-                flow.put("cost", Float.valueOf(deliveryReason));
+                flow.put("cost", cost);
 
                 if (storageType == StorageType.rawmaterial_gravel) {
                     int idx = remark.lastIndexOf('|');
@@ -187,7 +148,7 @@ public class InventoryService {
             Map<String, Object> target = entityService.getById(MzfEntity.SECOND_PRODUCT, targetId, user);
             flow.put("cost", MapUtils.getFloat(target, "buyPrice"));
         } else if (targetType == TargetType.secondGold) {//旧金出入库
-            //发生金额为旧金回收价格*数量
+            flow.put("cost",cost);
         } else {
             //TODO:其他类型的发生金额
         }
@@ -331,7 +292,7 @@ public class InventoryService {
         TargetType targetType = TargetType.valueOf(MapUtils.getString(inventory, "targetType"));
         String targetId = MapUtils.getString(inventory, "targetId");
 
-        createFlow(bizType, orgId, quantity, type, storageType, targetType, targetId, ObjectUtils.toString(cost), remark, user);
+        createFlow(bizType, orgId, quantity, type, storageType, targetType, targetId, cost, remark, user);
     }
 
     public void updateStatus(Integer[] inventoryId, InventoryStatus priorStatus, InventoryStatus nextStatus, String message, String remark, IUser user) throws BusinessException {

@@ -109,7 +109,7 @@ public class SaleruleAppService {
 			return productIdRules;
 		}
 
-		List<Map<String, Object>> productInventorys = productInventoryService.listProductInventory(productIds.toArray(new Integer[]{}), user.getOrgId());
+		List<Map<String, Object>> productInventorys = productInventoryService.list(productIds.toArray(new Integer[]{}), user.getOrgId());
 		for (Map<String, Object> productInventory : productInventorys) {
 //			Integer productId = MapUtils.getInteger(productInventory, "id");
 			String num = MapUtils.getString(productInventory, "num");
@@ -753,7 +753,7 @@ public class SaleruleAppService {
 		int orgId = user.getOrgId();
 		Map<String, Map<String, Object>> productMap = new HashMap<String, Map<String,Object>>();
 		String[] nums = productIdRuleResultIds.keySet().toArray(new String[]{});
-		List<Map<String, Object>> productInventorys = productInventoryService.listProductInventoryByNum(nums, orgId);
+		List<Map<String, Object>> productInventorys = productInventoryService.listByNum(nums, orgId);
 		for (Map<String, Object> product : productInventorys) {
 			String productNum = MapUtils.getString(product, "num");
 			productMap.put(productNum, product);

@@ -5,6 +5,7 @@ import com.zonrong.basics.customer.service.CustomerService;
 import com.zonrong.basics.material.service.MaterialService;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
+import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.*;
@@ -19,7 +20,7 @@ import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.inventory.service.MaterialInventoryService;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.inventory.service.SecondGoldInventoryService;
 import com.zonrong.inventory.service.TreasuryService;
 import com.zonrong.metadata.EntityMetadata;
@@ -74,6 +75,8 @@ public class ReturnsService{
 	private BusinessLogService businessLogService;
 	@Resource
 	private ChitService chitService;
+    @Resource
+    private RawmaterialService rawmaterialService;
 
 	private void check(Map<String, Object> sale, List<Map<String, Object>> detailList) throws BusinessException{
 
@@ -107,13 +110,13 @@ public class ReturnsService{
 			} else if (type == SaleDetailType.material) {
 				BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "quantity"));
 				BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
-				materialInventoryService.warehouse(MzfEnum.BizType.returned,orgId, targetId, quantity, cost, "价格", remark, user);
+				materialInventoryService.warehouse(MzfEnum.BizType.returned,orgId, targetId, quantity, cost, remark, user);
 				materialService.addCost(targetId, cost, orgId, user);
 			} else if (type == SaleDetailType.secondGold) {
-				GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
+				GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 				BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "goldWeight"));
 				BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
-				secondGoldInventoryService.delivery(MzfEnum.BizType.returned, goldClass, orgId, quantity, cost, "价格", remark, user);
+				secondGoldInventoryService.delivery(MzfEnum.BizType.returned, rawmaterialService.getSecondGoldIdByGoldClass(goldClass,user), orgId, quantity.doubleValue(), remark, user);
 			} else if (type == SaleDetailType.secondJewel) {
 				//商品标记为未回收
 				Map<String, Object> field = new HashMap<String, Object>();

@@ -1,28 +1,15 @@
 package com.zonrong.cusorder.service;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.basics.StatusCarrier;
 import com.zonrong.basics.customer.service.CustomerService;
 import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.basics.product.service.ProductService.ProductStatus;
 import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.utils.MzfEntity;
-import com.zonrong.common.utils.MzfUtils;
 import com.zonrong.common.utils.MzfEnum.CusOrderStatus;
 import com.zonrong.common.utils.MzfEnum.MaintainStatus;
 import com.zonrong.common.utils.MzfEnum.TargetType;
+import com.zonrong.common.utils.MzfUtils;
 import com.zonrong.common.utils.MzfUtils.BillPrefix;
 import com.zonrong.core.dao.OrderBy;
 import com.zonrong.core.dao.OrderBy.OrderByDir;
@@ -42,6 +29,17 @@ import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;
 import com.zonrong.util.TpltUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2010-10-10
@@ -100,7 +98,7 @@ public class CusOrderService extends BillStatusService<CusOrderStatus>{
 		int orderId = Integer.parseInt(id);
 
 		if (productId != null) {
-			Map<String, Object> inventory = productInventoryService.getInventoryForProduct(productId, null);
+			Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
 			if (orgId == user.getOrgId()) {
 				productService.lock(productId, "客户订单[" + num + "]预定", user);
@@ -108,7 +106,7 @@ public class CusOrderService extends BillStatusService<CusOrderStatus>{
 		}
 
 		if (diamondId != null) {
-			Map<String, Object> inventory = productInventoryService.getInventoryForProduct(diamondId, null);
+			Map<String, Object> inventory = productInventoryService.getInventory(diamondId, null);
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
 			if (orgId == user.getOrgId()) {
 				productService.lock(diamondId, "客户订单[" + num + "]预定", user);
@@ -277,12 +275,12 @@ public class CusOrderService extends BillStatusService<CusOrderStatus>{
 		Integer oldOrgId = null;
 		Integer newOrgId = null;
 		if (oldProductId != null) {
-			oldInventory = productInventoryService.getProductInventory(oldProductId, null);
+			oldInventory = productInventoryService.getInventory(oldProductId, null);
 			oldStatus = ProductStatus.valueOf(MapUtils.getString(oldInventory, "status"));
 			oldOrgId = MapUtils.getInteger(oldInventory, "orgId");
 		}
 		if (newProductId != null) {
-			newInventory = productInventoryService.getProductInventory(newProductId, null);
+			newInventory = productInventoryService.getInventory(newProductId, null);
 			newStatus = ProductStatus.valueOf(MapUtils.getString(newInventory, "status"));
 			newOrgId = MapUtils.getInteger(newInventory, "orgId");
 		}
@@ -467,7 +465,7 @@ public class CusOrderService extends BillStatusService<CusOrderStatus>{
 	private CusOrderType getCusOrderType(Integer productId, Integer styleId, IUser user) throws BusinessException {
 		CusOrderType type = null;
 		if (productId != null) {
-			Map<String, Object> inventory = productInventoryService.getInventoryForProduct(productId, null);
+			Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
 			if (user.getOrgId() == orgId) {
 				type = CusOrderType.normal;

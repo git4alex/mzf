@@ -25,7 +25,6 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.core.security.User;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.common.utils.MzfEnum.BizType;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.OrgService;
@@ -107,7 +106,7 @@ public class SecondProductInventoryService {
 			throw new BusinessException("操作员所在部门非调入部门，不允许收货");
 		}
 		deliveryBySecondProductId(MzfEnum.BizType.receive, secondProductId, remark, InventoryStatus.onPassage, false, user);
-		secondGoldInventoryService.warehouse(MzfEnum.BizType.receive, GoldClass.k750, quantity, cost, remark, user);
+		secondGoldInventoryService.warehouse(MzfEnum.BizType.receive, MzfEnum.GoldClass.k750, quantity, cost, remark, user);
 	}
 
 	private void deliveryBySecondProductId(BizType bizType, int secondProductId, String remark, InventoryStatus priorStatus, boolean isFlow, IUser user) throws BusinessException {

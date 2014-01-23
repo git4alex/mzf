@@ -1,21 +1,8 @@
 package com.zonrong.register.service;
 
-import java.math.BigDecimal;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.Resource;
-
-import com.zonrong.common.utils.MzfEnum;
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.basics.material.service.MaterialService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.TargetType;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.log.BusinessLogService;
@@ -24,6 +11,17 @@ import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.MaterialInventoryService;
 import com.zonrong.metadata.service.MetadataProvider;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2010-11-2
@@ -76,7 +74,7 @@ public class RegisterMaterialService {
 		int orderId = MapUtils.getInteger(dbDetail, "orderId");
 		Map<String, Object> dbOrder = entityService.getById(MzfEntity.VENDOR_ORDER, orderId, user.asSystem());
 		String remark = "物料入库， 物料采购订单号：" + MapUtils.getString(dbOrder, "num");
-		materialInventoryService.warehouse(MzfEnum.BizType.register, materialId, quantity, cost, null, remark, user);
+		materialInventoryService.warehouse(MzfEnum.BizType.register, materialId, quantity, cost, remark, user);
 		materialService.addCost(materialId, cost, user.getOrgId(), user);
 
 		 //记录操作日志

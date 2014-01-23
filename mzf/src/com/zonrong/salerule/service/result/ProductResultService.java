@@ -48,7 +48,7 @@ public class ProductResultService extends ResultService<List<Map<String, Object>
 
 		List<Map<String, Object>> resultList = new ArrayList<Map<String,Object>>();
 
-		List<Map<String, Object>> productInventorys = productInventoryService.listProductInventory(null, orgId);
+		List<Map<String, Object>> productInventorys = productInventoryService.list(null, orgId);
 		try {
 			int groupFlag = 0;
 			for (Map<String, Object> result : results) {

@@ -80,70 +80,64 @@ public class TransferProductService extends TransferService {
 	/**
 	 * 申请调拨
 	 *
-	 * @param productId
-	 * @param targetOrgId
-	 * @param transfer
-	 * @param user
-	 * @return
 	 * @throws BusinessException
 	 */
 	public int applyTransfer(final int productId, int targetOrgId, Map<String, Object> transfer, IUser user) throws BusinessException {
-		return createProductTransfer(productId, targetOrgId, TransferStatus.waitConfirm, transfer, null, new Interceptor(){
-			@Override
-			public void before(Map<String, Object> transfer, IUser user)  throws BusinessException {
-				Map<String, Object> inventory = productInventoryService.getProductInventory(productId, null);
-				String productNum = MapUtils.getString(inventory, "num");
-				Integer orgId = MapUtils.getInteger(inventory, "orgId");
-				if (orgId == user.getOrgId()) {
-					throw new BusinessException("商品[" + productNum + "]已在本部门，不必调拨");
-				}
+		return create(productId, targetOrgId, TransferStatus.waitConfirm, transfer, null, new Interceptor() {
+            @Override
+            public void before(Map<String, Object> transfer, IUser user) throws BusinessException {
+                Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
+                String productNum = MapUtils.getString(inventory, "num");
+                Integer orgId = MapUtils.getInteger(inventory, "orgId");
+                if (orgId == user.getOrgId()) {
+                    throw new BusinessException("商品[" + productNum + "]已在本部门，不必调拨");
+                }
 
-				ProductStatus status = ProductStatus.valueOf(MapUtils.getString(inventory, "status"));
-				if (ProductStatus.locked == status) {
-					String statusRemark = MapUtils.getString(inventory, "statusRemark");
-					throw new BusinessException("商品[" + productNum + "]不能调拨，原因:[" + statusRemark + "]");
-				}
-			}
+                ProductStatus status = ProductStatus.valueOf(MapUtils.getString(inventory, "status"));
+                if (ProductStatus.locked == status) {
+                    String statusRemark = MapUtils.getString(inventory, "statusRemark");
+                    throw new BusinessException("商品[" + productNum + "]不能调拨，原因:[" + statusRemark + "]");
+                }
+            }
 
-			@Override
-			public void after(Map<String, Object> transfer, IUser user)  throws BusinessException {
-				//锁定商品
-				String transferNum = MapUtils.getString(transfer, "num");
-				String statusRemark = "内部交易锁定商品, 与调拨单[" + transferNum + "]关联";
-				productService.lock(productId, statusRemark, user);
-			}
-		}, user);
+            @Override
+            public void after(Map<String, Object> transfer, IUser user) throws BusinessException {
+                //锁定商品
+                String transferNum = MapUtils.getString(transfer, "num");
+                String statusRemark = "内部交易锁定商品, 与调拨单[" + transferNum + "]关联";
+                productService.lock(productId, statusRemark, user);
+            }
+        }, user);
 	}
 
 	/**
 	 * 客订单申请调拨
 	 *
-	 * @param productId
-	 * @param targetOrgId
-	 * @param transfer
-	 * @param user
 	 * @throws BusinessException
 	 */
 	public int applyTransferFromCusOrder(final int productId, final int targetOrgId, Map<String, Object> transfer, IUser user) throws BusinessException {
-		int id = createProductTransfer(productId, targetOrgId, TransferStatus.waitConfirm, transfer, null, new Interceptor(){
-			@Override
-			public void before(Map<String, Object> transfer, IUser user)  throws BusinessException {
-				Map<String, Object> inventory = productInventoryService.getProductInventory(productId, null);
-				Integer sourceOrgId = MapUtils.getInteger(inventory, "orgId");
-				Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
-				if (sourceOrgId.intValue() == targetOrgId) {
-					String productNum = MapUtils.getString(inventory, "num");
-					throw new BusinessException("商品[" + productNum + "]已在该部门，不必申请调拨");
-				}
-			};
-			@Override
-			public void after(Map<String, Object> transfer, IUser user)  throws BusinessException {
-				//锁定商品
-				String transferNum = MapUtils.getString(transfer, "num");
-				String statusRemark = "内部交易锁定商品, 与调拨单[" + transferNum + "]关联";
-				productService.lock(productId, statusRemark, user);
-			};
-		}, user);
+		int id = create(productId, targetOrgId, TransferStatus.waitConfirm, transfer, null, new Interceptor() {
+            @Override
+            public void before(Map<String, Object> transfer, IUser user) throws BusinessException {
+                Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
+                Integer sourceOrgId = MapUtils.getInteger(inventory, "orgId");
+                Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
+                if (sourceOrgId.intValue() == targetOrgId) {
+                    String productNum = MapUtils.getString(inventory, "num");
+                    throw new BusinessException("商品[" + productNum + "]已在该部门，不必申请调拨");
+                }
+            }
+
+            ;
+
+            @Override
+            public void after(Map<String, Object> transfer, IUser user) throws BusinessException {
+                //锁定商品
+                String transferNum = MapUtils.getString(transfer, "num");
+                String statusRemark = "内部交易锁定商品, 与调拨单[" + transferNum + "]关联";
+                productService.lock(productId, statusRemark, user);
+            }
+        }, user);
 
 		//更新客订单状态为调拨中
 		Integer orderId = MapUtils.getInteger(transfer, "orderId");
@@ -163,13 +157,10 @@ public class TransferProductService extends TransferService {
 	/**
 	 * 调拨出库
 	 *
-	 * @param productIds
-	 * @param transfer
-	 * @param user
 	 * @throws BusinessException
 	 */
 	public void transfer(Integer[] productIds, Map<String, Object> transfer, IUser user) throws BusinessException {
-		List<Map<String, Object>> inventoryList = productInventoryService.listProductInventory(productIds, null);
+		List<Map<String, Object>> inventoryList = productInventoryService.list(productIds, null);
 		Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
 		if (targetOrgId != null) {
 			checkTransferProductBySelf(targetOrgId, inventoryList, user);
@@ -198,15 +189,15 @@ public class TransferProductService extends TransferService {
 //				inventoryService.updateOwnerId(inventoryId, suserId, user);
 			}
 
-			int transferId = createProductTransfer(productId, targetOrgId, status, transfer, Integer.toString(i + i), new Interceptor(){
-				@Override
-				public void after(Map<String, Object> transfer, IUser user)  throws BusinessException {
-					//锁定商品
-					String transferNum = MapUtils.getString(transfer, "num");
-					String statusRemark = "内部交易锁定商品, 与调拨单[" + transferNum + "]关联";
-					productService.lock(productId, statusRemark, user);
-				}
-			},user);
+			int transferId = create(productId, targetOrgId, status, transfer, Integer.toString(i + i), new Interceptor() {
+                @Override
+                public void after(Map<String, Object> transfer, IUser user) throws BusinessException {
+                    //锁定商品
+                    String transferNum = MapUtils.getString(transfer, "num");
+                    String statusRemark = "内部交易锁定商品, 与调拨单[" + transferNum + "]关联";
+                    productService.lock(productId, statusRemark, user);
+                }
+            }, user);
 			if (targetOrgId != null && status == TransferStatus.waitSend) {
 				transferIdList.add(transferId);
 			}
@@ -224,7 +215,7 @@ public class TransferProductService extends TransferService {
 		}
 	}
 
-	public int createProductTransfer(int productId, Integer targetOrgId, TransferStatus status, Map<String, Object> transfer, String numSufix, Interceptor interceptor, IUser user) throws BusinessException {
+	public int create(int productId, Integer targetOrgId, TransferStatus status, Map<String, Object> transfer, String numSufix, Interceptor interceptor, IUser user) throws BusinessException {
 		if (interceptor != null) {
 			interceptor.before(transfer, user);
 		}
@@ -243,7 +234,7 @@ public class TransferProductService extends TransferService {
 			}
 		}
 
-		Map<String, Object> inventory = productInventoryService.getProductInventory(productId, null);
+		Map<String, Object> inventory = productInventoryService.getInventory(productId, null);
 		Integer sourceOrgId = MapUtils.getInteger(inventory, "orgId");
 
 		//记录流程信息
@@ -273,7 +264,7 @@ public class TransferProductService extends TransferService {
 		return transferId;
 	}
 
-	public void confirmTransfer(int transferId, Map<String, Object> confirm, IUser user) throws BusinessException {
+	public void confirm(int transferId, Map<String, Object> confirm, IUser user) throws BusinessException {
 		Map<String, Object> transfer = entityService.getById(MzfEntity.TRANSFER_VIEW, transferId, User.getSystemUser());
 
 		TransferStatus resStatus = TransferStatus.canceled;
@@ -321,8 +312,8 @@ public class TransferProductService extends TransferService {
 	}
 
 	@Override
-	public void cancelTransfer(Map<String, Object> transfer, IUser user) throws BusinessException {
-		super.cancelTransfer(transfer, user);
+	public void cancel(Map<String, Object> transfer, IUser user) throws BusinessException {
+		super.cancel(transfer, user);
 
 		Integer orderId = MapUtils.getInteger(transfer, "orderId");
 		if (orderId != null) {
@@ -332,7 +323,7 @@ public class TransferProductService extends TransferService {
 		Integer productId = MapUtils.getInteger(transfer, "targetId");
 		productService.free(productId, "取消调拨, 解锁商品", user);
 
-		Map<String, Object> inventroy = productInventoryService.getProductInventory(productId, user.getOrgId());
+		Map<String, Object> inventroy = productInventoryService.getInventory(productId, user.getOrgId());
 		Integer inventoryId = MapUtils.getInteger(inventroy, "inventoryId");
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("status", InventoryStatus.onStorage);
@@ -342,7 +333,7 @@ public class TransferProductService extends TransferService {
 		businessLogService.log("取消调拨(商品调拨)", "商品编号：" + productId, user);
 	}
 
-	public int approveTransfer(int transferId, Map<String, Object> approve, IUser user) throws BusinessException {
+	public int approve(int transferId, Map<String, Object> approve, IUser user) throws BusinessException {
 		Map<String, Object> transfer = entityService.getById(MzfEntity.TRANSFER_VIEW, transferId, User.getSystemUser());
 		Integer productId = MapUtils.getInteger(transfer, "targetId");
 		Map<String, Object> product = entityService.getById(MzfEntity.PRODUCT, productId, User.getSystemUser());
@@ -404,7 +395,7 @@ public class TransferProductService extends TransferService {
 			logRemark = "同意调拨";
 		} else {
 			//自动取消调拨操作
-			cancelTransfer(transfer, user);
+			cancel(transfer, user);
 		}
 
 		//记录日志

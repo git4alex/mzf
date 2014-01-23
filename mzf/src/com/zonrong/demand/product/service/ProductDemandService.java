@@ -250,7 +250,7 @@ public class ProductDemandService extends ProductDemandCRUDService {
 		Integer[] productIds = productIdOrderIdMap.keySet().toArray(new Integer[]{});
 		if (productIds.length == 0) return;
 
-		List<Map<String, Object>> inventoryList = productInventoryService.listProductInventory(productIds, null);
+		List<Map<String, Object>> inventoryList = productInventoryService.list(productIds, null);
 		for (Map<String, Object> product : inventoryList) {
 			Integer productId = MapUtils.getInteger(product, "id");
 			Integer orgId = MapUtils.getInteger(product, "orgId");
@@ -276,7 +276,7 @@ public class ProductDemandService extends ProductDemandCRUDService {
 			Map<String, Object> transfer = new HashMap<String, Object>();
 			transfer.put("orderId", orderId);
 			transfer.put("remark", "该裸钻为客定款式指定的裸钻，与要货申请[" + demandNum + "]关联");
-			int transferId = transferProductService.createProductTransfer(productId, targetOrgId, TransferStatus.waitSend, transfer, Integer.toString(i + 1), new Interceptor(), user);
+			int transferId = transferProductService.create(productId, targetOrgId, TransferStatus.waitSend, transfer, Integer.toString(i + 1), new Interceptor(), user);
 			transferIds.add(transferId);
 		}
 

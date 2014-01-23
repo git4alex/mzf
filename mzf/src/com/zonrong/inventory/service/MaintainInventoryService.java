@@ -49,7 +49,7 @@ public class MaintainInventoryService extends ProductInventoryService {
      * @throws BusinessException
      */
 	public void deliveryFromMaintain(Integer[] productIds, String remark, IUser user) throws BusinessException {
-		List<Map<String, Object>> inventoryList = listInventoryForProduct(productIds, null);
+		List<Map<String, Object>> inventoryList = list(productIds, null);
 
 		StorageType target = StorageType.product_temporary;
 
@@ -86,7 +86,7 @@ public class MaintainInventoryService extends ProductInventoryService {
 	}
 
 //	public void deliveryFromMaintain(Integer[] productIds, String remark, IUser user) throws BusinessException {
-//		List<Map<String, Object>> inventoryList = listInventoryForProduct(productIds, null);
+//		List<Map<String, Object>> inventoryList = list(productIds, null);
 //		List<Integer> inventoryIds = new ArrayList<Integer>();
 //		for (Map<String, Object> inventory : inventoryList) {
 //			Integer dbInventoryId = MapUtils.getInteger(inventory, "id");
@@ -120,7 +120,7 @@ public class MaintainInventoryService extends ProductInventoryService {
      */
 	public void warehouseToMaintain(int productId, String remark, IUser user) throws BusinessException {
 		//更新库存状态
-		Map<String, Object> inventory = getInventoryForProduct(productId, null);
+		Map<String, Object> inventory = getInventory(productId, null);
 		StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
 		StorageType target = StorageType.product_maintain;
 		Integer orgId = MapUtils.getInteger(inventory, "orgId");
@@ -153,7 +153,7 @@ public class MaintainInventoryService extends ProductInventoryService {
 
 //	public void warehouseToMaintain(int productId, String remark, IUser user) throws BusinessException {
 //		//更新库存状态
-//		Map<String, Object> inventory = getInventoryForProduct(productId, null);
+//		Map<String, Object> inventory = getInventory(productId, null);
 //		Integer inventoryId = MapUtils.getInteger(inventory, "id");
 //		inventoryService.updateStatus(new Integer[]{inventoryId}, InventoryStatus.deliveryMaintain, InventoryStatus.onStorage, "入库失败", null, user);
 //

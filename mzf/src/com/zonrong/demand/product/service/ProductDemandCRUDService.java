@@ -5,6 +5,7 @@ import com.zonrong.basics.product.service.ProductService;
 import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.service.MzfOrgService;
 import com.zonrong.common.utils.MzfEntity;
+import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.CusOrderStatus;
 import com.zonrong.common.utils.MzfEnum.DemandStatus;
 import com.zonrong.common.utils.MzfEnum.ProductType;
@@ -18,7 +19,7 @@ import com.zonrong.core.security.IUser;
 import com.zonrong.cusorder.service.CusOrderService;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.transfer.product.service.TransferProductService;
@@ -115,22 +116,22 @@ public class ProductDemandCRUDService extends BillStatusService<DemandStatus>{
 				if (StringUtils.isNotBlank(goldClassStr)) {
                     GoldClass goldClass = null;
                     try{
-                        goldClass = GoldClass.valueOf(goldClassStr);
+                        goldClass = MzfEnum.GoldClass.valueOf(goldClassStr);
                     }catch (Exception e){
 
                     }
 
 					String goldWeight = null;
-					if (goldClass == GoldClass.pt900 || goldClass == GoldClass.pt950) {
+					if (goldClass == MzfEnum.GoldClass.pt900 || goldClass == MzfEnum.GoldClass.pt950) {
 						goldWeight = MapUtils.getString(dbStyle, "ptWeight");
 					}
-					if (goldClass == GoldClass.k750) {
+					if (goldClass == MzfEnum.GoldClass.k750) {
 						goldWeight = MapUtils.getString(dbStyle, "kWeight");
 					}
-					if (goldClass == GoldClass.pd950) {
+					if (goldClass == MzfEnum.GoldClass.pd950) {
 						goldWeight = MapUtils.getString(dbStyle, "pdWeight");
 					}
-					if (goldClass == GoldClass.silver) {
+					if (goldClass == MzfEnum.GoldClass.silver) {
 						goldWeight = MapUtils.getString(dbStyle, "silverWeight");
 					}
 					if (StringUtils.isNotBlank(goldWeight)) {

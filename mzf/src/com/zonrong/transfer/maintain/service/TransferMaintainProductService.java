@@ -61,7 +61,7 @@ public class TransferMaintainProductService extends TransferService {
 	 * @throws BusinessException
 	 */
 	public void transfer(Integer[] productIds, Map<String, Object> transfer, IUser user) throws BusinessException {
-		List<Map<String, Object>> inventoryList = productInventoryService.listProductInventory(productIds, null);
+		List<Map<String, Object>> inventoryList = productInventoryService.list(productIds, null);
 		Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
 		if (targetOrgId != null) {
 			checkTransferProductBySelf(targetOrgId, inventoryList, user);
@@ -163,12 +163,12 @@ public class TransferMaintainProductService extends TransferService {
 	}
 
 	@Override
-	public void cancelTransfer(Map<String, Object> transfer, IUser user) throws BusinessException {
-		super.cancelTransfer(transfer, user);
+	public void cancel(Map<String, Object> transfer, IUser user) throws BusinessException {
+		super.cancel(transfer, user);
 
 		Integer productId = MapUtils.getInteger(transfer, "targetId");
 
-		Map<String, Object> inventroy = productInventoryService.getProductInventory(productId, user.getOrgId());
+		Map<String, Object> inventroy = productInventoryService.getInventory(productId, user.getOrgId());
 		Integer inventoryId = MapUtils.getInteger(inventroy, "inventoryId");
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("status", InventoryStatus.onStorage);

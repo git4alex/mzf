@@ -1,7 +1,6 @@
 package com.zonrong.vendorSale.service;
 
 import com.zonrong.basics.product.service.ProductService;
-import com.zonrong.basics.rawmaterial.service.RawmaterialService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.core.exception.BusinessException;
@@ -91,7 +90,7 @@ public class VendorSaleService {
 
             //更新裸石状态为“已售”
             values.clear();
-            values.put("status", RawmaterialService.RawmaterialStatus.sold);
+            values.put("status", MzfEnum.RawmaterialStatus.sold);
             entityService.updateById(MzfEntity.RAWMATERIAL,id,values,user);
         }
     }

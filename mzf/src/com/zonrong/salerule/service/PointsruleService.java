@@ -1,21 +1,5 @@
 package com.zonrong.salerule.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import javax.annotation.PostConstruct;
-import javax.annotation.Resource;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.expression.ExpressionParser;
-import org.springframework.expression.spel.standard.SpelExpressionParser;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.User;
@@ -24,6 +8,20 @@ import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.salerule.service.expression.ExpressionProcessor;
 import com.zonrong.salerule.service.expression.RuleEvaluationContext;
 import com.zonrong.salerule.service.mapper.ProductMapper;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.expression.ExpressionParser;
+import org.springframework.expression.spel.standard.SpelExpressionParser;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * date: 2011-10-19
@@ -53,7 +51,7 @@ public class PointsruleService {
 	}
 
 	public int getPoints(int productId, BigDecimal pointsPrice, BigDecimal otherCharges, BigDecimal totalDiscount, int orgId) throws BusinessException {
-		Map<String, Object> product = productInventoryService.getProductInventory(productId, orgId);
+		Map<String, Object> product = productInventoryService.getInventory(productId, orgId);
 		BigDecimal price = new BigDecimal(MapUtils.getString(product, "fixedPrice"));
 		if (pointsPrice != null) {
 			price = pointsPrice;

@@ -1,7 +1,7 @@
 package com.zonrong.purchase.dosing.service;
 
 import com.zonrong.basics.product.service.ProductService;
-import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
+import com.zonrong.common.utils.MzfEnum.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.VendorOrderStatus;
@@ -199,9 +199,9 @@ public class DosingService {
 
         Map<String, Object> dosing1 = new HashMap<String, Object>();
         try {
-            RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(dosing, "rawmaterialType"));
+            RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(dosing, "rawmaterialType"));
             BigDecimal dosingQuantity = new BigDecimal(1);
-            if (type == RawmaterialType.gold || type == RawmaterialType.parts || type == RawmaterialType.gravel) {
+            if (type == MzfEnum.RawmaterialType.gold || type == MzfEnum.RawmaterialType.parts || type == MzfEnum.RawmaterialType.gravel) {
                 String dosingQuantityStr = MapUtils.getString(dosing, "dosingQuantity");
                 dosingQuantity = new BigDecimal(dosingQuantityStr);
             }
@@ -283,11 +283,11 @@ public class DosingService {
             if (rawmaterialId == null) {
                 continue;
             }
-            RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(dbDosing, "rawmaterialType"));
+            RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(dbDosing, "rawmaterialType"));
             String dosingQuantity = MapUtils.getString(dbDosing, "dosingQuantity");
-            if (type == RawmaterialType.nakedDiamond) {
+            if (type == MzfEnum.RawmaterialType.nakedDiamond) {
                 diamondList.add(rawmaterialId);
-            } else if (type == RawmaterialType.gold || type == RawmaterialType.parts || type == RawmaterialType.gravel) {
+            } else if (type == MzfEnum.RawmaterialType.gold || type == MzfEnum.RawmaterialType.parts || type == MzfEnum.RawmaterialType.gravel) {
                 if (StringUtils.isBlank(dosingQuantity)) {
                     throw new BusinessException("未指找到" + type.getName() + "实配量");
                 }
@@ -308,14 +308,14 @@ public class DosingService {
         if (rawmaterialId == null) {
             throw new BusinessException("未指定原料");
         }
-        RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(dbDosing, "rawmaterialType"));
+        RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(dbDosing, "rawmaterialType"));
         String dosingQuantity = MapUtils.getString(dbDosing, "dosingQuantity");
 
         List<Integer> diamondList = new ArrayList<Integer>();
         Map<Integer, BigDecimal> dosingMap = new HashMap<Integer, BigDecimal>();
-        if (type == RawmaterialType.nakedDiamond) {
+        if (type == MzfEnum.RawmaterialType.nakedDiamond) {
             diamondList.add(rawmaterialId);
-        } else if (type == RawmaterialType.gold || type == RawmaterialType.parts || type == RawmaterialType.gravel) {
+        } else if (type == MzfEnum.RawmaterialType.gold || type == MzfEnum.RawmaterialType.parts || type == MzfEnum.RawmaterialType.gravel) {
             if (StringUtils.isBlank(dosingQuantity)) {
                 throw new BusinessException("未找到" + type.getName() + "实配量");
             }
@@ -367,10 +367,10 @@ public class DosingService {
     }
 
     public void lockMaterial(int mid, float quantity, IUser user) throws BusinessException {
-        Map<String, Object> m = rawmaterialInventoryService.getRawmaterialInventory(mid, user.getOrgId(), user);
-        RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(m, "type"));
+        Map<String, Object> m = rawmaterialInventoryService.getInventory(mid, user.getOrgId(), user);
+        RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(m, "type"));
 
-        if (type == RawmaterialType.nakedDiamond) {
+        if (type == MzfEnum.RawmaterialType.nakedDiamond) {
             rawmaterialInventoryService.lockDiamond(new Integer[]{mid}, "配料锁定", user);
         } else {
             Map<Integer, BigDecimal> tmp = new HashMap<Integer, BigDecimal>();
@@ -380,10 +380,10 @@ public class DosingService {
     }
 
     public void freeMaterial(int mid, float quantity, IUser user) throws BusinessException {
-        Map<String, Object> m = rawmaterialInventoryService.getRawmaterialInventory(mid, user.getOrgId(), user);
-        RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(m, "type"));
+        Map<String, Object> m = rawmaterialInventoryService.getInventory(mid, user.getOrgId(), user);
+        RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(m, "type"));
 
-        if (type == RawmaterialType.nakedDiamond) {
+        if (type == MzfEnum.RawmaterialType.nakedDiamond) {
             rawmaterialInventoryService.freeDiamond(new Integer[]{mid}, "配料解锁", user);
         } else {
             Map<Integer, BigDecimal> tmp = new HashMap<Integer, BigDecimal>();
@@ -467,8 +467,8 @@ public class DosingService {
             Integer rawmaterialId = MapUtils.getInteger(dosing, "rawmaterialId");
 
             if (rawmaterialId != null) {
-                RawmaterialType rawmaterialType = RawmaterialType.valueOf(MapUtils.getString(dosing, "rawmaterialType"));
-                if (rawmaterialType != RawmaterialType.nakedDiamond) {
+                RawmaterialType rawmaterialType = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(dosing, "rawmaterialType"));
+                if (rawmaterialType != MzfEnum.RawmaterialType.nakedDiamond) {
                     DosingBom dosingBom = new DosingBom();
                     dosingBom.setRawmaterialId(rawmaterialId);
                     dosingBom.setQuantity(new BigDecimal(MapUtils.getString(dosing, "dosingQuantity")));

@@ -50,7 +50,7 @@ public class ProductGroupConditionService extends ConditonService<List<Map<Strin
 			totalDiscountMap.put(productId, MapUtils.getDouble(product, "totalDiscount"));
 		}
 
-		List<Map<String, Object>> productInventorys = productInventoryService.listProductInventory(productIds.toArray(new Integer[]{}), null);
+		List<Map<String, Object>> productInventorys = productInventoryService.list(productIds.toArray(new Integer[]{}), null);
 		for (Map<String, Object> productInventory : productInventorys) {
 			Integer productId = MapUtils.getInteger(productInventory, "id");
 			productInventory.put("retailBasePrice", MapUtils.getObject(productInventory, "fixedPrice"));

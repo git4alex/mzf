@@ -65,7 +65,7 @@ public class SaleruleAppTestController {
 										HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
-				Map<String, Object> productInventory = productInventoryService.getProductInventoryByProductNum(productNum, orgId);
+				Map<String, Object> productInventory = productInventoryService.getInventoryByNum(productNum, orgId);
 
 				Date date = TpltUtils.getDate(billDate, "yyyy-MM-dd hh:mm");
 				List<Map<String, Object>> rules = saleruleMatchService.matchSaleruleForSingle(productInventory, customerId, date);

@@ -60,7 +60,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 			return;
 		}
 
-		List<Map<String, Object>> dbProductInventoryList = listProductInventory(productIds, null);
+		List<Map<String, Object>> dbProductInventoryList = list(productIds, null);
 		List<String> tempList = new ArrayList<String>();
 		List<String> isQcList = new ArrayList<String>();
 		List<String> isCidList = new ArrayList<String>();
@@ -136,7 +136,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 			return;
 		}
 
-		List<Map<String, Object>> dbProductInventoryList = listProductInventory(productIds, null);
+		List<Map<String, Object>> dbProductInventoryList = list(productIds, null);
 		List<String> tempList = new ArrayList<String>();
 		List<String> isQcList = new ArrayList<String>();
 		List<String> isCidList = new ArrayList<String>();
@@ -265,7 +265,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 	}
 
 	public void deliveryFromTemporary(Integer[] productIds, String deliveryTemporaryReason, String remark, IUser user) throws BusinessException {
-		List<Map<String, Object>> inventoryList = listInventoryForProduct(productIds, null);
+		List<Map<String, Object>> inventoryList = list(productIds, null);
 		List<Integer> inventoryIds = new ArrayList<Integer>();
 		for (Map<String, Object> inventory : inventoryList) {
 			Integer dbInventoryId = MapUtils.getInteger(inventory, "id");
@@ -279,7 +279,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
 			inventoryService.createFlow(MzfEnum.BizType.deliveryFromTemporary, orgId,new BigDecimal(1),
                     MzfEnum.InventoryType.delivery, storageType,TargetType.product, Integer.toString(porductId),
-                    deliveryReasonText, deliveryReasonText, user);
+                    null, deliveryReasonText, user);
 
 			//记录流程
 			int transId = transactionService.findTransId(MzfEntity.PRODUCT, Integer.toString(porductId), user);
@@ -303,7 +303,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 
 	public void warehouseToTemporary(int productId, IUser user) throws BusinessException {
 		//更新库存状态
-		Map<String, Object> inventory = getInventoryForProduct(productId, null);
+		Map<String, Object> inventory = getInventory(productId, null);
 		Integer inventoryId = MapUtils.getInteger(inventory, "id");
 		inventoryService.updateStatus(new Integer[]{inventoryId}, InventoryStatus.deliveryTemporary, InventoryStatus.onStorage, "入库失败", null, user);
 
@@ -314,16 +314,16 @@ public class TemporaryInventoryService extends ProductInventoryService {
         String deliveryTemporaryReason = MapUtils.getString(inventory, "deliveryTemporaryReason");
         DeliveryTemporaryReason reason = null;
         try {
-            reason = DeliveryTemporaryReason.valueOf(deliveryTemporaryReason);
+            reason = MzfEnum.DeliveryTemporaryReason.valueOf(deliveryTemporaryReason);
         } catch (Exception e) {
             e.printStackTrace();
             logger.error(e.getMessage(), e);
         }
 
         String remark = "入临时库";
-        if(reason == DeliveryTemporaryReason.CID){
+        if(reason == MzfEnum.DeliveryTemporaryReason.CID){
             remark = "做证书入库";
-        }else if(reason==DeliveryTemporaryReason.QC){
+        }else if(reason== MzfEnum.DeliveryTemporaryReason.QC){
             remark = "QC入库";
         }
 
@@ -341,7 +341,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 	}
 
 	private void updateProductAndInventory(int productId, IUser user) throws BusinessException {
-		Map<String, Object> productInventory = getProductInventory(productId, null);
+		Map<String, Object> productInventory = getInventory(productId, null);
 //		ProductType ptype = ProductType.valueOf(MapUtils.getString(productInventory, "ptype"));
 //		String productNum = MapUtils.getString(productInventory, "num");
 //		if (ptype.isDiamond() && StringUtils.isNotBlank(productNum)) {
@@ -351,16 +351,16 @@ public class TemporaryInventoryService extends ProductInventoryService {
 		String deliveryTemporaryReason = MapUtils.getString(productInventory, "deliveryTemporaryReason");
 		DeliveryTemporaryReason reason = null;
 		try {
-			reason = DeliveryTemporaryReason.valueOf(deliveryTemporaryReason);
+			reason = MzfEnum.DeliveryTemporaryReason.valueOf(deliveryTemporaryReason);
 		} catch (Exception e) {
 			e.printStackTrace();
 			logger.error(e.getMessage(), e);
 		}
 
 		Map<String, Object> field = new HashMap<String, Object>();
-		if (reason == DeliveryTemporaryReason.QC) {
+		if (reason == MzfEnum.DeliveryTemporaryReason.QC) {
 			field.put("isQc", Boolean.toString(true));
-		} else if (reason == DeliveryTemporaryReason.CID) {
+		} else if (reason == MzfEnum.DeliveryTemporaryReason.CID) {
 			field.put("isCid", Boolean.toString(true));
 		}
 		if (MapUtils.isNotEmpty(field)) {

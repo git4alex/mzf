@@ -158,8 +158,8 @@ public class TransferSecondProductService extends TransferService {
 	}
 
 	@Override
-	public void cancelTransfer(Map<String, Object> transfer, IUser user) throws BusinessException {
-		super.cancelTransfer(transfer, user);
+	public void cancel(Map<String, Object> transfer, IUser user) throws BusinessException {
+		super.cancel(transfer, user);
 
 		Integer productId = MapUtils.getInteger(transfer, "targetId");
 

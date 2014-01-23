@@ -47,7 +47,7 @@ public class SaleController {
 	public Map findByProductNum(@PathVariable final String productNum, HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
-				Map<String, Object> product = productInventoryService.getProductInventoryByProductNumOnSale(productNum, this.getUser());
+				Map<String, Object> product = productInventoryService.getInventoryByNumOnSale(productNum, this.getUser());
 				this.put("product", product);
 			}
 		};

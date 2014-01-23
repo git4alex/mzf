@@ -32,62 +32,62 @@ import com.zonrong.transfer.product.service.TransferProductService;
 @RequestMapping(value="/code/transfer/product")
 public class TransferProductController {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
 	private TransferProductService transferProductService;
-	
+
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseBody
 	public Map applyTransfer(@RequestBody final Map<String, Object> transfer, HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
-				Integer productId = MapUtils.getInteger(transfer, "productId");		
+				Integer productId = MapUtils.getInteger(transfer, "productId");
 				transfer.remove("productId");
-				
+
 				IUser user = this.getUser();
-				transferProductService.applyTransfer(productId, user.getOrgId(), transfer, user);				
-			}			
+				transferProductService.applyTransfer(productId, user.getOrgId(), transfer, user);
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value="/fromCusOrder", method = RequestMethod.POST)
 	@ResponseBody
 	public Map applyTransferFromCusOrder(@RequestBody final Map transfer, HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
-				Integer productId = MapUtils.getInteger(transfer, "productId");		
+				Integer productId = MapUtils.getInteger(transfer, "productId");
 				transfer.remove("productId");
-				
+
 				IUser user = this.getUser();
-				transferProductService.applyTransferFromCusOrder(productId, user.getOrgId(), transfer, user);				
-			}			
+				transferProductService.applyTransferFromCusOrder(productId, user.getOrgId(), transfer, user);
+			}
 		};
-		return templete.operate();			
-	}	
-	
+		return templete.operate();
+	}
+
 	@RequestMapping(value = "/confirm/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map confirm(@PathVariable final int id, @RequestBody final Map<String, Object> approve, HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
-				transferProductService.confirmTransfer(id, approve, this.getUser());
-			}			
+				transferProductService.confirm(id, approve, this.getUser());
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value = "/approve/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map approve(@PathVariable final int id, @RequestBody final Map<String, Object> approve, HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
-				transferProductService.approveTransfer(id, approve, this.getUser());
-			}			
+				transferProductService.approve(id, approve, this.getUser());
+			}
 		};
-		return templete.operate();			
-	}	
-	
+		return templete.operate();
+	}
+
 	@RequestMapping(value="/transfer", method = RequestMethod.POST)
 	@ResponseBody
 	public Map create(@RequestBody final Map<String, Object> transfer, HttpServletRequest request) {
@@ -96,11 +96,11 @@ public class TransferProductController {
 				List<Integer> list = (List)MapUtils.getObject(transfer, "productIds");
 				Integer[] productIds = list.toArray(new Integer[]{});
 				transferProductService.transfer(productIds, transfer, this.getUser());
-			}			
+			}
 		};
-		return templete.operate();			
-	}	
-	
+		return templete.operate();
+	}
+
 	@RequestMapping(value = "/send", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map send(@RequestBody final Integer[] transferIds, HttpServletRequest request) {
@@ -111,11 +111,11 @@ public class TransferProductController {
 			protected void doSomething() throws BusinessException {
 				int dispatchId = transferProductService.send(transferIds, dispatch, this.getUser());
 				this.put("dispatchId", dispatchId);
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value = "/sendByStore", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map confirmSend(@RequestBody final Integer[] transferIds, HttpServletRequest request) {
@@ -124,22 +124,22 @@ public class TransferProductController {
 			protected void doSomething() throws BusinessException {
 				Integer[] dispatchIds = transferProductService.sendByStore(transferIds, remark, this.getUser());
 				this.put("dispatchId", dispatchIds);
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value = "/receive/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map receive(@PathVariable final int id, HttpServletRequest request) {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
 				transferProductService.receive(id, this.getUser());
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value = "/getPrintData/{dispatchId}", method = RequestMethod.GET)
 	@ResponseBody
 	public Map getPrintData(@PathVariable final int dispatchId, HttpServletRequest request) {
@@ -147,9 +147,9 @@ public class TransferProductController {
 			protected void doSomething() throws BusinessException {
 				Map<String, Object> dispatch = transferProductService.getPrintData(dispatchId, this.getUser());
 				this.put("dispatch", dispatch);
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
 	@RequestMapping(value = "/getSendProductData", method = RequestMethod.PUT)
 	@ResponseBody
@@ -158,11 +158,11 @@ public class TransferProductController {
 			protected void doSomething() throws BusinessException {
 				Map<String, Object> data = transferProductService.getSendProductData(dispatchIds, this.getUser());
 				this.put("data", data);
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value = "/getStoreBackProductData", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map getStoreBackProductData(@RequestBody final int dispatchId, HttpServletRequest request) {
@@ -170,9 +170,9 @@ public class TransferProductController {
 			protected void doSomething() throws BusinessException {
 				Map<String, Object> data = transferProductService.getStoreBackProductData(dispatchId, this.getUser());
 				this.put("data", data);
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
 	@RequestMapping(value = "/updateTransferStatusByDisNum", method = RequestMethod.PUT)
 	@ResponseBody
@@ -182,11 +182,11 @@ public class TransferProductController {
 				Map<String, Object> where = new HashMap<String, Object>();
 				where.put("dispatchId", dispatchId);
 				transferProductService.updateTransferStatus(where, this.getUser());
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
+
 	@RequestMapping(value = "/updateTransferStatus", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map updateTransferStatus(@RequestBody final Integer[] dispatchIds, HttpServletRequest request) {
@@ -195,12 +195,12 @@ public class TransferProductController {
 				Map<String, Object> where = new HashMap<String, Object>();
 				where.put("id", dispatchIds);
 				transferProductService.updateTransferStatus(where, this.getUser());
-			}			
+			}
 		};
-		return templete.operate();			
+		return templete.operate();
 	}
-	
-	
+
+
 }
 
 

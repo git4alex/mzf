@@ -36,9 +36,9 @@ import com.zonrong.transfer.secondProduct.service.TransferSecondProductService;
 @RequestMapping(value="/code/transfer")
 public class TransferController {
 	private Logger logger = Logger.getLogger(this.getClass());
-	
+
 	@Resource
-	private EntityService entityService;	
+	private EntityService entityService;
 	@Resource
 	private TransferProductService transferProductService;
 	@Resource
@@ -49,7 +49,7 @@ public class TransferController {
 	private TransferSecondProductService transferSecondProductService;
 	@Resource
 	private TransferMaterialService transferMaterialService;
-	
+
 	@RequestMapping(value = "/cancel/{id}", method = RequestMethod.PUT)
 	@ResponseBody
 	public Map cancel(@PathVariable final int id, HttpServletRequest request) {
@@ -58,22 +58,22 @@ public class TransferController {
 				Map<String, Object> transfer = entityService.getById(MzfEntity.TRANSFER_VIEW, id, User.getSystemUser());
 				TransferTargetType type = TransferTargetType.valueOf(MapUtils.getString(transfer, "targetType"));
 
-				if (type == TransferTargetType.product) {					
-					transferProductService.cancelTransfer(transfer, this.getUser());
-				} else if (type == TransferTargetType.maintainProduct) {					
-					transferMaintainProductService.cancelTransfer(transfer, this.getUser());
-				} else if (type == TransferTargetType.secondGold) {						
-					transferSecondGoldService.cancelTransfer(transfer, this.getUser());
-				} else if (type == TransferTargetType.secondProduct) {					
-					transferSecondProductService.cancelTransfer(transfer, this.getUser());
-				} else if (type == TransferTargetType.material) {					
-					transferMaterialService.cancelTransfer(transfer, this.getUser());
+				if (type == TransferTargetType.product) {
+					transferProductService.cancel(transfer, this.getUser());
+				} else if (type == TransferTargetType.maintainProduct) {
+					transferMaintainProductService.cancel(transfer, this.getUser());
+				} else if (type == TransferTargetType.secondGold) {
+					transferSecondGoldService.cancel(transfer, this.getUser());
+				} else if (type == TransferTargetType.secondProduct) {
+					transferSecondProductService.cancel(transfer, this.getUser());
+				} else if (type == TransferTargetType.material) {
+					transferMaterialService.cancel(transfer, this.getUser());
 				}
-				
-			}			
+
+			}
 		};
-		return templete.operate();			
-	}	
+		return templete.operate();
+	}
 }
 
 

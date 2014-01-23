@@ -71,8 +71,8 @@ public class TransferMaterialService extends TransferService {
 	 * @throws BusinessException
 	 */
 	@Override
-	public void cancelTransfer(Map<String, Object> transfer, IUser user) throws BusinessException {
-		super.cancelTransfer(transfer, user);
+	public void cancel(Map<String, Object> transfer, IUser user) throws BusinessException {
+		super.cancel(transfer, user);
 
 		//解锁原料
 		Integer materialId = MapUtils.getInteger(transfer, "targetId");

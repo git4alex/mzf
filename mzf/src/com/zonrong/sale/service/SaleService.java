@@ -24,7 +24,7 @@ import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.inventory.service.MaterialInventoryService;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.inventory.service.SecondGoldInventoryService;
 import com.zonrong.inventory.service.TreasuryEarnestService;
 import com.zonrong.inventory.service.TreasuryService;
@@ -289,7 +289,7 @@ public class SaleService {
 		materialInventoryService.delivery(MzfEnum.BizType.sell, materialId, quantity, cost, user.getOrgId(), remark, user);
 	}
 	private void sellSecondGold(String saleNum, Integer targetId, Map<String, Object> detail, IUser user) throws BusinessException {
-		GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
+		GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 		BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "goldWeight"));
 		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
 		String goldPrice = MapUtils.getString(detail, "goldPrice");
@@ -526,7 +526,7 @@ public class SaleService {
             String goldClass = MapUtils.getString(detail, "goldClass");
 			detail.put("goldClassText", null);
 			if (StringUtils.isNotBlank(goldClass)) {
-				GoldClass clazz = GoldClass.valueOf(goldClass);
+				GoldClass clazz = MzfEnum.GoldClass.valueOf(goldClass);
 				detail.put("goldClassText", clazz.getText());
 			}
 		}

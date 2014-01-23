@@ -12,7 +12,6 @@ import com.zonrong.core.log.FlowLogService;
 import com.zonrong.core.log.TransactionService;
 import com.zonrong.core.security.IUser;
 import com.zonrong.core.sql.service.SimpleSqlService;
-import com.zonrong.demand.product.service.ProductDemandProcessService.DemandProcessType;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.MaintainInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
@@ -66,7 +65,7 @@ public class OEMOrderService {
 	private FlowLogService logService;
 
     public Integer createOrderByDemand(Map<String, Object> order, Integer[] demandIds, IUser user) throws BusinessException {
-		return purchaseOrderService.createOrderByDemand(order, demandIds, DemandProcessType.OEM, user);
+		return purchaseOrderService.createOrderByDemand(order, demandIds, MzfEnum.DemandProcessType.OEM, user);
 	}
 
 	public int createOrder(Map<String, Object> order, VendorOrderType type, IUser user) throws BusinessException {

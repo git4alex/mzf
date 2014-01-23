@@ -1,7 +1,7 @@
 package com.zonrong.secondProduct.split.service;
 
 import com.zonrong.basics.StatusCarrier;
-import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
+import com.zonrong.common.utils.MzfEnum.RawmaterialType;
 import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
@@ -17,7 +17,7 @@ import com.zonrong.core.templete.SaveTemplete;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.SecondProductInventoryService;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.purchase.service.DetailCRUDService.VendorOrderDetailStatus;
@@ -245,9 +245,9 @@ public class SplitService extends BillStatusService<SplitStatus> {
 		for (Map<String, Object> detail : list) {
 			detail.remove("id");
 			detail.remove("splitId");
-			RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(detail, "type"));
-			if (type == RawmaterialType.gold) {
-				GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
+			RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(detail, "type"));
+			if (type == MzfEnum.RawmaterialType.gold) {
+				GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 				String key = type.toString() + splitChar + goldClass.toString();
 				Map<String, Object> map = detail;
 				if (tempMap.containsKey(key)) {
@@ -264,8 +264,8 @@ public class SplitService extends BillStatusService<SplitStatus> {
 
 				map.put("cost", preCost.add(cost));
 				map.put("quantity", preQuantity.add(quantity));
-			} else if (type == RawmaterialType.parts) {
-				GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
+			} else if (type == MzfEnum.RawmaterialType.parts) {
+				GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 				String partsType = MapUtils.getString(detail, "partsType");
 				String partsStandard = MapUtils.getString(detail, "partsStandard");
 				String key =  type.toString() + splitChar + goldClass.toString() + splitChar + partsType + splitChar + partsStandard;
@@ -284,7 +284,7 @@ public class SplitService extends BillStatusService<SplitStatus> {
 
 				map.put("cost", preCost.add(cost));
 				map.put("quantity", preQuantity.add(quantity));
-			} else if (type == RawmaterialType.gravel) {
+			} else if (type == MzfEnum.RawmaterialType.gravel) {
 				String gravelStandard = MapUtils.getString(detail, "gravelStandard");
 				String key = type.toString() + splitChar + gravelStandard;
 				Map<String, Object> map = detail;
@@ -305,7 +305,7 @@ public class SplitService extends BillStatusService<SplitStatus> {
 				map.put("weight", preWeight.add(weight));
 				map.put("cost", preCost.add(cost));
 				map.put("quantity", preQuantity.add(quantity));
-			} else if (type == RawmaterialType.nakedDiamond) {
+			} else if (type == MzfEnum.RawmaterialType.nakedDiamond) {
 				summary.add(detail);
 			}
 		}

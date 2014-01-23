@@ -15,7 +15,7 @@ import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.system.service.BizCodeService;
@@ -59,61 +59,31 @@ public class RawmaterialService {
 	@Resource
 	private Dao dao;
 
-	public enum RawmaterialType {
-		nakedDiamond("裸石", "RD"),			//裸石
-		gold("金料", ""),				//金料
-		parts("配件", "RP"),				//配件
-		gravel("碎石", "RSD"),				//碎石
-		secondGold("旧金", "");			//旧金（旧金和原料一同记录在原料表中）
-
-		private String name;
-		private String prefix;
-
-		RawmaterialType(String name, String prefix) {
-			this.name = name;
-			this.prefix = prefix;
-		}
-		public String getName() {
-			return name;
-		};
-
-		public String getPrefix() {
-			return prefix;
-		};
-	}
-
-	public enum RawmaterialStatus {
-		free,			//正常
-		locked,			//锁定
-		canedled,		//核销
-        sold            //已售
-	}
-
-	public int createRawmaterial(Map<String, Object> rawmaterial, IUser user) throws BusinessException {
+    public int createRawmaterial(Map<String, Object> rawmaterial, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
-		RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "type"));
-		String num = null;
-		if (type == RawmaterialType.nakedDiamond) {
+		MzfEnum.RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "type"));
+		String num;
+		if (type == MzfEnum.RawmaterialType.nakedDiamond) {
 			num = generateNakedDiamondNum();
-		} else if (type == RawmaterialType.parts) {
-			GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+		} else if (type == MzfEnum.RawmaterialType.parts) {
+			GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
 			String partsStandard = MapUtils.getString(rawmaterial, "partsStandard");
 			num = generatePartsNum(partsStandard, goldClass);
-		} else if (type == RawmaterialType.gravel) {
+		} else if (type == MzfEnum.RawmaterialType.gravel) {
 			String gravelStandard = MapUtils.getString(rawmaterial, "gravelStandard");
 			num = generateGravStringNum(gravelStandard);
-		} else if (type == RawmaterialType.gold) {
-			GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+		} else if (type == MzfEnum.RawmaterialType.gold) {
+			GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
 			num = generateGoldNum(goldClass);
-		}  else if (type == RawmaterialType.secondGold) {
-			GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+		}  else if (type == MzfEnum.RawmaterialType.secondGold) {
+			GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
 			num = "OLD" + generateGoldNum(goldClass);
 		} else {
 			throw new BusinessException("不支持该原料类型，无法生成原料条码");
 		}
 
 		rawmaterial.put("num", num);
-		rawmaterial.put("status", RawmaterialStatus.free);
+		rawmaterial.put("status", MzfEnum.RawmaterialStatus.free);
 		String id = entityService.create(metadata, rawmaterial, user);
 
 		return Integer.parseInt(id);
@@ -133,7 +103,7 @@ public class RawmaterialService {
 
 		String remark = "由商品[" + num + "]转成原料裸石, 用于配料";
 		Map<String, Object> rawmaterial = new HashMap<String, Object>();
-		rawmaterial.put("type", RawmaterialType.nakedDiamond);
+		rawmaterial.put("type", MzfEnum.RawmaterialType.nakedDiamond);
 		rawmaterial.put("shape", MapUtils.getString(product, "diamondShape"));
 		rawmaterial.put("color", MapUtils.getString(product, "diamondColor"));
 		rawmaterial.put("clean", MapUtils.getString(product, "diamondClean"));
@@ -145,18 +115,13 @@ public class RawmaterialService {
 		return createRawmaterial(rawmaterial, user);
 	}
 
-	public void updateRawmaterial(int id, Map<String, Object> rawmaterial, IUser user) throws BusinessException {
-		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
-		entityService.updateById(metadata, Integer.toString(id), rawmaterial, user);
-	}
-
 	public Integer findGold(GoldClass goldClass, IUser user) throws BusinessException {
 		if (goldClass == null) {
 			throw new BusinessException("未指定金料成色");
 		}
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
 		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("type", RawmaterialType.gold);
+		where.put("type", MzfEnum.RawmaterialType.gold);
 		where.put("goldClass", goldClass);
 		List<Map<String, Object>> list = entityService.list(metadata, where, null, user.asSystem());
 
@@ -175,7 +140,7 @@ public class RawmaterialService {
 		}
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
 		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("type", RawmaterialType.gravel);
+		where.put("type", MzfEnum.RawmaterialType.gravel);
 		where.put("gravelStandard", gravelStandard);
 		List<Map<String, Object>> list = entityService.list(metadata, where, null, user.asSystem());
 
@@ -200,7 +165,7 @@ public class RawmaterialService {
 		}
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
 		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("type", RawmaterialType.parts);
+		where.put("type", MzfEnum.RawmaterialType.parts);
 		where.put("partsType", partsType);
 		where.put("goldClass", goldClass);
 		where.put("partsStandard", partsStandard);
@@ -215,14 +180,14 @@ public class RawmaterialService {
 		}
 	}
 
-	public Integer findSecondGold(GoldClass goldClass, IUser user) throws BusinessException {
+	public Integer getSecondGoldIdByGoldClass(GoldClass goldClass, IUser user) throws BusinessException {
 		if (goldClass == null) {
 			throw new BusinessException("未指定旧金的金料成色");
 		}
 
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
 		Map<String, Object> where = new HashMap<String, Object>();
-		where.put("type", RawmaterialType.secondGold);
+		where.put("type", MzfEnum.RawmaterialType.secondGold);
 		where.put("goldClass", goldClass);
 		List<Map<String, Object>> list = entityService.list(metadata, where, null, user.asSystem());
 
@@ -235,7 +200,16 @@ public class RawmaterialService {
 		}
 	}
 
-	public void updateStatus(Integer[] rawmaterialId, RawmaterialStatus status, String statusRemark, IUser user) throws BusinessException {
+    public GoldClass getGoldClassByTargetId(int id,IUser user) throws BusinessException {
+        Map<String,Object> secondGold = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
+        if(secondGold == null){
+            return null;
+        }
+
+        return MzfEnum.GoldClass.valueOf(MapUtils.getString(secondGold,"goldClass"));
+    }
+
+	public void updateStatus(Integer[] rawmaterialId, MzfEnum.RawmaterialStatus status, String statusRemark, IUser user) throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("status", status);
@@ -250,14 +224,14 @@ public class RawmaterialService {
 		if (ArrayUtils.isEmpty(rawmaterialId)) {
 			return;
 		}
-		updateStatus(rawmaterialId, RawmaterialStatus.free, remark, user);
+		updateStatus(rawmaterialId, MzfEnum.RawmaterialStatus.free, remark, user);
 	}
 
 	public void lockDiamond(Integer[] rawmaterialId, String remark, IUser user) throws BusinessException {
 		if (ArrayUtils.isEmpty(rawmaterialId)) {
 			return;
 		}
-		updateStatus(rawmaterialId, RawmaterialStatus.locked, remark, user);
+		updateStatus(rawmaterialId, MzfEnum.RawmaterialStatus.locked, remark, user);
 	}
 
 
@@ -270,8 +244,8 @@ public class RawmaterialService {
 	 */
 	public void translateToProduct(int rawmaterialId, Map<String, Object> target, IUser user) throws BusinessException {
 		Map<String, Object> source = entityService.getById(MzfEntity.RAWMATERIAL, rawmaterialId, user);
-		RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(source, "type"));
-		if (type != RawmaterialType.nakedDiamond) {
+		MzfEnum.RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(source, "type"));
+		if (type != MzfEnum.RawmaterialType.nakedDiamond) {
 			throw new BusinessException("只有裸石才能转化为商品");
 		}
 		//货品信息转化信息
@@ -352,14 +326,14 @@ public class RawmaterialService {
 	private String generateNakedDiamondNum() throws BusinessException {
 		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.RAWMATERIAL);
 
-		String prefix = RawmaterialType.nakedDiamond.getPrefix();
+		String prefix = MzfEnum.RawmaterialType.nakedDiamond.getPrefix();
 		String col = metadata.getColumnName("num");
 		String typeCol = metadata.getColumnName("type");
 		QueryParam qp = new QueryParam();
 		qp.setTableName(metadata.getTableName());
 		qp.addColumn("max(" + col + ")", "num");
 		Filter filter = Filter.field(col).like(prefix + "%");
-		filter.and(Filter.field(typeCol).eq(RawmaterialType.nakedDiamond));
+		filter.and(Filter.field(typeCol).eq(MzfEnum.RawmaterialType.nakedDiamond));
 		qp.setFilter(filter);
 
 		Map<String, Object> map = dao.get(qp);
@@ -392,7 +366,7 @@ public class RawmaterialService {
 		if (goldClass == null) {
 			throw new BusinessException("未指定金料成色");
 		}
-		String prefix = RawmaterialType.parts.getPrefix();
+		String prefix = MzfEnum.RawmaterialType.parts.getPrefix();
 		String goldClassName = bizCodeService.getBizName("config_goldClass", goldClass.toString());
 		if (StringUtils.isBlank(goldClassName)) {
 			throw new BusinessException("未取到对应的金料成色编码，无法生成原料条码");
@@ -409,7 +383,7 @@ public class RawmaterialService {
 		if (StringUtils.isBlank(gravelStandard)) {
 			throw new BusinessException("未指定碎石规格");
 		}
-		String prefix = RawmaterialType.gravel.getPrefix();
+		String prefix = MzfEnum.RawmaterialType.gravel.getPrefix();
 		String gravelStandardName = bizCodeService.getBizName("config_gravelStandard", gravelStandard);
 		if (StringUtils.isBlank(gravelStandardName)) {
 			throw new BusinessException("未取到对应的碎石规格编码，无法生成原料条码");

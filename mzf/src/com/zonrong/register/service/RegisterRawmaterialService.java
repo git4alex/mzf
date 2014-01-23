@@ -1,7 +1,7 @@
 package com.zonrong.register.service;
 
 import com.zonrong.basics.rawmaterial.service.RawmaterialService;
-import com.zonrong.basics.rawmaterial.service.RawmaterialService.RawmaterialType;
+import com.zonrong.common.utils.MzfEnum.RawmaterialType;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
 import com.zonrong.common.utils.MzfEnum.TargetType;
@@ -15,7 +15,7 @@ import com.zonrong.entity.code.IEntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.common.utils.MzfEnum.BizType;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
-import com.zonrong.inventory.service.RawmaterialInventoryService.GoldClass;
+import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.purchase.dosing.service.DosingService;
 import com.zonrong.system.service.BizCodeService;
@@ -72,23 +72,23 @@ public class RegisterRawmaterialService {
         String oemOrderNum = MapUtils.getString(oemOrderDosing,"orderNum");
         String remark = "委外加工订单编号：["+oemOrderNum+"]";
         //更新库存
-        RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "rawmaterialType"));
+        RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "rawmaterialType"));
         int rawmaterialId = -1;
         BigDecimal quantity = new BigDecimal(1);
-        if(type == RawmaterialType.nakedDiamond){
+        if(type == MzfEnum.RawmaterialType.nakedDiamond){
             rawmaterialId = MapUtils.getInteger(rawmaterial, "rawmaterialId", -1);
             if(rawmaterialId<0){
                 throw new BusinessException("原料Id为空，无法退库");
             }
 
             Map<String,Object> v = new HashMap<String, Object>();
-            v.put("status",RawmaterialService.RawmaterialStatus.free);
+            v.put("status", MzfEnum.RawmaterialStatus.free);
             v.put("statusRemark","正常");
             entityService.updateById(MzfEntity.RAWMATERIAL,rawmaterialId+"",v,user);
 
             rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.oemReturn, rawmaterialId, user.getOrgId(), remark, user);
-        }else if(type == RawmaterialType.gold){
-            GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+        }else if(type == MzfEnum.RawmaterialType.gold){
+            GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
             Integer dbRawmaterialId = rawmaterialService.findGold(goldClass, user);
             if (dbRawmaterialId == null) {
                 rawmaterial.put("cost", 0);
@@ -99,7 +99,7 @@ public class RegisterRawmaterialService {
 
             quantity = new BigDecimal(MapUtils.getString(rawmaterial, "dosingQuantity"));
             rawmaterialInventoryService.warehouseGold(MzfEnum.BizType.oemReturn, rawmaterialId, quantity,new BigDecimal(0), remark, user);
-        }else if(type == RawmaterialType.gravel){
+        }else if(type == MzfEnum.RawmaterialType.gravel){
             String gravelStandard = MapUtils.getString(rawmaterial, "gravelStandard");
             Integer dbRawmaterialId = rawmaterialService.findGravel(gravelStandard, user);
             if (dbRawmaterialId == null) {
@@ -113,12 +113,12 @@ public class RegisterRawmaterialService {
             quantity = new BigDecimal(MapUtils.getString(rawmaterial, "dosingQuantity"));
             BigDecimal weight = new BigDecimal(MapUtils.getString(rawmaterial, "dosingWeight"));
             rawmaterialInventoryService.warehouseGravel(MzfEnum.BizType.oemReturn, rawmaterialId, quantity, new BigDecimal(0), weight, remark, user);
-        }else if(type == RawmaterialType.parts){
+        }else if(type == MzfEnum.RawmaterialType.parts){
             String partsType = MapUtils.getString(rawmaterial, "partsType");
             String partsStandard = MapUtils.getString(rawmaterial, "partsStandard");
             GoldClass goldClass = null;
             try {
-                goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+                goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
             } catch (Exception e) {
                 if (logger.isDebugEnabled()) {
                     logger.debug(e.getMessage());
@@ -190,9 +190,9 @@ public class RegisterRawmaterialService {
 		//核销订单明细
 		cancelRawmaterialOrderDetail(dbDetail, rawmaterialId, user);
 
-		RawmaterialType type = RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "type"));
+		RawmaterialType type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "type"));
 		BigDecimal quantity = new BigDecimal(1);
-		if (type != RawmaterialType.nakedDiamond) {
+		if (type != MzfEnum.RawmaterialType.nakedDiamond) {
 			quantity = new BigDecimal(MapUtils.getString(rawmaterial, "quantity"));
 		}
 		//记录操作日志
@@ -244,7 +244,7 @@ public class RegisterRawmaterialService {
 	private int registerRawmaterial(BizType bizType,Map<String, Object> rawmaterial, String remark, IUser user) throws BusinessException {
 		RawmaterialType type;
 		try {
-			type = RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "type"));
+			type = MzfEnum.RawmaterialType.valueOf(MapUtils.getString(rawmaterial, "type"));
 		} catch (Exception e) {
 			throw new BusinessException("未指定原料类型");
 		}
@@ -260,12 +260,12 @@ public class RegisterRawmaterialService {
 
 		//原料登记
 		int rawmaterialId;
-		if (type == RawmaterialType.nakedDiamond) {
+		if (type == MzfEnum.RawmaterialType.nakedDiamond) {
             rawmaterial.put("karatUnitPrice",MapUtils.getFloatValue(rawmaterial,"unitPrice"));
 			rawmaterialId = rawmaterialService.createRawmaterial(rawmaterial, user);
 			rawmaterialInventoryService.warehouseDiamond(bizType, rawmaterialId, user.getOrgId(), remark, user);
-		} else if (type == RawmaterialType.gold) {
-			GoldClass goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+		} else if (type == MzfEnum.RawmaterialType.gold) {
+			GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
 			Integer dbRawmaterialId = rawmaterialService.findGold(goldClass, user);
 			if (dbRawmaterialId == null) {
 				rawmaterial.put("cost", 0);
@@ -276,12 +276,12 @@ public class RegisterRawmaterialService {
 
 			BigDecimal quantity = new BigDecimal(MapUtils.getString(rawmaterial, "quantity"));
 			rawmaterialInventoryService.warehouseGold(bizType, rawmaterialId, quantity, cost, remark, user);
-		} else if (type == RawmaterialType.parts) {
+		} else if (type == MzfEnum.RawmaterialType.parts) {
 			String partsType = MapUtils.getString(rawmaterial, "partsType");
 			String partsStandard = MapUtils.getString(rawmaterial, "partsStandard");
 			GoldClass goldClass = null;
 			try {
-				goldClass = GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
+				goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
 			} catch (Exception e) {
 				if (logger.isDebugEnabled()) {
 					logger.debug(e.getMessage());
@@ -297,7 +297,7 @@ public class RegisterRawmaterialService {
 
 			BigDecimal quantity = new BigDecimal(MapUtils.getString(rawmaterial, "quantity"));
 			rawmaterialInventoryService.warehouseParts(bizType, rawmaterialId, quantity, cost, remark, user);
-		} else if (type == RawmaterialType.gravel) {
+		} else if (type == MzfEnum.RawmaterialType.gravel) {
 			String gravelStandard = MapUtils.getString(rawmaterial, "gravelStandard");
 			Integer dbRawmaterialId = rawmaterialService.findGravel(gravelStandard, user);
 			if (dbRawmaterialId == null) {

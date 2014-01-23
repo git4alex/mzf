@@ -519,6 +519,65 @@ public interface MzfEnum {
         delivery,                    //强制出库
         vendorSell                  //供应商销售
     }
+
+    enum RawmaterialType {
+        nakedDiamond("裸石", "RD"),			//裸石
+        gold("金料", ""),				//金料
+        parts("配件", "RP"),				//配件
+        gravel("碎石", "RSD"),				//碎石
+        secondGold("旧金", "");			//旧金（旧金和原料一同记录在原料表中）
+
+        private String name;
+        private String prefix;
+
+        RawmaterialType(String name, String prefix) {
+            this.name = name;
+            this.prefix = prefix;
+        }
+        public String getName() {
+            return name;
+        };
+
+        public String getPrefix() {
+            return prefix;
+        };
+    }
+
+    enum RawmaterialStatus {
+        free,			//正常
+        locked,			//锁定
+        canedled,		//核销
+sold            //已售
+    }
+
+    enum GoldClass {
+        pt900,			//铂900
+        pt950,			//铂950
+        k750,			//金750
+        pd950,			//钯
+        silver,			//银
+        gold;			//黄金
+
+        public String getText() {
+            return BizCodeService.getBizName("goldClass", this.toString());
+        }
+    }
+
+    enum DeliveryTemporaryReason {
+        QC,
+        CID
+    }
+
+    /**
+     * 要货单处理方式
+     */
+    enum DemandProcessType {
+        allocate,	//库存调拨
+        replaceAllocate,  //替代调拨
+        purchase,	//采购
+        OEM,		//委外
+        reject		//驳回
+    }
 }
 
 

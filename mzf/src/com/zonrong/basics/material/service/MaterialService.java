@@ -52,8 +52,7 @@ public class MaterialService {
 
 	public int addMaterial(Map<String, Object> material, IUser user) throws BusinessException {
 		int materialId = createMaterial(material, user);
-		//入库数量为0
-		materialInventoryService.warehouse(MzfEnum.BizType.addMaterial, materialId, new BigDecimal(0), new BigDecimal(0), "价格", null, user);
+		materialInventoryService.warehouse(MzfEnum.BizType.addMaterial, materialId, new BigDecimal(0), new BigDecimal(0), null, user);
 		return materialId;
 	}
 
