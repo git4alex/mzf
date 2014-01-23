@@ -268,13 +268,13 @@ public class TemporaryInventoryService extends ProductInventoryService {
 		List<Map<String, Object>> inventoryList = list(productIds, null);
 		List<Integer> inventoryIds = new ArrayList<Integer>();
 		for (Map<String, Object> inventory : inventoryList) {
-			Integer dbInventoryId = MapUtils.getInteger(inventory, "id");
+			Integer dbInventoryId = MapUtils.getInteger(inventory, "inventoryId");
 			inventoryIds.add(dbInventoryId);
 
 			String deliveryReasonText = BizCodeService.getBizName("deliveryTemporaryReason", deliveryTemporaryReason);
 			//记录库存流水
 			StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
-			Integer porductId = MapUtils.getInteger(inventory, "targetId");
+			Integer porductId = MapUtils.getInteger(inventory, "id");
 
 			Integer orgId = MapUtils.getInteger(inventory, "orgId");
 			inventoryService.createFlow(MzfEnum.BizType.deliveryFromTemporary, orgId,new BigDecimal(1),
@@ -304,7 +304,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 	public void warehouseToTemporary(int productId, IUser user) throws BusinessException {
 		//更新库存状态
 		Map<String, Object> inventory = getInventory(productId, null);
-		Integer inventoryId = MapUtils.getInteger(inventory, "id");
+		Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
 		inventoryService.updateStatus(new Integer[]{inventoryId}, InventoryStatus.deliveryTemporary, InventoryStatus.onStorage, "入库失败", null, user);
 
 		//更新商品QC和CID状态
@@ -409,7 +409,7 @@ public class TemporaryInventoryService extends ProductInventoryService {
 		where.put("status", DosingStatus.canceled);
 		List<Map<String, Object>> list1 = entityService.list(MzfEntity.DOSING, where, null, user.asSystem());
 		if (CollectionUtils.isNotEmpty(list1)) {
-			throw new BusinessException("已经核销原料，不鞥年返厂");
+			throw new BusinessException("已经核销原料，不能返厂");
 		}
 
 		//更新采购/委外订单明细状态，使其可以重新收货

@@ -70,8 +70,7 @@ public class RawmaterialInventoryService {
 		return id;
 	}
 
-	public void warehouseGold(BizType bizType, int rawmaterialId,
-			BigDecimal quantity, BigDecimal cost, String remark, IUser user)
+	public void warehouseGold(BizType bizType, int rawmaterialId,BigDecimal quantity, BigDecimal cost, String remark, IUser user)
 			throws BusinessException {
 		StorageType storageType = StorageType.rawmaterial_gold;
 		warehouseByQuantity(bizType, storageType, rawmaterialId, quantity, cost, remark, user);
@@ -256,7 +255,6 @@ public class RawmaterialInventoryService {
         entityService.updateById(MzfEntity.RAWMATERIAL,rid,value,user);
 
         //记录出库
-
         inventoryService.createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.delivery, outCost, remark, user);
 
 		//记录操作日志

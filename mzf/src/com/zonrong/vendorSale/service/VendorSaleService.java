@@ -17,6 +17,7 @@ import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -103,8 +104,8 @@ public class VendorSaleService {
 
         for(Object detail:details){
             Map<String,Object> d = (Map<String, Object>) detail;
-            String id = MapUtils.getString(d,"targetId");
-            if(StringUtils.isBlank(id)){
+            Integer id = MapUtils.getInteger(d,"targetId");
+            if(id == null){
                 throw new BusinessException("原料Id为空");
             }
             String inventoryId = MapUtils.getString(d,"inventoryId");
@@ -122,7 +123,9 @@ public class VendorSaleService {
             entityService.create(new EntityCode("vendorSaleGoldDetail"), values, user);//在实体定义中进行字段对应
 
             //金料出库
-            deliveryGold(inventoryId,quantity,num,user);
+            String remark = "订单号：["+num+"]";
+            rawmaterialInventoryService.deliveryRawmaterialById(MzfEnum.BizType.vendorSell,new BigDecimal(quantity),new BigDecimal(quantity),id,remark,user);
+            //deliveryGold(inventoryId,quantity,num,user);
         }
     }
 
@@ -243,12 +246,14 @@ public class VendorSaleService {
         //获取库存记录
         Map<String,Object> values = new HashMap<String,Object>();
         values.put("inventoryId",inventoryId);
-        List<Map<String,Object>> inventorys = entityService.list(MzfEntity.RAWMATERIAL_INVENTORY_VIEW,values,null,user);
+//        List<Map<String,Object>> inventorys = entityService.list(MzfEntity.RAWMATERIAL_INVENTORY_VIEW,values,null,user);
+        List<Map<String,Object>> inventorys = rawmaterialInventoryService.listRawmaterialInventory(new Integer[]{Integer.valueOf(inventoryId)},user.getOrgId(),user);
         if(CollectionUtils.isEmpty(inventorys)){
             throw new BusinessException("金料出库时，库存记录为空");
         }
 
         Map<String,Object> inventory = inventorys.get(0);
+        //Map<String,Object> inventory = rawmaterialInventoryService.getInventory();
         //计算出库成本
         float dbQuantity = MapUtils.getFloatValue(inventory,"quantity",0);
         if(dbQuantity < quantity){

@@ -125,12 +125,12 @@ public class ProductInventoryService {
             throw new BusinessException("非本部门商品，不允许发货");
         }
 
-        Integer inventoryId = MapUtils.getInteger(inventory, "id");
+        Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
         inventoryService.updateStatus(new Integer[]{inventoryId}, InventoryStatus.onStorage, InventoryStatus.onPassage, "发货失败", remark, user);
 
-        StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
-        inventoryService.createFlow(MzfEnum.BizType.send, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
-                storageType, TargetType.product, Integer.toString(productId), null, remark, user);
+//        StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
+//        inventoryService.createFlow(MzfEnum.BizType.send, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
+//                storageType, TargetType.product, Integer.toString(productId), null, remark, user);
     }
 
     public void send(int productId, int targetOrgId, String transferNum, IUser user) throws BusinessException {
@@ -204,12 +204,12 @@ public class ProductInventoryService {
     public void deliveryByProductId(BizType bizType, int productId, String remark, InventoryStatus priorStatus, IUser user) throws BusinessException {
         //删除库存
         Map<String, Object> inventory = getInventory(productId, null);
-        InventoryStatus status = InventoryStatus.valueOf(MapUtils.getString(inventory, "status"));
+        InventoryStatus status = InventoryStatus.valueOf(MapUtils.getString(inventory, "inventoryStatus"));
         if (status != priorStatus) {
             throw new BusinessException("商品库存状态为" + status.getText() + ", 不能进行出库操作");
         }
 
-        Integer inventoryId = MapUtils.getInteger(inventory, "id");
+        Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
         entityService.deleteById(inventoryService.getEntityMetadataOfInventory(), inventoryId.toString(), user);
 
         Integer orgId = MapUtils.getInteger(inventory, "orgId");
@@ -217,15 +217,15 @@ public class ProductInventoryService {
         StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
         inventoryService.createFlow(bizType, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
                 storageType, TargetType.product, Integer.toString(productId), null, remark, user);
-        remark = "商品强制出库备注：" + remark;
+
         boolean isStore = mzfOrgService.isStore(orgId);
         if (isStore) {
             showcaseCheckService.checkOut(productId, remark, user);
         }
-        //deliveryByProductId(bizType, productId, remark, priorStatus, true, user);
+
         if (bizType.equals(MzfEnum.BizType.delivery)) {
             //记录操作日志
-            businessLogService.log("商品强制出库(商品库存)", "商品编号：" + productId, user);
+            businessLogService.log(remark, "商品编号：" + productId, user);
         }
     }
 
@@ -346,5 +346,3 @@ public class ProductInventoryService {
         return ptype.getStorageType();
     }
 }
-
-

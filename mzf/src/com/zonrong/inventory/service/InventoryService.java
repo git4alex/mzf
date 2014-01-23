@@ -15,6 +15,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -33,6 +34,7 @@ import java.util.Map;
  */
 @Service
 public class InventoryService {
+    private Logger logger = Logger.getLogger(this.getClass());
     @Resource
     private MetadataProvider metadataProvider;
     @Resource
@@ -170,11 +172,10 @@ public class InventoryService {
         double q = MapUtils.getDoubleValue(dbInventory, "quantity", 0);
         double lq = MapUtils.getDoubleValue(dbInventory, "lockedQuantity", 0);
         //锁定时仅增加 锁定数量；出库时要同时减 库存数量 和 锁定数量
-        lq = lq+lockedQuantity;
-        if (lockedQuantity > q) {
+        if (lockedQuantity > q-lq) {
             throw new BusinessException("库存量不足");
         }
-
+        lq = lq+lockedQuantity;
         Map<String, Object> field = new HashMap<String, Object>();
         field.put("lockedQuantity", lq);
         entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
@@ -239,6 +240,17 @@ public class InventoryService {
         createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.warehouse, cost.doubleValue(), remark, user);
     }
 
+    /**
+     * 出库
+     *
+     * @param bizType 业务类型
+     * @param inventoryId 库存记录ID
+     * @param quantity 出库数量
+     * @param cost 发生成本
+     * @param remark 备注
+     *
+     * @throws BusinessException
+     */
     public void delivery(MzfEnum.BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
         if (quantity == null || quantity.doubleValue() == 0) return;
 
@@ -248,18 +260,29 @@ public class InventoryService {
         BigDecimal dbQuentity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
         Map<String, Object> field = new HashMap<String, Object>();
 
-        dbQuentity = dbQuentity.subtract(quantity);
-        if (dbQuentity.doubleValue() >= 0) {
-            field.put("quantity", dbQuentity);
+        BigDecimal newQuentity = dbQuentity.subtract(quantity);
+        if (newQuentity.doubleValue() >= 0) {
+            field.put("quantity", newQuentity);
         } else {
+            logger.debug("出库时库存量不足，库存总数量为："+dbQuentity+",本次数量为："+quantity);
             throw new BusinessException("库存量不足");
         }
-
-        entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
 
         if (cost == null) {
             cost = new BigDecimal(0);
         }
+
+        BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost"));
+        BigDecimal newCost = dbCost.subtract(cost);
+        if (newCost.doubleValue() >= 0) {
+            field.put("cost", newCost);
+        } else {
+            logger.debug("出库时发生成本错误，库存总成本为："+dbCost+",本次发生成本为："+cost);
+            throw new BusinessException("库存成本错误");
+        }
+
+        entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
+
         //记录出库流水
         createFlowOnQuantity(bizType, inventoryId, quantity, MzfEnum.InventoryType.delivery, cost.doubleValue(), remark, user);
     }

@@ -22,7 +22,6 @@ import com.zonrong.system.service.BizCodeService;
 import com.zonrong.transfer.common.service.TransferService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Service;
 
@@ -160,8 +159,8 @@ public class TransferSecondGoldService extends TransferService {
 	 }
 
 	public void receive(int transferId, Map<String, Object> receive, IUser user) throws BusinessException {
-		String price = MapUtils.getString(receive, "settlementPrice");
-		if (StringUtils.isBlank(price)) {
+		Double price = MapUtils.getDouble(receive, "settlementPrice");
+		if (price == null) {
 			throw new BusinessException("收货时未指定结算价");
 		}
 
@@ -190,7 +189,7 @@ public class TransferSecondGoldService extends TransferService {
 
         String remark = "调拨单号：["+transNum+"]";
         secondGoldInventoryService.deliveryLocked(MzfEnum.BizType.send,targetId,sourceOrgId,quantity,remark,user);
-        secondGoldInventoryService.warehouse(MzfEnum.BizType.receive,rawmaterialService.getGoldClassByTargetId(targetId,user),new BigDecimal(quantity),new BigDecimal(price),remark,user);
+        secondGoldInventoryService.warehouse(MzfEnum.BizType.receive,rawmaterialService.getGoldClassByTargetId(targetId,user),new BigDecimal(quantity),new BigDecimal(price*quantity),remark,user);
 
 		//生成结算单
 		settlementService.createForTransfer(SettlementType.transferSecondGold, sourceOrgId, targetOrgId, transferId, new BigDecimal(price), null, user);
