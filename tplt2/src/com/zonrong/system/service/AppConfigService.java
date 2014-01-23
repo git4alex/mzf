@@ -1,19 +1,5 @@
 package com.zonrong.system.service;
 
-import java.io.IOException;
-import java.util.*;
-
-import javax.annotation.Resource;
-
-import com.zonrong.metadata.service.MetadataCRUDService;
-import org.apache.commons.collections.MapUtils;
-import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.stereotype.Service;
-
 import com.zonrong.core.dao.filter.Filter;
 import com.zonrong.core.exception.BusinessException;
 import com.zonrong.core.security.IUser;
@@ -25,7 +11,19 @@ import com.zonrong.entity.code.TpltEnumEntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.entity.service.TreeEntityService;
 import com.zonrong.metadata.EntityMetadata;
+import com.zonrong.metadata.service.MetadataCRUDService;
 import com.zonrong.metadata.service.MetadataProvider;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.collections.MapUtils;
+import org.apache.commons.lang.StringUtils;
+import org.codehaus.jackson.map.ObjectMapper;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Service;
+
+import javax.annotation.Resource;
+import java.io.IOException;
+import java.util.*;
 
 @Service
 public class AppConfigService {
@@ -180,7 +178,7 @@ public class AppConfigService {
             }
         }
         return ret;
-    };
+    }
 
     /**
      * update config from uploaded file
@@ -198,19 +196,22 @@ public class AppConfigService {
 
     private void updateConfig(String type,Map<String,Object> config) throws BusinessException {
         if("Module".equals(type)){
-            String id = MapUtils.getString(config,"id");
+            String moduleId = MapUtils.getString(config,"moduleId");
             config.remove("id");
             EntityCode eCode = new EntityCode("Module");
             try {
-                if(entityService.getById(eCode,id,User.getSystemUser())!=null){
-                    entityService.updateById(eCode,id,config,User.getSystemUser());
+                Filter f = Filter.field("MODULE_ID").eq(moduleId);
+                List ms = entityService.list(eCode,f,null, User.getSystemUser());
+                if(CollectionUtils.isEmpty(ms)){
+                    entityService.create(eCode, config, User.getSystemUser());
                 }else{
-                    entityService.create(eCode,config,User.getSystemUser());
+                    Map<String,Object> target = (Map<String,Object>) ms.get(0);
+                    String id = MapUtils.getString(target,"id");
+                    entityService.updateById(eCode,id,config, User.getSystemUser());
                 }
             } catch (BusinessException e) {
                 e.printStackTrace();
             }
-
         }else if("Entity".equals(type)){
             List<Map<String,Object>> fields = (List<Map<String,Object>>) config.get("fields");
             config.remove("fields");
