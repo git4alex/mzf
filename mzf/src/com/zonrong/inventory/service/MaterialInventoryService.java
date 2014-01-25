@@ -78,7 +78,7 @@ public class MaterialInventoryService {
 
     /**
      * 查找指定部门，指定类型的物料库存记录
-     * 同一种旧金在同一个部门只能存在于一个仓库中
+     * 同一种物料在同一个部门只能存在于一个仓库中
      *
      * @param materialId 物料ID
      * @param orgId      部门ID

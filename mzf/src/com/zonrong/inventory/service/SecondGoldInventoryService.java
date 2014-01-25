@@ -133,7 +133,7 @@ public class SecondGoldInventoryService {
         Map<String, Object> inventory =  getInventory(secondGoldId, orgId, user);
         Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
         Double dbQuantity = MapUtils.getDouble(inventory,"quantity");
-        Double dbCost = MapUtils.getDouble(inventory,"cost");
+        Double dbCost = MapUtils.getDouble(inventory,"cost",0d);
 
         BigDecimal cost = new BigDecimal(dbCost * quantity/dbQuantity);
         inventoryService.delivery(bizType, inventoryId, new BigDecimal(quantity), cost, remark, user);

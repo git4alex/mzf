@@ -129,7 +129,7 @@ public class ProductInventoryService {
         inventoryService.updateStatus(new Integer[]{inventoryId}, InventoryStatus.onStorage, InventoryStatus.onPassage, "发货失败", remark, user);
 
 //        StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
-//        inventoryService.createFlow(MzfEnum.BizType.send, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
+//        inventoryService.createFlow(MzfEnum.BizType.sendOnPassage, orgId, new BigDecimal(1), MzfEnum.InventoryType.delivery,
 //                storageType, TargetType.product, Integer.toString(productId), null, remark, user);
     }
 

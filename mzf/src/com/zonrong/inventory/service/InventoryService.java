@@ -146,9 +146,7 @@ public class InventoryService {
                 }
             }
         } else if (targetType == TargetType.secondProduct) {//旧饰出入库
-            //发生金额为旧饰回收价格
-            Map<String, Object> target = entityService.getById(MzfEntity.SECOND_PRODUCT, targetId, user);
-            flow.put("cost", MapUtils.getFloat(target, "buyPrice"));
+            flow.put("cost", cost);
         } else if (targetType == TargetType.secondGold) {//旧金出入库
             flow.put("cost",cost);
         } else {
@@ -272,7 +270,7 @@ public class InventoryService {
             cost = new BigDecimal(0);
         }
 
-        BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost"));
+        BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost","0"));
         BigDecimal newCost = dbCost.subtract(cost);
         if (newCost.doubleValue() >= 0) {
             field.put("cost", newCost);

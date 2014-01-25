@@ -319,7 +319,7 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 		List<Map<String, Object>> dataList  = entityService.list(MzfEntity.MATERIAL_DEMAND_VIEW, where, orderBy, user);
 		return dataList;
 	}
-//	public void send(Integer[] demandIds, String remark, IUser user) throws BusinessException{
+//	public void sendOnPassage(Integer[] demandIds, String remark, IUser user) throws BusinessException{
 //		EntityMetadata metadata = metadataProvider.getEntityMetadata(MzfEntity.MATERIAL_DEMAND_VIEW);
 //		Map<String, Object> where = new HashMap<String, Object>();
 //		where.put(metadata.getPkCode(), demandIds);
@@ -332,7 +332,7 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 //			Map<String, Object> dbDemand = dbDemandList.get(i);
 //			Integer materialId = MapUtils.getInteger(dbDemand, "materialId");
 //
-//			int transferId = send(dbDemand, materialId, Integer.toString(i + 1), user);
+//			int transferId = sendOnPassage(dbDemand, materialId, Integer.toString(i + 1), user);
 //			transferIds.add(transferId);
 //			if (targetOrgId == null) {
 //				targetOrgId = MapUtils.getInteger(dbDemand, "orgId");
@@ -357,7 +357,7 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 //		entityService.update(MzfEntity.TRANSFER, field, where, user);
 //	}
 //
-//	private int send(Map<String, Object> demand, int materialId, String transferNumSufix, IUser user) throws BusinessException {
+//	private int sendOnPassage(Map<String, Object> demand, int materialId, String transferNumSufix, IUser user) throws BusinessException {
 //		Integer demandId = MapUtils.getInteger(demand, "id");
 //
 //		//分支流程信息

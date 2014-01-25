@@ -166,7 +166,7 @@ public class TransferMaterialService extends TransferService {
 //			Integer[] transferIds = new Integer[]{transferId};
 //			Map<String, Object> dispatch = new HashMap<String, Object>();
 //			dispatch.put("targetOrgId", targetOrgId);
-//			this.send(transferIds, dispatch, user);
+//			this.sendOnPassage(transferIds, dispatch, user);
 //		}
 //	}
 

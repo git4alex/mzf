@@ -174,6 +174,7 @@ public class SaleService {
 		}
 
 		int saleId = createBill(sale, detailList, user);
+
 		String num = MapUtils.getString(sale, "num");
 		logger.debug("销售积分日志 四 ： 销售单号为：" + num);
 		Integer cusId = MapUtils.getInteger(sale, "cusId");
@@ -209,7 +210,7 @@ public class SaleService {
 				sellMaterial(num, targetId, detail, user);
 			} else if (type == SaleDetailType.secondGold) {
 			    //旧金回收
-				sellSecondGold(num, targetId, detail, user);
+				sellSecondGold(num,detail,user);
 			} else if (type == SaleDetailType.secondJewel) {
 			    //旧饰回收
 				//商品标记为回收
@@ -218,13 +219,13 @@ public class SaleService {
 				Map<String, Object> where = new HashMap<String, Object>();
 				where.put("num", MapUtils.getString(detail, "targetNum"));
 				entityService.update(MzfEntity.PRODUCT, field, where, user);
-				sellSecondProduct(targetId, detail, user);
+				wareSecondProduct(targetId,num, user);
 			} else if (type == SaleDetailType.genChit) {
 			    //代金券销售
-				sellChit(targetId, detail, user);
+				sellChit(targetId, user);
 			} else if (type == SaleDetailType.returnsChit) {
 			    //代金券回收
-				returnsChit(targetId, saleId, detail, user);
+				returnsChit(targetId, saleId, user);
 			} else {
 				throw new BusinessException("未指定销售类型");
 			}
@@ -288,7 +289,7 @@ public class SaleService {
 		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
 		materialInventoryService.delivery(MzfEnum.BizType.sell, materialId, quantity, cost, user.getOrgId(), remark, user);
 	}
-	private void sellSecondGold(String saleNum, Integer targetId, Map<String, Object> detail, IUser user) throws BusinessException {
+	private void sellSecondGold(String saleNum, Map<String, Object> detail, IUser user) throws BusinessException {
 		GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 		BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "goldWeight"));
 		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
@@ -296,16 +297,17 @@ public class SaleService {
 		String remark = "旧金回收，金价：" + goldPrice + "， 销售单号：" + saleNum;
 		secondGoldInventoryService.warehouse(MzfEnum.BizType.buySecondGold, goldClass, quantity, cost, remark, user);
 	}
-	private void sellSecondProduct(Integer secondProductId, Map<String, Object> detail, IUser user) throws BusinessException {
-		int orgId = user.getOrgId();
-		secondProductInventoryService.warehouse(MzfEnum.BizType.buySecondProduct, secondProductId, orgId, null, orgId, "旧饰回收", user);
+
+	private void wareSecondProduct(Integer secondProductId,String saleNum, IUser user) throws BusinessException {
+		secondProductInventoryService.warehouse(MzfEnum.BizType.buySecondProduct, secondProductId,
+                user.getOrgId(), null, "销售单号：["+saleNum+"]", user);
 	}
 
-	private void sellChit(Integer chitId, Map<String, Object> detail, IUser user) throws BusinessException {
+	private void sellChit(Integer chitId, IUser user) throws BusinessException {
 		chitService.sellChit(chitId,user);
 	}
 
-	private void returnsChit(Integer chitId, Integer saleId, Map<String, Object> detail, IUser user) throws BusinessException {
+	private void returnsChit(Integer chitId, Integer saleId,IUser user) throws BusinessException {
 		chitService.returnsChit(chitId, saleId, user);
 	}
 
@@ -331,11 +333,6 @@ public class SaleService {
 				String productNum = MapUtils.getString(detail, "targetNum");
 				String productName = MapUtils.getString(detail, "targetName");
 
-				  //记录旧饰回收日志
-				if(productId != null){
-					int transId = transactionService.createTransId();
-					logService.createLog(transId, MzfEntity.PRODUCT, productId+"", "旧饰回收", TargetType.product, productId, "销售单号：" + num , user);
-				}
 				//如果是旧饰回收，要记下旧饰信息
 				Map<String, Object> field = new HashMap<String, Object>(detail);
 				if (productId != null) {
@@ -348,9 +345,10 @@ public class SaleService {
 				}
 				field.put("buyPrice", MapUtils.getObject(detail, "price"));
 				field.put("status", ProductStatus.free);
+                field.put("remark","回收单号：["+num+"]");
 
 				EntityMetadata spMetadata = metadataProvider.getEntityMetadata(MzfEntity.SECOND_PRODUCT);
-				String secondProductId = null;
+				String secondProductId;
 				if (productId != null) {
 					Map<String, Object> w = new HashMap<String, Object>();
 					w.put("num", productNum);
@@ -372,6 +370,10 @@ public class SaleService {
 					field.put("num", spNum);
 					entityService.updateById(spMetadata, secondProductId, field, user);
 				}
+                //记录旧饰回收日志
+                int transId = transactionService.createTransId();
+                logService.createLog(transId, MzfEntity.PRODUCT, secondProductId+"", "旧饰回收", TargetType.product, productId, "销售单号：" + num , user);
+
 				detail.put("targetId", secondProductId);
 			}
 			detail.put("saleId", saleId);
@@ -633,11 +635,8 @@ public class SaleService {
 		Map<String, Object> where = new HashMap<String, Object>();
 		where.put("cusId", cusId);
 		List<Map<String, Object>> list = entityService.list(MzfEntity.SALE_VIEW, where, null, User.getSystemUser());
-		if (CollectionUtils.isNotEmpty(list)) {
-			return false;
-		}
-		return true;
-	}
+        return !CollectionUtils.isNotEmpty(list);
+    }
 
 	//按照实收计算总积分, 为每一件商品计算积分
 	private void calcPoints(Map<String, Object> bill, List<Map<String, Object>> details) throws BusinessException {

@@ -163,7 +163,7 @@ public class SplitService extends BillStatusService<SplitStatus> {
 	 	if (splitProductSource == SplitProductSource.product || splitProductSource == SplitProductSource.maintainProduct) {
 	 		productInventoryService.deliveryByProductId(MzfEnum.BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
 	 	} else if (splitProductSource == SplitProductSource.secondProduct) {
-	 		Map<String, Object> inventory = secondProductInventoryService.getInventoryForSecondProduct(productId, null);
+	 		Map<String, Object> inventory = secondProductInventoryService.get(productId);
 	 		Integer sourceOrgId = MapUtils.getInteger(inventory, "sourceOrgId");
 			//生成结算单
 			String price = MapUtils.getString(split, "settlementPrice");
@@ -176,7 +176,7 @@ public class SplitService extends BillStatusService<SplitStatus> {
 	 			throw new BusinessException("来源部门为空，不能生成结算单");
 	 		}
 
-	 		secondProductInventoryService.deliveryBySecondProductId(MzfEnum.BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
+	 		secondProductInventoryService.delivery(MzfEnum.BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
 	 	}
 
 	 	//记录操作日志

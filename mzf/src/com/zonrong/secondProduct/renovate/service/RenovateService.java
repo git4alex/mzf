@@ -79,7 +79,7 @@ public class RenovateService {
 
 		BigDecimal price = new BigDecimal(priceStr);
 		String remark = MapUtils.getString(renovate, "remark");
-		Map<String, Object> inventory = secondProductInventoryService.getInventoryForSecondProduct(secondProductId, user.getOrgId());
+		Map<String, Object> inventory = secondProductInventoryService.get(secondProductId);
 		if (MapUtils.isEmpty(inventory)) {
 			throw new BusinessException("非本部门旧饰， 不能翻新");
 		}
@@ -100,8 +100,8 @@ public class RenovateService {
 
         //旧饰出库
         product = entityService.getById(MzfEntity.PRODUCT,newProductId,user);
-        secondProductInventoryService.deliveryBySecondProductId(MzfEnum.BizType.renovate, secondProductId,
-                "新商品条码：["+MapUtils.getString(product,"num")+"]", MzfEnum.InventoryStatus.onStorage, user);
+        secondProductInventoryService.delivery(MzfEnum.BizType.renovate, secondProductId,
+                "新商品条码：[" + MapUtils.getString(product, "num") + "]", MzfEnum.InventoryStatus.onStorage, user);
 
 		//商品入库
 		StorageType storageType = StorageType.product_temporary;

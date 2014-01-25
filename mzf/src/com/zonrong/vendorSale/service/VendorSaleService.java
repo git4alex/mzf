@@ -9,6 +9,7 @@ import com.zonrong.entity.code.EntityCode;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
+import com.zonrong.inventory.service.SecondGoldInventoryService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -39,6 +40,8 @@ public class VendorSaleService {
     private ProductInventoryService productInventoryService;
     @Resource
     private RawmaterialInventoryService rawmaterialInventoryService;
+    @Resource
+    private SecondGoldInventoryService secondGoldInventoryService;
 
     public void createProductOrder(Map<String,Object> order,List details,IUser user) throws BusinessException {
         createOrder(order,"product",user);
@@ -108,19 +111,15 @@ public class VendorSaleService {
             if(id == null){
                 throw new BusinessException("原料Id为空");
             }
-            String inventoryId = MapUtils.getString(d,"inventoryId");
-            if(StringUtils.isBlank(inventoryId)){
-                throw new BusinessException("库存ID为空");
-            }
             float quantity = MapUtils.getFloatValue(d,"quantity");
             if(quantity<=0){
                 throw new BusinessException("销售数量为空");
             }
 
             //保存销售单明细
-            Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
-            values.put("orderId",orderId);
-            entityService.create(new EntityCode("vendorSaleGoldDetail"), values, user);//在实体定义中进行字段对应
+            //Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
+            d.put("orderId",orderId);
+            entityService.create(new EntityCode("vendorSaleGoldDetail"), d, user);//在实体定义中进行字段对应
 
             //金料出库
             String remark = "订单号：["+num+"]";
@@ -137,26 +136,28 @@ public class VendorSaleService {
 
         for(Object detail:details){
             Map<String,Object> d = (Map<String, Object>) detail;
-            String id = MapUtils.getString(d,"targetId");
-            if(StringUtils.isBlank(id)){
+            Integer id = MapUtils.getInteger(d, "targetId");
+            if(id == null){
                 throw new BusinessException("原料Id为空");
             }
-            String inventoryId = MapUtils.getString(d,"inventoryId");
-            if(StringUtils.isBlank(inventoryId)){
-                throw new BusinessException("库存ID为空");
-            }
-            float quantity = MapUtils.getFloatValue(d,"quantity");
+//            String inventoryId = MapUtils.getString(d,"inventoryId");
+//            if(StringUtils.isBlank(inventoryId)){
+//                throw new BusinessException("库存ID为空");
+//            }
+            Double quantity = MapUtils.getDouble(d,"quantity");
             if(quantity<=0){
                 throw new BusinessException("销售数量为空");
             }
 
             //保存销售单明细
-            Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
-            values.put("orderId",orderId);
-            entityService.create(new EntityCode("vendorSaleSecondGoldDetail"), values, user);//在实体定义中进行字段对应
+//            Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
+            d.put("orderId",orderId);
+            entityService.create(new EntityCode("vendorSaleGoldDetail"), d, user);//在实体定义中进行字段对应
 
             //金料出库
-            deliverySecondGold(inventoryId, quantity, num, user);
+            String remark = "订单号：["+num+"]";
+            secondGoldInventoryService.delivery(MzfEnum.BizType.vendorSell,id,user.getOrgId(),quantity,remark,user);
+//            deliverySecondGold(inventoryId, quantity, num, user);
         }
     }
 

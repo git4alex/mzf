@@ -125,7 +125,7 @@ public class ReturnsService{
 				where.put("num", MapUtils.getString(detail, "targetNum"));
 				entityService.update(MzfEntity.PRODUCT, field, where, user);
 				//旧饰出库
-				secondProductInventoryService.deliveryBySecondProductId(MzfEnum.BizType.returned, targetId, remark, InventoryStatus.onStorage, user);
+				secondProductInventoryService.delivery(MzfEnum.BizType.returned, targetId, remark, InventoryStatus.onStorage, user);
 			}else if(type == SaleDetailType.returnsChit){
 				//退还回收的代金券
 				chitService.returnBackChit(targetId, user);

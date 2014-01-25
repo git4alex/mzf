@@ -274,7 +274,7 @@ public class SaleService {
 	}
 	private void sellSecondProduct(Integer secondProductId, Map<String, Object> detail, IUser user) throws BusinessException {
 		int orgId = user.getOrgId();
-		secondProductInventoryService.warehouse(MzfEnum.BizType.buySecondProduct, secondProductId, orgId, null, orgId, "旧饰回收", user);
+		secondProductInventoryService.warehouse(MzfEnum.BizType.buySecondProduct, secondProductId, orgId, orgId, "旧饰回收", user);
 	}
 
 	private void sellChit(Integer chitId, Map<String, Object> detail, IUser user) throws BusinessException {

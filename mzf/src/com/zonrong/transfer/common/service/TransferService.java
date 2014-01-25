@@ -157,7 +157,7 @@ public abstract class TransferService extends BillStatusService<TransferStatus> 
 //			Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
 
 			send(transfer, targetOrgId, user);
-//			send(targetId, targetOrgId, user);
+//			sendOnPassage(targetId, targetOrgId, user);
 
 			//修改调拨单状态为待收货
 			updateStatus(transferId, new TransferStatus[]{TransferStatus.waitSend}, TransferStatus.waitReceive, new StatusCarrier(){

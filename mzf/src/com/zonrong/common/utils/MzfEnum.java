@@ -496,6 +496,7 @@ public interface MzfEnum {
         register,        //收货登记
         oemReturn,      //委外原料退库
         send,            //发货
+        cancelSend,     //取消调拨
         receive,        //从其它部门收货
         returned,        //退货
         renovate,        //翻新
