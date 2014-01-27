@@ -16,7 +16,6 @@ import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.SecondProductInventoryService;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
-import com.zonrong.secondProduct.split.service.SplitService.SplitProductSource;
 import com.zonrong.settlement.service.SettlementService;
 import com.zonrong.system.service.BizCodeService;
 import org.apache.commons.collections.MapUtils;
@@ -58,7 +57,7 @@ public class RenovateService {
 		String num = MzfUtils.getBillNum(BillPrefix.FX, user);
 		renovate.put("num", num);
 
-		renovate.put("productSource", SplitProductSource.secondProduct);
+		renovate.put("productSource", MzfEnum.SplitProductSource.secondProduct);
 		renovate.put("productId", secondProductId);
 		renovate.put("newProductId", newProductId);
 		renovate.put("cuserId", user.getId());

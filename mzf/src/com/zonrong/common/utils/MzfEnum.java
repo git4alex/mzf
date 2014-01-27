@@ -579,6 +579,12 @@ sold            //已售
         OEM,		//委外
         reject		//驳回
     }
+
+    enum SplitProductSource {
+        secondProduct,
+        product,
+        maintainProduct
+    }
 }
 
 

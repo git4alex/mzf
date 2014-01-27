@@ -1,7 +1,6 @@
 package com.zonrong.secondProduct.split.service;
 
 import com.zonrong.basics.StatusCarrier;
-import com.zonrong.common.utils.MzfEnum.RawmaterialType;
 import com.zonrong.common.service.BillStatusService;
 import com.zonrong.common.utils.MzfEntity;
 import com.zonrong.common.utils.MzfEnum;
@@ -17,12 +16,10 @@ import com.zonrong.core.templete.SaveTemplete;
 import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.SecondProductInventoryService;
-import com.zonrong.common.utils.MzfEnum.GoldClass;
 import com.zonrong.metadata.EntityMetadata;
 import com.zonrong.metadata.service.MetadataProvider;
 import com.zonrong.purchase.service.DetailCRUDService.VendorOrderDetailStatus;
 import com.zonrong.purchase.service.RawmaterialOrderService;
-import com.zonrong.register.service.RegisterRawmaterialService;
 import com.zonrong.settlement.service.SettlementService;
 import com.zonrong.system.service.BizCodeService;
 import org.apache.commons.collections.CollectionUtils;
@@ -57,23 +54,15 @@ public class SplitService extends BillStatusService<SplitStatus> {
 	@Resource
 	private SecondProductInventoryService	secondProductInventoryService;
 	@Resource
-	private RegisterRawmaterialService registerRawmaterialService;
-	@Resource
 	private RawmaterialOrderService rawmaterialOrderService;
 	@Resource
 	private SettlementService settlementService;
 	@Resource
 	private BusinessLogService businessLogService;
 
-	public enum SplitProductSource {
-		secondProduct,
-		product,
-		maintainProduct
-	}
-
-	public int createSplit(Map<String, Object> split, List<Map<String, Object>> detailList, IUser user) throws BusinessException {
+    public int createSplit(Map<String, Object> split, List<Map<String, Object>> detailList, IUser user) throws BusinessException {
 		try {
-			SplitProductSource.valueOf(MapUtils.getString(split, "productSource"));
+			MzfEnum.SplitProductSource.valueOf(MapUtils.getString(split, "productSource"));
 		} catch (Exception e) {
 			throw new BusinessException("请指定合法的拆旧商品来源");
 		}
@@ -156,13 +145,13 @@ public class SplitService extends BillStatusService<SplitStatus> {
 		}, user);
 
 		//商品出库
-		SplitProductSource splitProductSource = SplitProductSource.valueOf(MapUtils.getString(split, "productSource"));
+		SplitProductSource splitProductSource = MzfEnum.SplitProductSource.valueOf(MapUtils.getString(split, "productSource"));
 		Integer productId = MapUtils.getInteger(split, "productId");
 
 		String remark = "拆旧单号：["+MapUtils.getString(split, "num")+"]";
-	 	if (splitProductSource == SplitProductSource.product || splitProductSource == SplitProductSource.maintainProduct) {
+	 	if (splitProductSource == MzfEnum.SplitProductSource.product || splitProductSource == MzfEnum.SplitProductSource.maintainProduct) {
 	 		productInventoryService.deliveryByProductId(MzfEnum.BizType.warehouseOnSplit, productId, remark, InventoryStatus.onStorage, user);
-	 	} else if (splitProductSource == SplitProductSource.secondProduct) {
+	 	} else if (splitProductSource == MzfEnum.SplitProductSource.secondProduct) {
 	 		Map<String, Object> inventory = secondProductInventoryService.get(productId);
 	 		Integer sourceOrgId = MapUtils.getInteger(inventory, "sourceOrgId");
 			//生成结算单
@@ -198,18 +187,17 @@ public class SplitService extends BillStatusService<SplitStatus> {
 		where.put("status", SplitStatus.pass);
 		where.put("id", splitIds);
 		List<Map<String, Object>> list = entityService.list(this.getBillMetadata(), where, null, user.asSystem());
-		Integer sourceOrgId = null;
+		Integer sourceOrgId;
 		if (CollectionUtils.isNotEmpty(list)) {
 			sourceOrgId = MapUtils.getInteger(list.get(0), "sourceOrgId");
 			for (Map<String, Object> split : list) {
-				if (MapUtils.getIntValue(split, "sourceOrgId") != sourceOrgId.intValue()) {
+				if (MapUtils.getIntValue(split, "sourceOrgId") != sourceOrgId) {
 					throw new BusinessException("来源部门不一致，不允许汇总");
 				}
 			}
 		} else {
 			throw new BusinessException("集合为空");
 		}
-
 
 		Map<String, Object> field = new HashMap<String, Object>();
 		field.put("status", SplitStatus.over);
