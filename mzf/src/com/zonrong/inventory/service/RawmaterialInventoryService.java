@@ -307,7 +307,8 @@ public class RawmaterialInventoryService {
 	public Map<String, Object> getInventory(int rawmaterialId, int orgId, IUser user) throws BusinessException {
 		List<Map<String, Object>> rawmaterialInventoryList = listRawmaterialInventory(new Integer[]{rawmaterialId}, orgId, user);
 		if (CollectionUtils.isEmpty(rawmaterialInventoryList)) {
-			throw new BusinessException("库存中未找到该原料[" + rawmaterialId + "]");
+            return null;
+			//throw new BusinessException("库存中未找到该原料[" + rawmaterialId + "]");
 		} else if (rawmaterialInventoryList.size() > 1) {
 			throw new BusinessException("库存中找到多件原料[" + rawmaterialId + "]");
 		}
