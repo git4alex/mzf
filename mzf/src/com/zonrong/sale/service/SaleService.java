@@ -490,7 +490,7 @@ public class SaleService {
 			SaleDetailType type = SaleDetailType.valueOf(MapUtils.getString(detail, "type"));
 			if (type == SaleDetailType.product) {
 //				Integer productId = MapUtils.getInteger(detail, "targetId");
-//				Map<String, Object> product = productService.get(productId, user);
+//				Map<String, Object> product = productService.getInventory(productId, user);
 //				String remark = MapUtils.getString(detail, "remark");
 //				detail.putAll(product);
 //				detail.put("remark", remark);

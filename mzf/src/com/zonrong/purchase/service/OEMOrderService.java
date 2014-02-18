@@ -187,7 +187,7 @@ public class OEMOrderService {
 //					}
 //					rawmaterialQuantityMap.put(rawmaterialId, dosingBom);
 //				} else {
-//					rawmaterialInventoryService.deliveryDiamondByRawmaterialId(BizType.OEM, rawmaterialId, remark, user);
+//					rawmaterialInventoryService.deliveryDiamond(BizType.OEM, rawmaterialId, remark, user);
 //				}
 //			}
 //		}

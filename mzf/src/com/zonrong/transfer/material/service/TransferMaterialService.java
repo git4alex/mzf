@@ -159,7 +159,7 @@ public class TransferMaterialService extends TransferService {
 //
 //		Map<Integer, BigDecimal> map = new HashMap<Integer, BigDecimal>();
 //		map.put(materialId, quantity);
-//		materialInventoryService.lockByQuantity(map, remark, user);
+//		materialInventoryService.lock(map, remark, user);
 //
 //		//系统自动发货
 //		if (targetOrgId != null) {

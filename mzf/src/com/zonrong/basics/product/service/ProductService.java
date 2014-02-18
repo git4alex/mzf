@@ -618,7 +618,7 @@ public class ProductService {
 
 		//原料入库
         remark = "商品条码：["+MapUtils.getString(source,"num")+"]";
-		rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.translateToRawmaterial, rawmaterialId, user.getOrgId(), remark, user);
+		rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.translateToRawmaterial, rawmaterialId, remark, user);
 	}
 	public HSSFWorkbook exportExcel(Integer[] ids,String[] filedCodes,IEntityCode entity,OutputStream stream) throws BusinessException{
 		    Map<String,String> filedNameMap = getFiled(filedCodes,entity);

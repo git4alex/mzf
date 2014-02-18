@@ -270,7 +270,7 @@ public class RawmaterialService {
         Map<String,Object> product = productService.get(productId,user);
         String remark = "商品条码：["+MapUtils.getString(product,"num")+"]";
 		//原料出库
-		rawmaterialInventoryService.deliveryDiamondByRawmaterialId(bizType, rawmaterialId, remark, user);
+		rawmaterialInventoryService.deliveryDiamond(bizType, rawmaterialId, remark, user);
 		//deleteById(rawmaterialId, user);
         Map<String,Object> status = new HashMap<String,Object>();
         status.put("status","toProduct");

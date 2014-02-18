@@ -10,7 +10,6 @@ import com.zonrong.entity.service.EntityService;
 import com.zonrong.inventory.service.ProductInventoryService;
 import com.zonrong.inventory.service.RawmaterialInventoryService;
 import com.zonrong.inventory.service.SecondGoldInventoryService;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
@@ -83,9 +82,9 @@ public class VendorSaleService {
                 throw new BusinessException("裸石ID不能为空");
             }
 
-            //裸石
-            rawmaterialInventoryService.deliveryDiamondByRawmaterialId(MzfEnum.BizType.vendorSell,
-                    Integer.parseInt(id),"销售单号：["+num+"]",user);
+            //裸石出库
+            rawmaterialInventoryService.deliveryDiamond(MzfEnum.BizType.vendorSell,
+                    Integer.parseInt(id), "销售单号：[" + num + "]", user);
 
             //保存销售单明细
             Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
@@ -117,14 +116,12 @@ public class VendorSaleService {
             }
 
             //保存销售单明细
-            //Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
             d.put("orderId",orderId);
             entityService.create(new EntityCode("vendorSaleGoldDetail"), d, user);//在实体定义中进行字段对应
 
             //金料出库
             String remark = "订单号：["+num+"]";
-            rawmaterialInventoryService.deliveryRawmaterialById(MzfEnum.BizType.vendorSell,new BigDecimal(quantity),new BigDecimal(quantity),id,remark,user);
-            //deliveryGold(inventoryId,quantity,num,user);
+            rawmaterialInventoryService.deliveryById(MzfEnum.BizType.vendorSell, new BigDecimal(quantity), new BigDecimal(quantity), id, remark, user);
         }
     }
 
@@ -140,25 +137,91 @@ public class VendorSaleService {
             if(id == null){
                 throw new BusinessException("原料Id为空");
             }
-//            String inventoryId = MapUtils.getString(d,"inventoryId");
-//            if(StringUtils.isBlank(inventoryId)){
-//                throw new BusinessException("库存ID为空");
-//            }
             Double quantity = MapUtils.getDouble(d,"quantity");
             if(quantity<=0){
                 throw new BusinessException("销售数量为空");
             }
 
             //保存销售单明细
-//            Map<String,Object> values = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
             d.put("orderId",orderId);
             entityService.create(new EntityCode("vendorSaleGoldDetail"), d, user);//在实体定义中进行字段对应
 
-            //金料出库
+            //旧金出库
             String remark = "订单号：["+num+"]";
             secondGoldInventoryService.delivery(MzfEnum.BizType.vendorSell,id,user.getOrgId(),quantity,remark,user);
-//            deliverySecondGold(inventoryId, quantity, num, user);
         }
+    }
+
+    public void createPartsOrder(Map<String,Object> order,List details,IUser user) throws BusinessException {
+        createOrder(order, "parts", user);
+
+        String num = MapUtils.getString(order,"num");
+        String orderId = MapUtils.getString(order,"id");
+
+        for(Object detail:details){
+            Map<String,Object> d = (Map<String, Object>) detail;
+            Integer id = MapUtils.getInteger(d, "targetId");
+            if(id == null){
+                throw new BusinessException("配件Id为空");
+            }
+            Integer quantity = MapUtils.getInteger(d, "quantity");
+            if(quantity<=0){
+                throw new BusinessException("销售数量为空");
+            }
+            Map<String,Object> parts = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
+            if(parts == null){
+                throw new BusinessException("配件不存在，ID：["+id+"]");
+            }
+            d.put("targetName",MapUtils.getString(parts,"name"));
+            d.put("targetNum",MapUtils.getString(parts,"num"));
+            //保存销售单明细
+            d.put("orderId",orderId);
+            entityService.create(new EntityCode("vendorSalePartsDetail"), d, user);//在实体定义中进行字段对应
+
+            //配件出库
+            String remark = "订单号：["+num+"]";
+            rawmaterialInventoryService.deliveryParts(MzfEnum.BizType.vendorSell,id,quantity,remark,user);
+        }
+    }
+
+    public void createGravelOrder(Map<String,Object> order, List details, IUser user) throws BusinessException {
+        createOrder(order,"gravel",user);
+
+        String num = MapUtils.getString(order,"num");
+        String orderId = MapUtils.getString(order,"id");
+
+        for(Object detail:details){
+            Map<String,Object> d = (Map<String, Object>) detail;
+            Integer id = MapUtils.getInteger(d, "targetId");
+            if(id == null){
+                throw new BusinessException("碎石Id为空");
+            }
+            Integer quantity = MapUtils.getInteger(d, "quantity");
+            if(quantity<=0){
+                throw new BusinessException("销售数量为空");
+            }
+
+            Float weight = MapUtils.getFloat(d, "weight");
+            if(weight<=0){
+                throw new BusinessException("销售重量为空");
+            }
+
+            Map<String,Object> gravel = entityService.getById(MzfEntity.RAWMATERIAL,id,user);
+            if(gravel == null){
+                throw new BusinessException("碎石不存在，ID：["+id+"]");
+            }
+
+            d.put("targetName",MapUtils.getString(gravel,"name"));
+            d.put("targetNum",MapUtils.getString(gravel,"num"));
+            //保存销售单明细
+            d.put("orderId",orderId);
+            entityService.create(new EntityCode("vendorSaleGravelDetail"), d, user);//在实体定义中进行字段对应
+
+            //配件出库
+            String remark = "订单号：["+num+"]";
+            rawmaterialInventoryService.deliveryGravel(MzfEnum.BizType.vendorSell,id,quantity,weight,remark,user);
+        }
+
     }
 
     public void cancelProductOrder(String id,IUser user) throws BusinessException {
@@ -198,102 +261,5 @@ public class VendorSaleService {
         }
     }
 
-    //旧金出库
-    private void deliverySecondGold(String inventoryId,float quantity,String num,IUser user)throws BusinessException{
-        //获取库存记录
-        Map<String,Object> values = new HashMap<String,Object>();
-        values.put("inventoryId",inventoryId);
-        List<Map<String,Object>> inventorys = entityService.list(MzfEntity.SECOND_GOLD_INVENTORY_VIEW,values,null,user);
-        if(CollectionUtils.isEmpty(inventorys)){
-            throw new BusinessException("金料出库时，库存记录为空");
-        }
 
-        Map<String,Object> inventory = inventorys.get(0);
-        //计算出库成本
-        float dbQuantity = MapUtils.getFloatValue(inventory,"quantity",0);
-        if(dbQuantity < quantity){
-            throw new BusinessException("金料出库时，库存数量不足");
-        }
-
-        //todo:成本的计算需要进一步修改
-//        float dbCost = MapUtils.getFloatValue(inventory,"cost");
-//        float cost = dbCost*quantity/dbQuantity;
-
-        //更新库存记录
-        values.clear();
-        values.put("quantity",dbQuantity - quantity);
-//        values.put("cost",dbCost - cost);
-        entityService.updateById(MzfEntity.INVENTORY,inventoryId,values,user);
-
-        //创建出库记录
-        values.clear();
-        values.put("bizType", MzfEnum.BizType.vendorSell);
-        values.put("orgId", MapUtils.getShortValue(inventory,"orgId"));
-        values.put("storageType", MzfEnum.StorageType.rawmaterial_gold);
-        values.put("type", MzfEnum.InventoryType.delivery);
-        values.put("targetType", MzfEnum.TargetType.rawmaterial);
-        values.put("targetId", MapUtils.getString(inventory,"id"));
-        values.put("remark", "销售单号："+num);
-        values.put("quantity", quantity);
-        values.put("cuserId", user.getId());
-        values.put("cdate", null);
-//        values.put("cost",cost);
-
-        entityService.create(MzfEntity.INVENTORY_FLOW,values,user);
-    }
-
-    //金料出库
-    private void deliveryGold(String inventoryId,float quantity,String num,IUser user) throws BusinessException {
-        //获取库存记录
-        Map<String,Object> values = new HashMap<String,Object>();
-        values.put("inventoryId",inventoryId);
-//        List<Map<String,Object>> inventorys = entityService.list(MzfEntity.RAWMATERIAL_INVENTORY_VIEW,values,null,user);
-        List<Map<String,Object>> inventorys = rawmaterialInventoryService.listRawmaterialInventory(new Integer[]{Integer.valueOf(inventoryId)},user.getOrgId(),user);
-        if(CollectionUtils.isEmpty(inventorys)){
-            throw new BusinessException("金料出库时，库存记录为空");
-        }
-
-        Map<String,Object> inventory = inventorys.get(0);
-        //Map<String,Object> inventory = rawmaterialInventoryService.getInventory();
-        //计算出库成本
-        float dbQuantity = MapUtils.getFloatValue(inventory,"quantity",0);
-        if(dbQuantity < quantity){
-            throw new BusinessException("金料出库时，库存数量不足");
-        }
-
-        float dbCost = MapUtils.getFloatValue(inventory,"cost");
-        float cost = dbCost*quantity/dbQuantity;
-
-        //更新库存记录
-        values.clear();
-        values.put("quantity",dbQuantity - quantity);
-        values.put("cost",dbCost - cost);
-        entityService.updateById(MzfEntity.INVENTORY,inventoryId,values,user);
-
-        //创建出库记录
-        values.clear();
-        values.put("bizType", MzfEnum.BizType.vendorSell);
-        values.put("orgId", MapUtils.getShortValue(inventory,"orgId"));
-        values.put("storageType", MzfEnum.StorageType.rawmaterial_gold);
-        values.put("type", MzfEnum.InventoryType.delivery);
-        values.put("targetType", MzfEnum.TargetType.rawmaterial);
-        values.put("targetId", MapUtils.getString(inventory,"id"));
-        values.put("remark", "销售单号："+num);
-        values.put("quantity", quantity);
-        values.put("cuserId", user.getId());
-        values.put("cdate", null);
-        values.put("cost",cost);
-
-        entityService.create(MzfEntity.INVENTORY_FLOW,values,user);
-    }
-
-    //配件出库
-    private void deliveryPart(String inventoryId,int quantity){
-
-    }
-
-    //碎石出库
-    private void deliveryGravel(String inventoryId,int quantity,float weight){
-
-    }
 }

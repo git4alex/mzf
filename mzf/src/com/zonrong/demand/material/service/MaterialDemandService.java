@@ -329,7 +329,7 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 //		Integer targetOrgId = null;
 //		List<Integer> transferIds = new ArrayList<Integer>();
 //		for (int i = 0; i < dbDemandList.size(); i++) {
-//			Map<String, Object> dbDemand = dbDemandList.get(i);
+//			Map<String, Object> dbDemand = dbDemandList.getInventory(i);
 //			Integer materialId = MapUtils.getInteger(dbDemand, "materialId");
 //
 //			int transferId = sendOnPassage(dbDemand, materialId, Integer.toString(i + 1), user);

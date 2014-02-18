@@ -97,7 +97,7 @@ public class MaintainService extends BillStatusService<MaintainStatus>{
             }
         } else {
             Map<String, Object> inventory = productInventoryService.getInventory(productId, user.getOrgId());
-            InventoryStatus iStatus = InventoryStatus.valueOf(MapUtils.getString(inventory, "status"));
+            InventoryStatus iStatus = InventoryStatus.valueOf(MapUtils.getString(inventory, "inventoryStatus"));
             if (iStatus == InventoryStatus.onStorage) {
                 product.put("productSource", ProductSource.onStorage);
             } else {

@@ -70,7 +70,7 @@ public class SecondProductInventoryService {
         inventory.put("targetType", TargetType.secondProduct);
         inventory.put("targetId", secondProductId);
 
-        int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType, sourceOrgId, remark, user);
+        int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType, user);
 
         inventoryService.createFlow(bizType, targetOrgId, new BigDecimal(1),
                 MzfEnum.InventoryType.warehouse, storageType,

@@ -43,6 +43,7 @@ public class MaintainInventoryService extends ProductInventoryService {
 
     /**
      * 委外维修商品出库（从维修库调入临时库）
+     *
      * @param productIds
      * @param remark
      * @param user
@@ -113,6 +114,7 @@ public class MaintainInventoryService extends ProductInventoryService {
 
     /**
      * 临时库调入维修库
+     *
      * @param productId        商品ID
      * @param remark
      * @param user

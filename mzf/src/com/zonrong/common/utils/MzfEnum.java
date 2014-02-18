@@ -90,9 +90,9 @@ public interface MzfEnum {
 
 	public enum DemandStatus implements MzfEnum {
 		New,			//新增
-		waitFranchiseeProcess, //待加盟店经理审核
-		waitMgrProcess,	//待销售总监审核
-		waitFinanceProcess,	//待财务审核
+		waitFranchiseeProcess,  //待加盟店经理审核
+		waitMgrProcess,	        //待销售总监审核
+		waitFinanceProcess,	    //待财务审核
 		waitProcess,	//待处理
 		waitPurchase,	//待采购
 		waitOEM,		//待委外
@@ -458,17 +458,8 @@ public interface MzfEnum {
 		second_secondProduct("旧饰库", "forSecondProduct"),
 
 		product_maintain("维修库", "forProduct"),
-		product_borrow("借货库"),
 		product_temporary("临时库", "forTemporaryProduct"),
-
-		material("物料库", "forMaterial"),
-
-		Sale("现金库"),
-		Earnest("定金库");
-
-		private StorageType(String text){
-			this.text = text;
-		}
+		material("物料库", "forMaterial");
 
 		private StorageType(String text, String inventoryCheckSql){
 			this.text = text;
@@ -500,32 +491,32 @@ public interface MzfEnum {
         receive,        //从其它部门收货
         returned,        //退货
         renovate,        //翻新
-        transferToTemporary,        //调拨如临时库
-        transferToProductStorage,    //调入商品库
-        dropProduct,                //返厂
-        deliveryFromTemporary,        //临时出库
-        deliveryFromMaintain,        //委外维修出库
-        warehouseToTemporary,        //临时库入库
-        warehouseToMaintain,        //维修库入库
-        warehouseOnSplit,            //拆旧入库
-        maintainOver,                //维修完成
+        transferToTemporary,            //调拨如临时库
+        transferToProductStorage,       //调入商品库
+        dropProduct,                    //返厂
+        deliveryFromTemporary,          //临时出库
+        deliveryFromMaintain,           //委外维修出库
+        warehouseToTemporary,           //临时库入库
+        warehouseToMaintain,            //维修库入库
+        warehouseOnSplit,               //拆旧入库
+        maintainOver,                   //维修完成
         OEM,
-        sell,                        //销售
-        maintailSell,                //维修销售入库
-        buySecondGold,                //旧金回收
-        buySecondProduct,            //旧饰回收
-        maintain,                    //维修
-        translateToProduct,            //原料裸石转化为商品
-        translateToRawmaterial,        //商品裸钻转化为原料裸石
-        delivery,                    //强制出库
-        vendorSell                  //供应商销售
+        sell,                           //销售
+        maintailSell,                   //维修销售入库
+        buySecondGold,                  //旧金回收
+        buySecondProduct,               //旧饰回收
+        maintain,                       //维修
+        translateToProduct,             //原料裸石转化为商品
+        translateToRawmaterial,         //商品裸钻转化为原料裸石
+        delivery,                       //强制出库
+        vendorSell                      //供应商销售
     }
 
     enum RawmaterialType {
-        nakedDiamond("裸石", "RD"),			//裸石
+        nakedDiamond("裸石", "RD"),		//裸石
         gold("金料", ""),				//金料
         parts("配件", "RP"),				//配件
-        gravel("碎石", "RSD"),				//碎石
+        gravel("碎石", "RSD"),			//碎石
         secondGold("旧金", "");			//旧金（旧金和原料一同记录在原料表中）
 
         private String name;
@@ -548,7 +539,7 @@ public interface MzfEnum {
         free,			//正常
         locked,			//锁定
         canedled,		//核销
-sold            //已售
+        sold            //已售
     }
 
     enum GoldClass {
@@ -573,11 +564,11 @@ sold            //已售
      * 要货单处理方式
      */
     enum DemandProcessType {
-        allocate,	//库存调拨
-        replaceAllocate,  //替代调拨
-        purchase,	//采购
-        OEM,		//委外
-        reject		//驳回
+        allocate,	        //库存调拨
+        replaceAllocate,    //替代调拨
+        purchase,	        //采购
+        OEM,		        //委外
+        reject		        //驳回
     }
 
     enum SplitProductSource {

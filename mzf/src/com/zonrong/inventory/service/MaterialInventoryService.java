@@ -50,7 +50,7 @@ public class MaterialInventoryService {
         Map<String, Object> inventory = getInventory(materialId, orgId, user);
         Integer inventoryId;
         if (inventory == null) {
-            inventoryId = inventoryService.createMaterialInventory(materialId, orgId, "物料采购收货入库", user);
+            inventoryId = inventoryService.createMaterialInventory(materialId, orgId, user);
         } else {
             inventoryId = MapUtils.getInteger(inventory, "id");
         }
@@ -178,7 +178,7 @@ public class MaterialInventoryService {
 //		for (Map<String, Object> dbInventory : list) {
 //			Integer inventoryId = MapUtils.getInteger(dbInventory, metadata.getPkCode());
 //			Integer materialIdTemp = MapUtils.getInteger(dbInventory, "targetId");
-//			BigDecimal lockedQuantity = map.get(materialIdTemp);
+//			BigDecimal lockedQuantity = map.getInventory(materialIdTemp);
 //			if (inventoryId == null || lockedQuantity == null) {
 //				throw new BusinessException("获取参数错误");
 //			}

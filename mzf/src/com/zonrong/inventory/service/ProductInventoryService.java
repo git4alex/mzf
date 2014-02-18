@@ -105,7 +105,7 @@ public class ProductInventoryService {
         inventory.put("targetType", TargetType.product);
         inventory.put("targetId", productId);
 
-        int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType, sourceOrgId, remark, user);
+        int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType,user);
 
         inventoryService.createFlow(bizType, targetOrgId, new BigDecimal(1), MzfEnum.InventoryType.warehouse,
                 storageType, TargetType.product, Integer.toString(productId), null, remark, user);
@@ -194,7 +194,7 @@ public class ProductInventoryService {
         deliveryByProductId(MzfEnum.BizType.send, productId, remark, InventoryStatus.onPassage, user);
         if (isCusNakedDiamond) {
             int rawmaterialId = rawmaterialService.createNakedDiamondFromProduct(productId, user);
-            rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.receive, rawmaterialId, user.getOrgId(), remark, user);
+            rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.receive, rawmaterialId, remark, user);
         } else {
             //收货入库
             warehouse(MzfEnum.BizType.receive, productId, targetOrgId, storageType, sourceOrgId, remark, user);

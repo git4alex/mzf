@@ -73,13 +73,43 @@ public class VendorSaleController {
 
     @RequestMapping(value = "/secondGold",method = RequestMethod.POST)
     @ResponseBody
-    public Map<String,Object> vendorSecondSaleGold(@RequestBody final Map<String,Object> params,HttpServletRequest request) throws BusinessException {
+    public Map<String,Object> vendorSaleSecondGold(@RequestBody final Map<String,Object> params,HttpServletRequest request) throws BusinessException {
         final List details = getOrderDetails(params);
 
         OperateTemplete opt = new HttpTemplete(request) {
             @Override
             protected void doSomething() throws BusinessException {
                 vendorSaleService.createSecondGoldOrder(params, details, this.getUser());
+            }
+        };
+
+        return opt.operate();
+    }
+
+    @RequestMapping(value = "/parts",method = RequestMethod.POST)
+         @ResponseBody
+         public Map<String,Object> vendorSaleParts(@RequestBody final Map<String,Object> params,HttpServletRequest request) throws BusinessException {
+        final List details = getOrderDetails(params);
+
+        OperateTemplete opt = new HttpTemplete(request) {
+            @Override
+            protected void doSomething() throws BusinessException {
+                vendorSaleService.createPartsOrder(params, details, this.getUser());
+            }
+        };
+
+        return opt.operate();
+    }
+
+    @RequestMapping(value = "/gravel",method = RequestMethod.POST)
+    @ResponseBody
+    public Map<String,Object> vendorSaleGravel(@RequestBody final Map<String,Object> params,HttpServletRequest request) throws BusinessException {
+        final List details = getOrderDetails(params);
+
+        OperateTemplete opt = new HttpTemplete(request) {
+            @Override
+            protected void doSomething() throws BusinessException {
+                vendorSaleService.createGravelOrder(params, details, this.getUser());
             }
         };
 

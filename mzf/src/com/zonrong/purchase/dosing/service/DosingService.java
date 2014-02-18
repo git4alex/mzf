@@ -71,7 +71,7 @@ public class DosingService {
 //            throw new BusinessException("");
 //        }
 //
-//        Map<String, Object> map = list.get(0);
+//        Map<String, Object> map = list.getInventory(0);
 //        return MapUtils.getInteger(map, "orderId");
 //    }
 
@@ -299,7 +299,7 @@ public class DosingService {
         //解锁原料
         String remark = "委外加工订单删除配料，解锁原料";
         rawmaterialInventoryService.freeDiamond(diamondList.toArray(new Integer[diamondList.size()]), remark, user);
-        rawmaterialInventoryService.freeByQuantity(dosingMap, user);
+        rawmaterialInventoryService.free(dosingMap, user);
     }
 
     private void lockRawmaterialInventory(int dosingId, IUser user) throws BusinessException {
@@ -326,7 +326,7 @@ public class DosingService {
         //锁定原料
         String remark = "委外加工订单锁定原料";
         rawmaterialInventoryService.lockDiamond(diamondList.toArray(new Integer[diamondList.size()]), remark, user);
-        rawmaterialInventoryService.lockByQuantity(dosingMap, user);
+        rawmaterialInventoryService.lock(dosingMap, user);
     }
 
     public void validDosing(Integer[] dosingId, IUser user) throws BusinessException {
@@ -375,7 +375,7 @@ public class DosingService {
         } else {
             Map<Integer, BigDecimal> tmp = new HashMap<Integer, BigDecimal>();
             tmp.put(mid, new BigDecimal(quantity));
-            rawmaterialInventoryService.lockByQuantity(tmp, user);
+            rawmaterialInventoryService.lock(tmp, user);
         }
     }
 
@@ -388,7 +388,7 @@ public class DosingService {
         } else {
             Map<Integer, BigDecimal> tmp = new HashMap<Integer, BigDecimal>();
             tmp.put(mid, new BigDecimal(quantity));
-            rawmaterialInventoryService.freeByQuantity(tmp, user);
+            rawmaterialInventoryService.free(tmp, user);
         }
     }
 
@@ -475,7 +475,7 @@ public class DosingService {
                     dosingBom.setWeight(new BigDecimal(MapUtils.getString(dosing, "dosingWeight","0")));
                     rawmaterialQuantityMap.put(rawmaterialId, dosingBom);
                 } else {
-                    rawmaterialInventoryService.deliveryDiamondByRawmaterialId(MzfEnum.BizType.OEM, rawmaterialId, remark, user);
+                    rawmaterialInventoryService.deliveryDiamond(MzfEnum.BizType.OEM, rawmaterialId, remark, user);
                     int transId = transactionService.findTransId(MzfEntity.RAWMATERIAL, rawmaterialId+"", user);
                     flowLogService.createLog(transId, MzfEntity.RAWMATERIAL, rawmaterialId+"", "配料出库", MzfEnum.TargetType.rawmaterial, rawmaterialId, "委外订单号："+orderNum, user);
                 }

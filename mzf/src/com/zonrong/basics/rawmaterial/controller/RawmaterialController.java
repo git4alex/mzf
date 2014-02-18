@@ -58,7 +58,7 @@ public class RawmaterialController {
 				String quantity = MapUtils.getString(param, "quantity");
 				String weight  = MapUtils.getString(param, "weight");
 				String remark = MapUtils.getString(param, "remark");
-				rawmaterialInventoryService.deliveryRawmaterialById(MzfEnum.BizType.delivery,new BigDecimal(quantity),new BigDecimal(weight),id,remark,this.getUser());
+				rawmaterialInventoryService.deliveryById(MzfEnum.BizType.delivery, new BigDecimal(quantity), new BigDecimal(weight), id, remark, this.getUser());
 			}
 		};
 		return templete.operate();
@@ -71,7 +71,7 @@ public class RawmaterialController {
 		OperateTemplete templete = new HttpTemplete(request) {
 			protected void doSomething() throws BusinessException {
 				String remark = MapUtils.getString(param, "remark");
-				rawmaterialInventoryService.deliveryDiamondByRawmaterialId(MzfEnum.BizType.delivery,id,remark,this.getUser());
+				rawmaterialInventoryService.deliveryDiamond(MzfEnum.BizType.delivery, id, remark, this.getUser());
 			}
 		};
 		return templete.operate();

@@ -54,8 +54,6 @@ public class RegisterRawmaterialService {
 	private RegisterService registerService;
 	@Resource
 	private BusinessLogService businessLogService;
-	@Resource
-	private BizCodeService bizCodeService;
     @Resource
     private TransactionService transactionService;
     @Resource
@@ -86,7 +84,7 @@ public class RegisterRawmaterialService {
             v.put("statusRemark","正常");
             entityService.updateById(MzfEntity.RAWMATERIAL,rawmaterialId+"",v,user);
 
-            rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.oemReturn, rawmaterialId, user.getOrgId(), remark, user);
+            rawmaterialInventoryService.warehouseDiamond(MzfEnum.BizType.oemReturn, rawmaterialId, remark, user);
         }else if(type == MzfEnum.RawmaterialType.gold){
             GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
             Integer dbRawmaterialId = rawmaterialService.findGold(goldClass, user);
@@ -263,7 +261,7 @@ public class RegisterRawmaterialService {
 		if (type == MzfEnum.RawmaterialType.nakedDiamond) {
             rawmaterial.put("karatUnitPrice",MapUtils.getFloatValue(rawmaterial,"unitPrice"));
 			rawmaterialId = rawmaterialService.createRawmaterial(rawmaterial, user);
-			rawmaterialInventoryService.warehouseDiamond(bizType, rawmaterialId, user.getOrgId(), remark, user);
+			rawmaterialInventoryService.warehouseDiamond(bizType, rawmaterialId, remark, user);
 		} else if (type == MzfEnum.RawmaterialType.gold) {
 			GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(rawmaterial, "goldClass"));
 			Integer dbRawmaterialId = rawmaterialService.findGold(goldClass, user);

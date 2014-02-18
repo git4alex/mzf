@@ -43,14 +43,6 @@ public class InventoryCheckService {
 	@Resource
 	private SimpleSqlService simpleSqlService;
 
-//	public enum InventoryCheckType {
-//		product,
-//		rawmaterial,
-//		material,
-//		cash,
-//		frontMoney
-//	}
-
 	public enum InventoryCheckStatus {
 		New,
 		over

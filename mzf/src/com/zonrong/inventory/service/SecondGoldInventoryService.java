@@ -71,7 +71,7 @@ public class SecondGoldInventoryService {
         Map<String, Object> inventory = new HashMap<String, Object>();
         inventory.put("targetType", MzfEnum.TargetType.secondGold);
         inventory.put("targetId", secondGoldId);
-        return inventoryService.createInventory(inventory, orgId, new BigDecimal(0), MzfEnum.StorageType.second_secondGold, orgId, null, user);
+        return inventoryService.createInventory(inventory, orgId, new BigDecimal(0), MzfEnum.StorageType.second_secondGold,user);
     }
 
     /**
@@ -118,8 +118,13 @@ public class SecondGoldInventoryService {
 		}
 		Map<String, Object> inventory =  getInventory(secondGoldId, orgId, user);
 		Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-        Double dbQuantity = MapUtils.getDouble(inventory,"quantity");
-        Double dbCost = MapUtils.getDouble(inventory,"cost");
+        Double dbQuantity = MapUtils.getDouble(inventory,"quantity",0d);
+
+        if(dbQuantity == 0d){
+            throw new BusinessException("计算发生金额时，库存总数量为0");
+        }
+
+        Double dbCost = MapUtils.getDouble(inventory,"cost",0d);
 
         BigDecimal cost = new BigDecimal(dbCost * quantity/dbQuantity);
 

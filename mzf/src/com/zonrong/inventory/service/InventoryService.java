@@ -20,7 +20,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -40,41 +39,29 @@ public class InventoryService {
     @Resource
     private EntityService entityService;
 
-    private Map<String, Object> getInventory(Map<String, Object> where, IUser user) throws BusinessException {
-        EntityMetadata metadata = getEntityMetadataOfInventory();
-        List<Map<String, Object>> dbInventoryList = entityService.list(metadata, where, null, user.asSystem());
-        if (CollectionUtils.isEmpty(dbInventoryList)) {
-            return null;
-        } else if (dbInventoryList.size() > 1) {
-            throw new BusinessException("同一仓库中找到ID相同的多件货品");
-        }
-
-        return dbInventoryList.get(0);
-    }
-
-    public int createRawmaterialInventory(int rawmaterialId, int orgId, StorageType storageType, String remark, IUser user) throws BusinessException {
+    public int createRawmaterialInventory(int rawmaterialId, int orgId, StorageType storageType, IUser user) throws BusinessException {
         Map<String, Object> inventory = new HashMap<String, Object>();
         inventory.put("targetType", TargetType.rawmaterial);
         inventory.put("targetId", rawmaterialId);
-        return createInventory(inventory, orgId, new BigDecimal(0), storageType, orgId, remark, user);
+        return createInventory(inventory, orgId, new BigDecimal(0), storageType, user);
     }
 
-    public int createMaterialInventory(int materialId, int orgId, String remark, IUser user) throws BusinessException {
+    public int createMaterialInventory(int materialId, int orgId, IUser user) throws BusinessException {
         Map<String, Object> inventory = new HashMap<String, Object>();
         inventory.put("targetType", TargetType.material);
         inventory.put("targetId", materialId);
-        return createInventory(inventory, orgId, new BigDecimal(0), StorageType.material, orgId, remark, user);
+        return createInventory(inventory, orgId, new BigDecimal(0), StorageType.material, user);
     }
 
     public int createInventory(Map<String, Object> inventory, int orgId,
-                               BigDecimal quantity, StorageType storageType, int sourceOrgId, String remark,
+                               BigDecimal quantity, StorageType storageType,
                                IUser user) throws BusinessException {
         inventory.put("orgId", orgId);
         inventory.put("storageType", storageType);
         inventory.put("quantity", quantity);
-        inventory.put("remark", remark);
+//        inventory.put("remark", remark);
         inventory.put("status", InventoryStatus.onStorage);
-        inventory.put("sourceOrgId", sourceOrgId);
+//        inventory.put("sourceOrgId", sourceOrgId);
         inventory.put("cuserId", user.getId());
         inventory.put("cdate", null);
 
@@ -125,19 +112,19 @@ public class InventoryService {
             //发生金额为商品成本
         } else if (targetType == TargetType.rawmaterial) {//原料出入库
             //发生金额为原料成本
-            if (storageType == StorageType.rawmaterial_gold || storageType == StorageType.rawmaterial_gravel) {
+            if (storageType == StorageType.rawmaterial_gold) {
                 //金料的发生金额为本次入库的成本，参见：createFlowOnQuantity
                 flow.put("cost", cost);
-
-                if (storageType == StorageType.rawmaterial_gravel) {
-                    int idx = remark.lastIndexOf('|');
-                    String wStr = remark.substring(idx + 1);
-                    remark = remark.substring(0, idx);
-                    flow.put("remark", remark);
-                    flow.put("weight", new BigDecimal(wStr).round(new MathContext(3)).toString());
-                } else {
-                    flow.put("weight", quantity);
-                }
+                flow.put("weight", quantity);
+            }else if(storageType == StorageType.rawmaterial_gravel){
+                flow.put("cost", cost);
+//                int idx = remark.lastIndexOf('|');
+//                String wStr = remark.substring(idx + 1);
+//                remark = remark.substring(0, idx);
+//                flow.put("remark", remark);
+//                flow.put("weight", new BigDecimal(wStr).round(new MathContext(3)).toString());
+            }else if(storageType == StorageType.rawmaterial_parts){
+                flow.put("cost",cost);
             } else {
                 Map<String, Object> target = entityService.getById(MzfEntity.RAWMATERIAL, targetId, user);
                 flow.put("cost", MapUtils.getFloat(target, "cost"));
@@ -260,7 +247,7 @@ public class InventoryService {
 
         BigDecimal newQuentity = dbQuentity.subtract(quantity);
         if (newQuentity.doubleValue() >= 0) {
-            field.put("quantity", newQuentity);
+            field.put("quantity", newQuentity.floatValue());
         } else {
             logger.debug("出库时库存量不足，库存总数量为："+dbQuentity+",本次数量为："+quantity);
             throw new BusinessException("库存量不足");
@@ -273,9 +260,9 @@ public class InventoryService {
         BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost","0"));
         BigDecimal newCost = dbCost.subtract(cost);
         if (newCost.doubleValue() >= 0) {
-            field.put("cost", newCost);
+            field.put("cost", newCost.floatValue());
         } else {
-            logger.debug("出库时发生成本错误，库存总成本为："+dbCost+",本次发生成本为："+cost);
+            logger.debug("出库时发生错误，库存总成本为："+dbCost+",本次发生成本为："+cost);
             throw new BusinessException("库存成本错误");
         }
 
