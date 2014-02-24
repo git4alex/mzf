@@ -114,7 +114,7 @@ public class RawmaterialInventoryService {
 		if (inventory == null) {
 			inventoryId = inventoryService.createRawmaterialInventory(rawmaterialId, user.getOrgId(), storageType, user);
 		} else {
-			inventoryId = MapUtils.getInteger(inventory, "id");
+			inventoryId = MapUtils.getInteger(inventory, "inventoryId");
 		}
 
 		inventoryService.warehouse(bizType, inventoryId, quantity, cost, remark, user);

@@ -296,7 +296,7 @@ public class MaterialDemandService extends BillStatusService<MaterialDemandStatu
 			//锁定物料
 			Map<String, Object> materialInventory = materialInventoryService.getInventory(materialId, 1, user);
 			if(MapUtils.isNotEmpty(materialInventory)){
-				int inventoryId = MapUtils.getIntValue(materialInventory, "id");
+				int inventoryId = MapUtils.getIntValue(materialInventory, "inventoryId");
 				double lockedQuantity = MapUtils.getDoubleValue(demand, "allocatedQuantity");
 				materialInventoryService.lock(inventoryId, lockedQuantity, user);
 

@@ -272,8 +272,8 @@ public class ProductInventoryService {
         remark1 = "从商品库调往临时库。" + remark1;
         List<Integer> inventoryIds = new ArrayList<Integer>();
         for (Map<String, Object> inventory : inventoryList) {
-            inventoryIds.add(MapUtils.getInteger(inventory, "id"));
-            String productId = MapUtils.getString(inventory, "targetId");
+            inventoryIds.add(MapUtils.getInteger(inventory, "inventoryId"));
+            String productId = MapUtils.getString(inventory, "id");
             StorageType storageType = StorageType.valueOf(MapUtils.getString(inventory, "storageType"));
 
             Integer orgId = MapUtils.getInteger(inventory, "orgId");

@@ -47,22 +47,33 @@ public class MaterialInventoryService {
     }
 
     public void warehouse(BizType bizType, int orgId, int materialId, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
-        Map<String, Object> inventory = getInventory(materialId, orgId, user);
+        Map<String, Object> inventory = null;
+        try{
+            inventory = getInventory(materialId, orgId, user);
+        }catch (Exception e){
+
+        }
         Integer inventoryId;
         if (inventory == null) {
             inventoryId = inventoryService.createMaterialInventory(materialId, orgId, user);
         } else {
-            inventoryId = MapUtils.getInteger(inventory, "id");
+            inventoryId = MapUtils.getInteger(inventory, "inventoryId");
         }
 
         inventoryService.warehouse(bizType, inventoryId, quantity, cost, remark, user);
     }
 
-    public void delivery(BizType bizType, int materialId, BigDecimal quantity, BigDecimal cost, int orgId, String remark, IUser user) throws BusinessException {
+    public void delivery(BizType bizType, int materialId, Float quantity, int orgId, String remark, IUser user) throws BusinessException {
         Map<String, Object> inventory = getInventory(materialId, orgId, user);
         Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
+        Float dbCost = MapUtils.getFloat(inventory,"cost");
+        Float dbQuantity = MapUtils.getFloat(inventory,"quantity",0f);
+        BigDecimal cost = new BigDecimal(0);
+        if(dbQuantity > 0){
+            cost = new BigDecimal(quantity * dbCost / dbQuantity);
+        }
 
-        inventoryService.deliveryLocked(bizType, inventoryId, quantity, cost, remark, user);
+        inventoryService.delivery(bizType, inventoryId, new BigDecimal(quantity), cost, remark, user);
     }
 
     public List<Map<String, Object>> listMaterialInventory(Integer[] materialIds, int orgId, IUser user) throws BusinessException {
@@ -152,7 +163,7 @@ public class MaterialInventoryService {
 //		String costDesc = "批发价: " + cost;
 //		delivery(BizType.receive, inventoryId, quantity, cost, costDesc, true, remark, user);
 
-        inventoryService.delivery(MzfEnum.BizType.receive, inventoryId, quantity, null, remark, user);
+        inventoryService.deliveryLocked(MzfEnum.BizType.receive, inventoryId, quantity, null, remark, user);
         warehouse(MzfEnum.BizType.receive, materialId, quantity, warehouseCost.abs(), remark, user);
 
 //		materialService.addCost(materialId, cost.abs().multiply(new BigDecimal(-1)), sourceOrgId, user);

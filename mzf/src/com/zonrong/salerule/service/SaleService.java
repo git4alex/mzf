@@ -259,10 +259,10 @@ public class SaleService {
 		logService.createLog(transId, MzfEntity.SALE, Integer.toString(saleId), "新建销售单", TargetType.product, productId, "销售,销售单号为： "+saleNum, user);
 	}
 	private void sellMaterial(String saleNum, Integer materialId, Map<String, Object> detail, IUser user) throws BusinessException {
-		BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "quantity"));
+		Float quantity = MapUtils.getFloat(detail, "quantity");
 		String remark = "商品销售， 销售单号：" + saleNum;
-		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
-		materialInventoryService.delivery(MzfEnum.BizType.sell, materialId, quantity, cost, user.getOrgId(), remark, user);
+
+		materialInventoryService.delivery(MzfEnum.BizType.sell, materialId, quantity, user.getOrgId(), remark, user);
 	}
 	private void sellSecondGold(String saleNum, Integer targetId, Map<String, Object> detail, IUser user) throws BusinessException {
 		GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));

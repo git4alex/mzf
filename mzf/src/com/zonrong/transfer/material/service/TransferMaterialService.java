@@ -175,8 +175,9 @@ public class TransferMaterialService extends TransferService {
 		BigDecimal quantity = new BigDecimal(MapUtils.getFloatValue(transfer, "quantity", 0));
 		Integer sourceOrgId = MapUtils.getInteger(transfer, "sourceOrgId");
 
-		//TODO从仓库发货
-		materialInventoryService.send(materialId, quantity, sourceOrgId, null, user);
+		//TODO：调出方库存锁定
+		materialInventoryService.send(materialId, quantity, sourceOrgId, "调拨出库，调拨单号：["+MapUtils.getString(transfer,"num")+"]", user);
+
 		//记录操作日志
 		businessLogService.log("发货(物料调拨)", "调拨单号：" + MapUtils.getInteger(transfer, "id"), user);
 	}
@@ -197,7 +198,9 @@ public class TransferMaterialService extends TransferService {
 		BigDecimal cost = new BigDecimal(MapUtils.getString(transfer, "materialWholesalePrice"));
 		Integer sourceOrgId = MapUtils.getInteger(transfer, "sourceOrgId");
 		Integer targetOrgId = MapUtils.getInteger(transfer, "targetOrgId");
-		materialInventoryService.receive(targetId, quantity, cost, sourceOrgId, targetOrgId, "商品调拨", user);
+
+        //todo: 此处应改为：调出方出库，调入方入库
+		materialInventoryService.receive(targetId, quantity, cost, sourceOrgId, targetOrgId, "物料调拨，调拨单号：["+MapUtils.getString(transfer,"num")+"]", user);
 
 		//更新物料要货申请状态
 		Integer demandId = MapUtils.getInteger(transfer, "demandId");

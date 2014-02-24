@@ -275,12 +275,33 @@ public class InventoryService {
     public void deliveryLocked(MzfEnum.BizType bizType, int inventoryId, BigDecimal quantity, BigDecimal cost, String remark, IUser user) throws BusinessException {
         if (quantity == null || quantity.doubleValue() == 0) return;
 
-        delivery(bizType,inventoryId,quantity,cost,remark,user);
-
         EntityMetadata metadata = getEntityMetadataOfInventory();
         Map<String, Object> inventory = entityService.getById(metadata, inventoryId, user.asSystem());
 
+        BigDecimal dbQuentity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
         Map<String, Object> field = new HashMap<String, Object>();
+
+        BigDecimal newQuentity = dbQuentity.subtract(quantity);
+        if (newQuentity.doubleValue() >= 0) {
+            field.put("quantity", newQuentity.floatValue());
+        } else {
+            logger.debug("出库时库存量不足，库存总数量为："+dbQuentity+",本次数量为："+quantity);
+            throw new BusinessException("库存量不足");
+        }
+
+        if (cost == null) {
+            cost = new BigDecimal(0);
+        }
+
+        BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost","0"));
+        BigDecimal newCost = dbCost.subtract(cost);
+        if (newCost.doubleValue() >= 0) {
+            field.put("cost", newCost.floatValue());
+        } else {
+            logger.debug("出库时发生错误，库存总成本为："+dbCost+",本次发生成本为："+cost);
+            throw new BusinessException("库存成本错误");
+        }
+
         BigDecimal lockedQuantity = new BigDecimal(MapUtils.getString(inventory, "lockedQuantity", Integer.toString(0)));
         lockedQuantity = lockedQuantity.subtract(quantity);
         if (lockedQuantity.doubleValue() >= 0) {
