@@ -66,7 +66,7 @@ public class MaterialInventoryService {
     public void delivery(BizType bizType, int materialId, Float quantity, int orgId, String remark, IUser user) throws BusinessException {
         Map<String, Object> inventory = getInventory(materialId, orgId, user);
         Integer inventoryId = MapUtils.getInteger(inventory, "inventoryId");
-        Float dbCost = MapUtils.getFloat(inventory,"cost");
+        Float dbCost = MapUtils.getFloat(inventory,"cost",0f);
         Float dbQuantity = MapUtils.getFloat(inventory,"quantity",0f);
         BigDecimal cost = new BigDecimal(0);
         if(dbQuantity > 0){

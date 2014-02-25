@@ -281,9 +281,8 @@ public class InventoryService {
         BigDecimal dbQuentity = new BigDecimal(MapUtils.getString(inventory, "quantity"));
         Map<String, Object> field = new HashMap<String, Object>();
 
-        BigDecimal newQuentity = dbQuentity.subtract(quantity);
-        if (newQuentity.doubleValue() >= 0) {
-            field.put("quantity", newQuentity.floatValue());
+        if (dbQuentity.floatValue() >= quantity.floatValue()) {
+            field.put("quantity", dbQuentity.subtract(quantity).floatValue());
         } else {
             logger.debug("出库时库存量不足，库存总数量为："+dbQuentity+",本次数量为："+quantity);
             throw new BusinessException("库存量不足");
@@ -303,11 +302,10 @@ public class InventoryService {
         }
 
         BigDecimal lockedQuantity = new BigDecimal(MapUtils.getString(inventory, "lockedQuantity", Integer.toString(0)));
-        lockedQuantity = lockedQuantity.subtract(quantity);
-        if (lockedQuantity.doubleValue() >= 0) {
-            field.put("lockedQuantity", lockedQuantity);
+
+        if (lockedQuantity.floatValue() >= quantity.floatValue()) {
+            field.put("lockedQuantity", lockedQuantity.subtract(quantity).floatValue());
         } else {
-            field.put("lockedQuantity", 0);
             throw new BusinessException("库存锁定量不足");
         }
         entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
