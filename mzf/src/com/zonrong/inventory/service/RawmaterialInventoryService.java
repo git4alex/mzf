@@ -93,7 +93,15 @@ public class RawmaterialInventoryService {
 		warehouseByQuantity(bizType, storageType, rawmaterialId, quantity, cost, remark, user);
 
 		//更新碎石重量
-		rawmaterialService.addWeight(rawmaterialId, weight, user);
+		//rawmaterialService.addWeight(rawmaterialId, weight, user);
+
+        //更新库存重量
+        Map<String, Object> inventory = getInventory(rawmaterialId, user.getOrgId(), user);
+        String inventoryId = MapUtils.getString(inventory, "inventoryId");
+        Float dbWeight = MapUtils.getFloat(inventory,"weight",0f);
+        Map<String,Object> field = new HashMap<String, Object>();
+        field.put("weight",dbWeight+weight.floatValue());
+        entityService.updateById(MzfEntity.INVENTORY,inventoryId,field,user);
 	}
 
 	public void warehouseParts(BizType bizType, int rawmaterialId,
@@ -119,7 +127,7 @@ public class RawmaterialInventoryService {
 
 		inventoryService.warehouse(bizType, inventoryId, quantity, cost, remark, user);
 
-		rawmaterialService.addCost(rawmaterialId, cost, user);
+		//rawmaterialService.addCost(rawmaterialId, cost, user);
 	}
 
 	/**
