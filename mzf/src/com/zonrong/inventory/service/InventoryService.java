@@ -101,7 +101,7 @@ public class InventoryService {
         flow.put("targetType", targetType);
         flow.put("targetId", targetId);
         flow.put("remark", remark);
-        flow.put("quantity", quantity);
+        flow.put("quantity", quantity.floatValue());
         flow.put("cuserId", user.getId());
         flow.put("cdate", null);
         if (targetType == TargetType.product) {//商品出入库
@@ -246,7 +246,7 @@ public class InventoryService {
         Map<String, Object> field = new HashMap<String, Object>();
 
         BigDecimal newQuentity = dbQuentity.subtract(quantity);
-        if (newQuentity.doubleValue() >= 0) {
+        if (dbQuentity.floatValue() >= quantity.floatValue()) {
             field.put("quantity", newQuentity.floatValue());
         } else {
             logger.debug("出库时库存量不足，库存总数量为："+dbQuentity+",本次数量为："+quantity);
@@ -259,7 +259,7 @@ public class InventoryService {
 
         BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost","0"));
         BigDecimal newCost = dbCost.subtract(cost);
-        if (newCost.doubleValue() >= 0) {
+        if (dbCost.floatValue() >= cost.floatValue()) {
             field.put("cost", newCost.floatValue());
         } else {
             logger.debug("出库时发生错误，库存总成本为："+dbCost+",本次发生成本为："+cost);
@@ -293,9 +293,8 @@ public class InventoryService {
         }
 
         BigDecimal dbCost = new BigDecimal(MapUtils.getString(inventory, "cost","0"));
-        BigDecimal newCost = dbCost.subtract(cost);
-        if (newCost.doubleValue() >= 0) {
-            field.put("cost", newCost.floatValue());
+        if (dbCost.floatValue() >= cost.floatValue()) {
+            field.put("cost", dbCost.subtract(cost).floatValue());
         } else {
             logger.debug("出库时发生错误，库存总成本为："+dbCost+",本次发生成本为："+cost);
             throw new BusinessException("库存成本错误");

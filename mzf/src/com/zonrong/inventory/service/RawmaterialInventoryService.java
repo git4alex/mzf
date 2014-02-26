@@ -156,12 +156,12 @@ public class RawmaterialInventoryService {
         Map<String,Object> dbInventory = getInventory(gravelId,user.getOrgId(),user);
         Integer inventoryId = MapUtils.getInteger(dbInventory,"inventoryId");
 
-        Integer dbQuantity = MapUtils.getInteger(dbInventory,"quantity");
-        Integer dbLockedQuantity = MapUtils.getInteger(dbInventory,"lockedQuantity");
-        Float dbWeight = MapUtils.getFloat(dbInventory,"weight");
+        Integer dbQuantity = MapUtils.getInteger(dbInventory,"quantity",0);
+        Integer dbLockedQuantity = MapUtils.getInteger(dbInventory,"lockedQuantity",0);
+        Float dbWeight = MapUtils.getFloat(dbInventory,"weight",0f);
         //Float dbLockedWeight = MapUtils.getFloat(dbInventory,"lockedWeight");
 
-        if(quantity> dbQuantity - dbLockedQuantity){
+        if(quantity > dbQuantity - dbLockedQuantity){
             throw new BusinessException("库存数量不足");
         }
 
@@ -169,9 +169,11 @@ public class RawmaterialInventoryService {
             throw new BusinessException("库存重量不足");
         }
 
-        Double dbCost = MapUtils.getDouble(dbInventory, "cost");
-        Double cost = dbCost * weight / dbWeight;
-
+        Float dbCost = MapUtils.getFloat(dbInventory, "cost");
+        Float cost = 0f;
+        if(dbWeight>0){
+            cost = dbCost * weight / dbWeight;
+        }
         dbInventory.clear();
 
         dbInventory.put("quantity",dbQuantity - quantity);
