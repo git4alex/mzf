@@ -292,10 +292,13 @@ public class SaleService {
 	private void sellSecondGold(String saleNum, Map<String, Object> detail, IUser user) throws BusinessException {
 		GoldClass goldClass = MzfEnum.GoldClass.valueOf(MapUtils.getString(detail, "goldClass"));
 		BigDecimal quantity = new BigDecimal(MapUtils.getString(detail, "goldWeight"));
-		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));
+		BigDecimal cost = new BigDecimal(MapUtils.getString(detail, "price"));//此处price应为amount，旧金支付的总金额
+        Float totalDiscount = MapUtils.getFloat(detail,"totalDiscount",0f);
+        cost = cost.subtract(new BigDecimal(totalDiscount));//回收成本为总金额 - 折扣
 		String goldPrice = MapUtils.getString(detail, "goldPrice");
+
 		String remark = "旧金回收，金价：" + goldPrice + "， 销售单号：" + saleNum;
-		secondGoldInventoryService.warehouse(MzfEnum.BizType.buySecondGold, goldClass, quantity, cost, remark, user);
+ 		secondGoldInventoryService.warehouse(MzfEnum.BizType.buySecondGold, goldClass, quantity, cost, remark, user);
 	}
 
 	private void wareSecondProduct(Integer secondProductId,String saleNum, IUser user) throws BusinessException {
