@@ -79,7 +79,7 @@ public class TransferMaterialService extends TransferService {
 		double quantity = MapUtils.getDoubleValue(transfer, "quantity",0);
 
         Map<String,Object> inv = materialInventoryService.getInventory(materialId,user.getOrgId(),user);
-		int inventoryId = MapUtils.getIntValue(inv,"id");
+		int inventoryId = MapUtils.getIntValue(inv,"inventoryId");
 
 		materialInventoryService.unLock(inventoryId, quantity, user);
 		//记录操作日志
