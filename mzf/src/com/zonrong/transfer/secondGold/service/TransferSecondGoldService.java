@@ -83,7 +83,7 @@ public class TransferSecondGoldService extends TransferService {
 		//解锁原料
 		int secondGoldId = MapUtils.getIntValue(transfer, "targetId");
 		double lockedQuantity = MapUtils.getDoubleValue(transfer, "quantity");
-        int srcOrgId = MapUtils.getIntValue(transfer,"srcOrgId");
+        int srcOrgId = MapUtils.getIntValue(transfer,"sourceOrgId");
 		secondGoldInventoryService.unLock(srcOrgId,secondGoldId, lockedQuantity, user);
 
 		//记录操作日志
