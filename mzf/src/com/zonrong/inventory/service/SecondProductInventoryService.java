@@ -69,6 +69,7 @@ public class SecondProductInventoryService {
         Map<String, Object> inventory = new HashMap<String, Object>();
         inventory.put("targetType", TargetType.secondProduct);
         inventory.put("targetId", secondProductId);
+        inventory.put("sourceOrgId",sourceOrgId);
 
         int inventoryId = inventoryService.createInventory(inventory, targetOrgId, new BigDecimal(1), storageType, user);
 
