@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.MathContext;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -213,9 +214,9 @@ public class InventoryService {
         dbCost = dbCost.add(cost);
 
         Map<String, Object> field = new HashMap<String, Object>();
-        field.put("quantity", dbQuantity);
-        field.put("cost", dbCost);
-        field.put("lastQuantity", quantity);
+        field.put("quantity", dbQuantity.round(new MathContext(4)));
+        field.put("cost", dbCost.round(new MathContext(4)));
+        field.put("lastQuantity", quantity.round(new MathContext(4)));
         entityService.updateById(metadata, Integer.toString(inventoryId), field, user);
 
         if (cost == null) {
